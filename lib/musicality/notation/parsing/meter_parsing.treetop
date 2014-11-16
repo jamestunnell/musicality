@@ -1,0 +1,29 @@
+module Musicality
+module Parsing
+
+grammar Meter
+  include PositiveInteger
+  
+  rule meter
+    meter1 / meter2
+  end
+  
+  rule meter1
+    bpm:positive_integer "/" bd:positive_integer {
+      def to_meter
+        Musicality::Meter.new(bpm.to_i, Rational(1,bd.to_i))
+      end
+    }
+  end
+  
+  rule meter2
+    bpm:positive_integer "*" num:positive_integer "/" den:positive_integer {
+      def to_meter
+        Musicality::Meter.new(bpm.to_i, Rational(num.to_i,den.to_i))
+      end
+    }
+  end
+end
+
+end
+end

@@ -1,0 +1,25 @@
+module Musicality
+module Parsing
+
+grammar Duration
+  include PositiveInteger
+  
+  rule duration
+    num_and_den / num_only / den_only
+  end
+  
+  rule num_and_den
+    positive_integer "/" positive_integer <NumDenNode>
+  end
+  
+  rule num_only
+    numerator:positive_integer "/"? <NumOnlyNode>
+  end
+  
+  rule den_only
+    "/" denominator:positive_integer <DenOnlyNode>
+  end
+end
+
+end
+end

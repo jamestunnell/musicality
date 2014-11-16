@@ -1,0 +1,19 @@
+module Musicality
+module Parsing
+
+grammar PositiveRational
+  include PositiveInteger
+  
+  rule positive_rational
+    positive_integer "/" positive_integer {
+      def to_r
+        text_value.to_r
+      end
+      
+      alias :to_num :to_r
+    }
+  end
+end
+
+end
+end

@@ -1,0 +1,23 @@
+module Musicality
+module Parsing
+
+grammar Segment
+  include NonnegativeInteger
+  include NonnegativeFloat
+  include NonnegativeRational
+  
+  rule range
+    first:nonnegative_number ([.] 2..3) last:nonnegative_number {
+      def to_range
+        first.to_num...last.to_num
+      end
+    }
+  end
+  
+  rule nonnegative_number
+    nonnegative_float / nonnegative_rational / nonnegative_integer
+  end
+end
+
+end
+end

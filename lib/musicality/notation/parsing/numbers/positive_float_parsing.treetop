@@ -1,0 +1,33 @@
+module Musicality
+module Parsing
+
+grammar PositiveFloat
+  rule positive_float
+    (float1 / float2 / float3) {
+      def to_f
+        text_value.to_f
+      end
+      
+      alias :to_num :to_f
+    }
+  end
+
+  rule float1
+    [0]* [1-9]+ [0-9]* exponent
+  end
+  
+  rule float2
+    [0]* [1-9]+ [0-9]* [.] [0-9]+ exponent?
+  end
+  
+  rule float3
+    [0]+ [.] [0]* [1-9]+ [0-9]* exponent?
+  end
+
+  rule exponent
+    "e" [+-]? [0-9]+
+  end
+end
+
+end
+end

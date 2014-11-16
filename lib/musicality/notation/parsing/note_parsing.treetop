@@ -1,0 +1,28 @@
+module Musicality
+module Parsing
+
+grammar Note
+  include Pitch
+  include Articulation
+  include Link
+  include Duration
+
+  rule note
+    duration
+    art:articulation?
+    pitch_links:(first:pitch_link more:("," pl:pitch_link)*)?
+    acc:accent?
+    <NoteNode>
+  end
+
+  rule pitch_link
+    pitch the_link:link?
+  end
+  
+  rule accent
+    "!"
+  end
+end
+
+end
+end

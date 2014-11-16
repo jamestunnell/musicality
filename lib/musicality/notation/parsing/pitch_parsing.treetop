@@ -1,0 +1,52 @@
+module Musicality
+module Parsing
+
+grammar Pitch
+  include NonnegativeInteger
+  rule pitch
+    pitch_letter mod:[#b]? octave cents:cent? <PitchNode>
+  end
+  
+  rule octave
+    n:nonnegative_integer { def to_i; n.to_i; end }
+  end
+  
+  rule cent
+    [+-] n:nonnegative_integer { def to_i; text_value.to_i; end }
+  end
+  
+  rule pitch_letter
+    letter_a / letter_b / letter_c / letter_d / letter_e / letter_f / letter_g
+  end
+  
+  rule letter_a
+    [Aa] { def to_semitone; 9; end }
+  end
+  
+  rule letter_b
+    [Bb] { def to_semitone; 11; end }
+  end
+  
+  rule letter_c
+    [Cc] { def to_semitone; 0; end }
+  end
+  
+  rule letter_d
+    [Dd] { def to_semitone; 2; end }
+  end
+  
+  rule letter_e
+    [Ee] { def to_semitone; 4; end }
+  end
+  
+  rule letter_f
+    [Ff] { def to_semitone; 5; end }
+  end
+  
+  rule letter_g
+    [Gg] { def to_semitone; 7; end }
+  end
+end
+
+end
+end
