@@ -33,7 +33,7 @@ chord = Note.whole([C3,E3,G3])
 part = Part.new(MP, notes:[single,rest,chord])
 ```
 
-Or, a compact string-representation can be used, instead.
+Or, a compact, string representation can be used, instead.
 ```ruby
 Part.new(FF, "/4Ab4 /4 1C3,E3,G3".to_notes)
 ```
