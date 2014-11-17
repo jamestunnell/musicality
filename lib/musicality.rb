@@ -3,7 +3,10 @@ require 'musicality/version'
 require 'musicality/validatable'
 require 'musicality/errors'
 
-# code for notating (representing) music
+#
+# Notation
+#
+
 require 'musicality/notation/model/pitch'
 require 'musicality/notation/model/pitches'
 require 'musicality/notation/model/link'
@@ -52,3 +55,20 @@ require 'musicality/notation/conversion/tempo_conversion'
 require 'musicality/notation/conversion/measure_note_map'
 require 'musicality/notation/conversion/measure_score_converter'
 require 'musicality/notation/conversion/measure_score_conversion'
+
+#
+# Performance
+#
+
+require 'musicality/performance/model/note_attacks'
+require 'musicality/performance/model/note_sequence'
+
+require 'musicality/performance/util/interpolation'
+require 'musicality/performance/util/piecewise_function'
+require 'musicality/performance/util/value_computer'
+require 'musicality/performance/util/optimization'
+require 'musicality/performance/util/note_linker'
+
+require 'musicality/performance/conversion/glissando_converter'
+require 'musicality/performance/conversion/portamento_converter'
+require 'musicality/performance/conversion/note_sequence_extractor'
