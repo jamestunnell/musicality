@@ -50,4 +50,5 @@ require 'musicality/notation/packing/score_packing'
 
 require 'musicality/notation/conversion/tempo_conversion'
 require 'musicality/notation/conversion/measure_note_map'
+require 'musicality/notation/conversion/measure_score_converter'
 require 'musicality/notation/conversion/measure_score_conversion'
