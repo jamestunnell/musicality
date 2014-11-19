@@ -22,33 +22,12 @@ class Change
     def clone
       Immediate.new(@value)
     end
-    
-    def resize newdur
-      self.clone
-    end
   end
   
   class Gradual < Change
-    def initialize value, transition_dur
-      if transition_dur <= 0
-        raise NonPositiveError, "transition duration #{transition_dur} must be positive"
-      end
-      super(value, transition_dur)
-    end
+    attr_reader :elapsed, :impending, :remaining, :total_duration
     
-    def clone
-      Gradual.new(@value,@duration)
-    end
-    
-    def resize newdur
-      Gradual.new(@value,newdur)
-    end
-  end
-  
-  class Partial < Change
-    attr_reader :elapsed, :impending, :remaining
-    
-    def initialize value, elapsed, impending, remaining
+    def initialize value, impending, elapsed=0, remaining=0
       if elapsed < 0
         raise NegativeError, "elapsed (#{elapsed}) is < 0"
       end
@@ -69,10 +48,13 @@ class Change
     end
     
     def ==(other)
-      super() &&
+      super(other) &&
       @elapsed == other.elapsed &&
-      @impending == other.impending &&
       @remaining == other.remaining
+    end
+    
+    def clone
+      Gradual.new(@value, @impending, @elapsed, @remaining)
     end
   end
 end

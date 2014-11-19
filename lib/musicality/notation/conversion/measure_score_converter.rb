@@ -23,9 +23,17 @@ class MeasureScoreConverter
   def convert_parts
     Hash[ @score.parts.map do |name,part|
       new_dcs = Hash[ part.dynamic_changes.map do |moff,change|
-        noff = @mnoff_map[moff]
-        noff2 = @mnoff_map[moff + change.duration]
-        [noff, change.resize(noff2-noff)]
+        case change
+        when Change::Immediate
+          [@mnoff_map[moff],change]
+        when Change::Gradual
+          noff1 = @mnoff_map[moff-change.elapsed]
+          noff2 = @mnoff_map[moff]
+          noff3 = @mnoff_map[moff+change.duration]
+          noff4 = @mnoff_map[moff+change.duration+change.remaining]
+          [noff2, Change::Gradual.new(change.value,
+            noff3-noff2, noff2-noff1, noff4-noff3)]
+        end
       end ]
       new_notes = part.notes.map {|n| n.clone }
       [name, Part.new(part.start_dynamic,
@@ -59,30 +67,27 @@ class MeasureScoreConverter
       when Change::Gradual
         start_moff, end_moff = moff, moff + change.duration
         start_noff, end_noff = @mnoff_map[start_moff], @mnoff_map[end_moff]
+        
+        initial_moff, final_moff = start_moff - change.elapsed, end_moff + change.remaining
+        initial_noff, final_noff = @mnoff_map[initial_moff], @mnoff_map[final_moff]
+        
+        more_bdurs = bdurs.select {|x,y| x > start_moff && x < end_moff }
         cur_noff, cur_bdur = start_noff, bdur
-
-        more_bdurs = bdurs.select {|x,y| x > moff && x < end_moff }
-        if more_bdurs.any?
-          more_bdurs.each do |next_moff, next_bdur|
-            next_noff = @mnoff_map[next_moff]
-            elapsed = cur_noff - start_noff
-            impending = next_noff - cur_noff
-            remaining = end_noff - next_noff
-            tempo2 = Tempo::BPM.to_qnpm(tempo, cur_bdur)
-            tcs[cur_noff] = Change::Partial.new(tempo2, elapsed, impending, remaining)
-            cur_noff, cur_bdur = next_noff, next_bdur
-          end
-          elapsed = cur_noff - start_noff
-          impending = end_noff - cur_noff
-          remaining = 0
+        
+        more_bdurs.each do |next_moff, next_bdur|
+          next_noff = @mnoff_map[next_moff]
+          elapsed = cur_noff - initial_noff
+          impending = next_noff - cur_noff
+          remaining = final_noff - next_noff
           tempo2 = Tempo::BPM.to_qnpm(tempo, cur_bdur)
-          tcs[cur_noff] = Change::Partial.new(tempo2,elapsed, impending, remaining)
-        else
-          tcs[start_noff] = Change::Gradual.new(
-            Tempo::BPM.to_qnpm(tempo, cur_bdur), end_noff - start_noff)
+          tcs[cur_noff] = Change::Gradual.new(tempo2, impending, elapsed, remaining)
+          cur_noff, cur_bdur = next_noff, next_bdur
         end
-      when Change::Partial
-        raise NotImplementedError, "No support yet for converting partial tempo changes."
+        elapsed = cur_noff - initial_noff
+        impending = end_noff - cur_noff
+        remaining = final_noff - end_noff
+        tempo2 = Tempo::BPM.to_qnpm(tempo, cur_bdur)
+        tcs[cur_noff] = Change::Gradual.new(tempo2, impending, elapsed, remaining)
       end
     end
     

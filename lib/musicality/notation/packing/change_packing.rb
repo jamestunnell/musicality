@@ -9,21 +9,14 @@ class Change
   
   class Gradual < Change
     def pack
-      [ @value, @duration ]
-    end
-  end
-  
-  class Partial < Change
-    def pack
-      [ @value, @elapsed, @impending, @remaining ]
+      [ @value, @duration, @elapsed, @remaining ]
     end
   end
 
   def self.unpack packing
     case packing.size
     when 1 then Immediate.new(*packing)
-    when 2 then Gradual.new(*packing)
-    when 4 then Partial.new(*packing)
+    when 4 then Gradual.new(*packing)
     else raise ArgumentError, "bad array size"
     end
   end

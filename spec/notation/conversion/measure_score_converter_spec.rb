@@ -138,25 +138,36 @@ describe MeasureScoreConverter do
       context 'single meter change within tempo change duration' do
         before :all do
           @tc_moff, @mc_moff = 2, 4
-          @tc_dur = 4
+          @tc = Change::Gradual.new(100,4)
           @score = MeasureScore.new(THREE_FOUR, 120,
-            tempo_changes: { @tc_moff => Change::Gradual.new(100,@tc_dur) },
+            tempo_changes: { @tc_moff => @tc },
             meter_changes: { @mc_moff => Change::Immediate.new(SIX_EIGHT) }
           )
           @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
+          
+          mend = @tc_moff + @tc.impending + @tc.remaining
+          @ndur = @mnoff_map[mend] - @mnoff_map[mend - @tc.total_duration]
         end
   
-        it 'should split the one gradual change into two partial changes' do
+        it 'should split the one gradual change into two, durations adding to original total' do
           @tcs.size.should eq(2)
-          @tcs.values.each {|x| x.should be_a Change::Partial }
+          @tcs.values.each {|x| x.should be_a Change::Gradual }
         end
         
-        it 'should start first partial change where gradual change would start' do
+        it 'should make each with same total duration' do
+          @tcs.values.each {|x| x.total_duration.should eq(@ndur) }
+        end
+        
+        it 'should make durations so they sum to make the total duration' do
+          @tcs.values.map {|x| x.duration }.inject(0,:+).should eq(@ndur)
+        end
+        
+        it 'should start first split change where original change would start' do
           @tcs.should have_key(@mnoff_map[@tc_moff])
         end
         
-        it 'should stop first partial, and start second partial change where inner meter change occurs' do
+        it 'should stop first split, and start second split where inner meter change occurs' do
           pc1_start_noff = @mnoff_map[@tc_moff]
           pc1_end_noff  = pc1_start_noff + @tcs[pc1_start_noff].duration
           
@@ -165,36 +176,47 @@ describe MeasureScoreConverter do
           pc1_end_noff.should eq(pc2_start_noff)
         end
         
-        it 'should stop second partial change where gradual change would end' do
+        it 'should stop second split change where original change would end' do
           pc2_start_noff = @mnoff_map[@mc_moff]
           pc2_end_noff = pc2_start_noff + @tcs[pc2_start_noff].duration
-          pc2_end_noff.should eq(@mnoff_map[@tc_moff + @tc_dur])
+          pc2_end_noff.should eq(@mnoff_map[@tc_moff + @tc.duration])
         end
       end
   
       context 'two meter changes within tempo change duration' do
         before :all do
           @tc_moff, @mc1_moff, @mc2_moff = 2, 4, 5
-          @tc_dur = 5
+          @tc = Change::Gradual.new(100,5)
           @score = MeasureScore.new(THREE_FOUR, 120,
-            tempo_changes: { @tc_moff => Change::Gradual.new(100,@tc_dur) },
+            tempo_changes: { @tc_moff =>  @tc},
             meter_changes: { @mc1_moff => Change::Immediate.new(SIX_EIGHT),
                              @mc2_moff => Change::Immediate.new(TWO_FOUR) }
           )
           @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
+          
+          mend = @tc_moff + @tc.impending + @tc.remaining
+          @ndur = @mnoff_map[mend] - @mnoff_map[mend - @tc.total_duration]
         end
   
-        it 'should split the one gradual change into three partial changes' do
+        it 'should split the one gradual change into three' do
           @tcs.size.should eq(3)
-          @tcs.values.each {|x| x.should be_a Change::Partial }
+          @tcs.values.each {|x| x.should be_a Change::Gradual }
         end
         
-        it 'should start first partial change where gradual change would start' do
+        it 'should make each with same total duration' do
+          @tcs.values.each {|x| x.total_duration.should eq(@ndur) }
+        end
+        
+        it 'should make durations so they sum to make the total duration' do
+          @tcs.values.map {|x| x.duration }.inject(0,:+).should eq(@ndur)
+        end
+        
+        it 'should start first split change where original change would start' do
           @tcs.should have_key(@mnoff_map[@tc_moff])
         end
         
-        it 'should stop first partial, and start second partial change where 1st meter change occurs' do
+        it 'should stop first split, and start second split change where 1st meter change occurs' do
           pc1_start_noff = @mnoff_map[@tc_moff]
           pc1_end_noff  = pc1_start_noff + @tcs[pc1_start_noff].duration
           
@@ -203,7 +225,7 @@ describe MeasureScoreConverter do
           pc1_end_noff.should eq(pc2_start_noff)
         end
         
-        it 'should stop second partial, and start third partial change where 2st meter change occurs' do
+        it 'should stop second split, and start third split change where 2st meter change occurs' do
           pc2_start_noff = @mnoff_map[@mc1_moff]
           pc2_end_noff  = pc2_start_noff + @tcs[pc2_start_noff].duration
           
@@ -212,20 +234,11 @@ describe MeasureScoreConverter do
           pc2_end_noff.should eq(pc3_start_noff)
         end
         
-        it 'should stop third partial change where gradual change would end' do
+        it 'should stop third split change where original change would end' do
           pc3_start_noff = @mnoff_map[@mc2_moff]
           pc3_end_noff = pc3_start_noff + @tcs[pc3_start_noff].duration
-          pc3_end_noff.should eq(@mnoff_map[@tc_moff + @tc_dur])
+          pc3_end_noff.should eq(@mnoff_map[@tc_moff + @tc.duration])
         end
-      end
-    end
-    
-    context 'partial tempo changes' do
-      it 'should raise NotImplementedError' do
-        @score = MeasureScore.new(THREE_FOUR, 120,
-          tempo_changes: { 1 => Change::Partial.new(100,10,2,3)}
-        )
-        expect { MeasureScoreConverter.new(@score).convert_tempo_changes }.to raise_error(NotImplementedError)
       end
     end
   end
