@@ -35,15 +35,15 @@ describe 'Conversion.measure_note_map' do
       @first_mc_off = 3
       @start_meter = THREE_FOUR
       @new_meter = TWO_FOUR
-      @score = MeasureScore.new(@start_meter, Tempo::BPM.new(120),
+      @score = MeasureScore.new(@start_meter, 120,
         meter_changes: { @first_mc_off => Change::Immediate.new(@new_meter) },
         tempo_changes: {
-          "1/2".to_r => Change::Gradual.new(Tempo::BPM.new(100),1),
-          2 => Change::Immediate.new(Tempo::BPM.new(120)),
-          3 => Change::Immediate.new(Tempo::BPM.new(100)),
-          3.1 => Change::Gradual.new(Tempo::BPM.new(100),1),
-          5 => Change::Immediate.new(Tempo::BPM.new(120)),
-          6 => Change::Immediate.new(Tempo::BPM.new(100)),
+          "1/2".to_r => Change::Gradual.new(100,1),
+          2 => Change::Immediate.new(120),
+          3 => Change::Immediate.new(100),
+          3.1 => Change::Gradual.new(100,1),
+          5 => Change::Immediate.new(120),
+          6 => Change::Immediate.new(100),
         }
       )
       @moffs = @score.measure_offsets

@@ -1,5 +1,6 @@
 module Musicality
 
+# Score with note-based offsets. Tempo values are in quarter-notes-per-second.
 class NoteScore
   include Validatable
   
@@ -13,32 +14,13 @@ class NoteScore
     
     yield(self) if block_given?
   end
-
-  def check_methods
-    [ :check_start_tempo_type, :check_tempo_change_types ]
-  end
   
+  def check_methods
+    [:check_start_tempo, :check_tempo_changes]
+  end
+    
   def validatables
     [ @program ] + @parts.values
-  end
-  
-  def self.valid_tempo_types
-    [ Tempo::QNPM, Tempo::NPM, Tempo::NPS ]
-  end
-  
-  def check_start_tempo_type
-    vtts = self.class.valid_tempo_types
-    unless vtts.include?(@start_tempo.class)
-      raise TypeError, "type of start tempo #{@start_tempo} is not one of valid tempo types: #{vtts}"
-    end
-  end
-
-  def check_tempo_change_types
-    vtts = self.class.valid_tempo_types
-    baddtypes = @tempo_changes.select {|k,v| !vtts.include?(v.value.class) }
-    if baddtypes.any?
-      raise NonPositiveError, "type of tempo change values #{baddtypes} are not one of valid tempo types: #{vtts}"
-    end
   end
   
   def clone
@@ -54,6 +36,19 @@ class NoteScore
     
   def duration
     @parts.map {|p| p.duration }.max
+  end
+  
+  def check_start_tempo
+    if @start_tempo <= 0
+      raise NonPositiveError, "start tempo (#{@start_tempo}) is not positive"
+    end
+  end
+  
+  def check_tempo_changes
+    badvalues = @tempo_changes.select {|k,v| v.value <= 0 }
+    if badvalues.any?
+      raise NonPositiveError, "tempo changes (#{badvalues}) are not positive"
+    end    
   end
 end
 

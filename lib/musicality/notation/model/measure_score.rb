@@ -1,5 +1,6 @@
 module Musicality
 
+# Score with measure-based offsets. Tempo values are in beats-per-second.
 class MeasureScore < NoteScore
   attr_accessor :start_meter, :meter_changes
   
@@ -19,10 +20,6 @@ class MeasureScore < NoteScore
   
   def validatables
     super() + [ @start_meter ] + @meter_changes.values.map {|v| v.value}
-  end
-  
-  def self.valid_tempo_types
-    NoteScore.valid_tempo_types + [ Tempo::BPM ]
   end
   
   def check_startmeter_type

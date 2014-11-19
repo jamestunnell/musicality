@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe MeasureScore do
   before :all do
-    @score = MeasureScore.new(FOUR_FOUR,Tempo::BPM.new(120)) do |s|
+    @score = MeasureScore.new(FOUR_FOUR,120) do |s|
       s.program = Program.new([0...2, 0...2,2...4,0...2])
       s.parts["lead"] = Part.new(Dynamics::MF) do |p|
         riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \
@@ -52,8 +52,8 @@ describe MeasureScore do
       end
     end
     
-    it 'should pack start tempo as string' do
-      @h['start_tempo'].should be_a String
+    it 'should pack start tempo as numeric' do
+      @h['start_tempo'].should be_a Numeric
     end
     
     it 'should pack tempo changes as whatver type Change#pack returns' do
@@ -64,9 +64,9 @@ describe MeasureScore do
       end
     end
     
-    it 'should pack tempo change values as strings' do
+    it 'should pack tempo change values as numerics' do
       @h['tempo_changes'].each do |offset,packed_v|
-        packed_v[0].should be_a String
+        packed_v[0].should be_a Numeric
       end
     end
     

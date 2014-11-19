@@ -2,7 +2,7 @@ module Musicality
 
 # Converts MeasureScore to NoteScore by converting measure-based offsets to
 # note-based offsets, and eliminating the use of meters. Also, tempo is
-# coverted to non-BPM tempo.
+# coverted from beats-per-minute to quarter-notes per minute.
 class MeasureScoreConverter
   def initialize score
     unless score.valid?
@@ -14,10 +14,10 @@ class MeasureScoreConverter
     @mnoff_map = score.measure_note_map
   end
   
-  def convert_score tempo_class
-    NoteScore.new(convert_start_tempo(tempo_class),
+  def convert_score
+    NoteScore.new(convert_start_tempo,
       parts: convert_parts, program: convert_program,
-      tempo_changes: convert_tempo_changes(tempo_class))
+      tempo_changes: convert_tempo_changes)
   end
   
   def convert_parts
@@ -41,19 +41,11 @@ class MeasureScoreConverter
     )
   end
   
-  def convert_start_tempo tempo_class
-    unless NoteScore.valid_tempo_types.include? tempo_class
-      raise TypeError, "The desired tempo class #{tempo_class} is not valid for a NoteScore."
-    end
-    
-    @score.start_tempo.convert(tempo_class,@score.start_meter.beat_duration)
+  def convert_start_tempo
+    Tempo::BPM.to_qnpm(@score.start_tempo, @score.start_meter.beat_duration)
   end
   
-  def convert_tempo_changes tempo_class
-    unless NoteScore.valid_tempo_types.include? tempo_class
-      raise TypeError, "The desired tempo class #{tempo_class} is not valid for a NoteScore."
-    end
-    
+  def convert_tempo_changes
     tcs = {}
     bdurs = @score.beat_durations
     
@@ -63,7 +55,7 @@ class MeasureScoreConverter
       
       case change
       when Change::Immediate
-        tcs[@mnoff_map[moff]] = Change::Immediate.new(tempo.convert(tempo_class,bdur))
+        tcs[@mnoff_map[moff]] = Change::Immediate.new(Tempo::BPM.to_qnpm(tempo,bdur))
       when Change::Gradual
         start_moff, end_moff = moff, moff + change.duration
         start_noff, end_noff = @mnoff_map[start_moff], @mnoff_map[end_moff]
@@ -76,18 +68,18 @@ class MeasureScoreConverter
             elapsed = cur_noff - start_noff
             impending = next_noff - cur_noff
             remaining = end_noff - next_noff
-            tempo2 = tempo.convert(tempo_class, cur_bdur)
+            tempo2 = Tempo::BPM.to_qnpm(tempo, cur_bdur)
             tcs[cur_noff] = Change::Partial.new(tempo2, elapsed, impending, remaining)
             cur_noff, cur_bdur = next_noff, next_bdur
           end
           elapsed = cur_noff - start_noff
           impending = end_noff - cur_noff
           remaining = 0
-          tempo2 = tempo.convert(tempo_class, cur_bdur)
+          tempo2 = Tempo::BPM.to_qnpm(tempo, cur_bdur)
           tcs[cur_noff] = Change::Partial.new(tempo2,elapsed, impending, remaining)
         else
           tcs[start_noff] = Change::Gradual.new(
-            tempo.convert(tempo_class, cur_bdur), end_noff - start_noff)
+            Tempo::BPM.to_qnpm(tempo, cur_bdur), end_noff - start_noff)
         end
       when Change::Partial
         raise NotImplementedError, "No support yet for converting partial tempo changes."

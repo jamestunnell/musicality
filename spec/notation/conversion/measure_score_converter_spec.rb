@@ -1,8 +1,10 @@
+require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+
 describe MeasureScoreConverter do
   describe '#initialize' do
     context 'current score is invalid' do
       it 'should raise NotValidError' do
-        score = MeasureScore.new(1, Tempo::BPM.new(120))
+        score = MeasureScore.new(1, 120)
         expect { MeasureScoreConverter.new(score) }.to raise_error(NotValidError)
       end
     end    
@@ -12,7 +14,7 @@ describe MeasureScoreConverter do
     before :each do
       @changeA = Change::Immediate.new(Dynamics::PP)
       @changeB = Change::Gradual.new(Dynamics::F, 2)
-      @score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120),
+      @score = MeasureScore.new(FOUR_FOUR, 120,
         parts: {"simple" => Part.new(Dynamics::MP, dynamic_changes: { 1 => @changeA, 3 => @changeB })}
       )
     end
@@ -52,7 +54,7 @@ describe MeasureScoreConverter do
   describe '#convert_program' do
     before :each do
       @prog = Program.new([0...4,2...5])
-      @score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120), program: @prog)
+      @score = MeasureScore.new(FOUR_FOUR, 120, program: @prog)
       @converter = MeasureScoreConverter.new(@score)
     end
     
@@ -81,65 +83,43 @@ describe MeasureScoreConverter do
   end
   
   describe '#convert_start_tempo' do
-    context 'given desired tempo class is not valid for NoteScore' do
-      it 'should raise TypeError' do
-        score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120))
-        converter = MeasureScoreConverter.new(score)
-        expect { converter.convert_start_tempo(Tempo::BPM) }.to raise_error(TypeError)
-      end
-    end
-
     it 'should return a converted tempo object, with same type as givn tempo class' do
-      score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120))
+      score = MeasureScore.new(SIX_EIGHT, 120)
       converter = MeasureScoreConverter.new(score)
-      { Tempo::QNPM => 120, Tempo::NPM => 30, Tempo::NPS => 0.5 }.each do |tempo_class, tgt_val|
-        tempo = converter.convert_start_tempo(tempo_class)
-        tempo.should be_a tempo_class
-        tempo.value.should eq(tgt_val)
-      end
+      tempo = converter.convert_start_tempo
+      tempo.should eq(180)
     end
   end
   
   describe '#convert_tempo_changes' do
-    context 'given desired tempo class is not valid for NoteScore' do
-      it 'should raise TypeError' do
-        score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120))
-        converter = MeasureScoreConverter.new(score)
-        expect { converter.convert_tempo_changes(Tempo::BPM) }.to raise_error(TypeError)
-      end
-    end
-    
     context 'immediate tempo changes' do
       before :all do
-        @score = MeasureScore.new(THREE_FOUR, Tempo::BPM.new(120),
-          tempo_changes: { 1 => Change::Immediate.new(Tempo::BPM.new(100)),
-            2.5 => Change::Immediate.new(Tempo::NPS.new(1.5)),
-          4 => Change::Immediate.new(Tempo::NPM.new(22.5)),
-          7 => Change::Immediate.new(Tempo::QNPM.new(90)) }
+        @score = MeasureScore.new(THREE_FOUR, 120,
+          tempo_changes: { 1 => Change::Immediate.new(100),
+            2.5 => Change::Immediate.new(90)}
         )
-        @tempo_type = Tempo::QNPM
-        @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes(@tempo_type)
+        @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
       end
       
       it 'should change offset from measure-based to note-based' do
-        @tcs.keys.sort.should eq([0.75, 1.875, 3, 5.25])
+        @tcs.keys.sort.should eq([0.75, 1.875])
       end
       
-      it 'should convert tempo type to given type' do
-        @tcs.values.each {|change| change.value.should be_a @tempo_type }
+      it 'should change tempo value using Tempo::BPM.to_qnpm' do
+        @tcs.entries.first[1].value.should eq(Tempo::BPM.to_qnpm(100,Rational(1,4)))
+        @tcs.entries.last[1].value.should eq(Tempo::BPM.to_qnpm(90,Rational(1,4)))
       end
     end
     
     context 'gradual tempo changes' do
       context 'no meter changes within tempo change duration' do
         before :all do
-          @score = MeasureScore.new(THREE_FOUR, Tempo::BPM.new(120),
-            tempo_changes: { 2 => Change::Gradual.new(Tempo::BPM.new(100),2) },
+          @score = MeasureScore.new(THREE_FOUR, 120,
+            tempo_changes: { 2 => Change::Gradual.new(100,2) },
             meter_changes: { 1 => Change::Immediate.new(TWO_FOUR),
                              4 => Change::Immediate.new(SIX_EIGHT) }
           )
-          @tempo_type = Tempo::QNPM
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes(@tempo_type)
+          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
         end
   
         it 'should change tempo change offset to note-based' do
@@ -147,7 +127,7 @@ describe MeasureScoreConverter do
         end
         
         it 'should convert the tempo change' do
-          @tcs[Rational(5,4)].value.should be_a @tempo_type
+          @tcs[Rational(5,4)].value.should eq(Tempo::BPM.to_qnpm(100,Rational(1,4)))
         end
         
         it 'should convert change duration to note-based' do
@@ -159,12 +139,11 @@ describe MeasureScoreConverter do
         before :all do
           @tc_moff, @mc_moff = 2, 4
           @tc_dur = 4
-          @score = MeasureScore.new(THREE_FOUR, Tempo::BPM.new(120),
-            tempo_changes: { @tc_moff => Change::Gradual.new(Tempo::BPM.new(100),@tc_dur) },
+          @score = MeasureScore.new(THREE_FOUR, 120,
+            tempo_changes: { @tc_moff => Change::Gradual.new(100,@tc_dur) },
             meter_changes: { @mc_moff => Change::Immediate.new(SIX_EIGHT) }
           )
-          @tempo_type = Tempo::QNPM
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes(@tempo_type)
+          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
         end
   
@@ -197,13 +176,12 @@ describe MeasureScoreConverter do
         before :all do
           @tc_moff, @mc1_moff, @mc2_moff = 2, 4, 5
           @tc_dur = 5
-          @score = MeasureScore.new(THREE_FOUR, Tempo::BPM.new(120),
-            tempo_changes: { @tc_moff => Change::Gradual.new(Tempo::BPM.new(100),@tc_dur) },
+          @score = MeasureScore.new(THREE_FOUR, 120,
+            tempo_changes: { @tc_moff => Change::Gradual.new(100,@tc_dur) },
             meter_changes: { @mc1_moff => Change::Immediate.new(SIX_EIGHT),
                              @mc2_moff => Change::Immediate.new(TWO_FOUR) }
           )
-          @tempo_type = Tempo::QNPM
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes(@tempo_type)
+          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
         end
   
@@ -244,44 +222,44 @@ describe MeasureScoreConverter do
     
     context 'partial tempo changes' do
       it 'should raise NotImplementedError' do
-        @score = MeasureScore.new(THREE_FOUR, Tempo::BPM.new(120),
-          tempo_changes: { 1 => Change::Partial.new(Tempo::BPM.new(100),10,2,3)}
+        @score = MeasureScore.new(THREE_FOUR, 120,
+          tempo_changes: { 1 => Change::Partial.new(100,10,2,3)}
         )
-        expect { MeasureScoreConverter.new(@score).convert_tempo_changes(Tempo::QNPM) }.to raise_error(NotImplementedError)
+        expect { MeasureScoreConverter.new(@score).convert_tempo_changes }.to raise_error(NotImplementedError)
       end
     end
   end
   
   describe '#convert_score' do    
     it 'should return a NoteScore' do
-      score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120))
+      score = MeasureScore.new(FOUR_FOUR, 120)
       converter = MeasureScoreConverter.new(score)
-      converter.convert_score(Tempo::QNPM).should be_a NoteScore
+      converter.convert_score.should be_a NoteScore
     end
   
     it 'should use output from convert_start_tempo' do
-      score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120))
+      score = MeasureScore.new(FOUR_FOUR, 120)
       converter = MeasureScoreConverter.new(score)
-      nscore = converter.convert_score(Tempo::NPS)
-      nscore.start_tempo.should eq(converter.convert_start_tempo(Tempo::NPS))
+      nscore = converter.convert_score
+      nscore.start_tempo.should eq(converter.convert_start_tempo)
     end
     
     it 'should use output from convert_program' do
       prog = Program.new([0...4,2...5])
-      score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120), program: prog)
+      score = MeasureScore.new(FOUR_FOUR, 120, program: prog)
       converter = MeasureScoreConverter.new(score)
-      nscore = converter.convert_score(Tempo::QNPM)
+      nscore = converter.convert_score
       nscore.program.should eq(converter.convert_program)
     end
     
     it 'should use output from convert_parts' do
       changeA = Change::Immediate.new(Dynamics::PP)
       changeB = Change::Gradual.new(Dynamics::F, 2)
-      score = MeasureScore.new(FOUR_FOUR, Tempo::BPM.new(120),
+      score = MeasureScore.new(FOUR_FOUR, 120,
         parts: {"simple" => Part.new(Dynamics::MP, dynamic_changes: { 1 => changeA, 3 => changeB })}
       )
       converter = MeasureScoreConverter.new(score)
-      nscore = converter.convert_score(Tempo::QNPM)
+      nscore = converter.convert_score
       nscore.parts.should eq(converter.convert_parts)
     end
   end

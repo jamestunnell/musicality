@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-note_score = NoteScore.new(Tempo::QNPM.new(30)) do |s|
+note_score = NoteScore.new(30) do |s|
   s.program = Program.new([0...2, 0...2,2...4,0...2])
   s.parts["lead"] = Part.new(Dynamics::MF) do |p|
     riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \
@@ -15,7 +15,7 @@ note_score = NoteScore.new(Tempo::QNPM.new(30)) do |s|
   end
 end
 
-measure_score = MeasureScore.new(FOUR_FOUR,Tempo::BPM.new(120)) do |s|
+measure_score = MeasureScore.new(FOUR_FOUR,120) do |s|
   s.program = Program.new([0...2, 0...2,2...4,0...2])
   s.parts["lead"] = Part.new(Dynamics::MF) do |p|
     riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \

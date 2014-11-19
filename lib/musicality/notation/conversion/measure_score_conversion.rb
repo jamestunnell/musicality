@@ -1,11 +1,11 @@
 module Musicality
 
 class MeasureScore
-  # Convert to NoteScore object by first converting measure-based offsets to
+  # Converts MeasureScore to NoteScore by converting measure-based offsets to
   # note-based offsets, and eliminating the use of meters. Also, tempo is
-  # to non-BPM tempo.
-  def to_note_score tempo_class
-    MeasureScoreConverter.new(self).convert_score(tempo_class)
+  # coverted from beats-per-minute to quarter-notes per minute.
+  def to_note_score
+    MeasureScoreConverter.new(self).convert_score
   end
   
   def measure_note_map
