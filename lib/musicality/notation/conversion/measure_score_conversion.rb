@@ -16,20 +16,14 @@ class MeasureScore
     moffs = Set.new([0.to_r])
     
     @tempo_changes.each do |moff,change|
-      moffs.add(moff)
-      if change.duration > 0
-        moffs.add(moff + change.duration)
-      end
+      moffs += change.offsets(moff)
     end
     
     @meter_changes.keys.each {|moff| moffs.add(moff) }
     
     @parts.values.each do |part|
       part.dynamic_changes.each do |moff,change|
-        moffs.add(moff)
-        if change.duration > 0
-          moffs.add(moff + change.duration)
-        end
+        moffs += change.offsets(moff)
       end
     end
     
