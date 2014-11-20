@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe MeasureScore do
+describe Score::Measured do
   before :all do
     @parts = {
       "piano" => Part.new(Dynamics::MP,
@@ -23,7 +23,7 @@ describe MeasureScore do
       1 => Change::Immediate.new(TWO_FOUR),
       3 => Change::Immediate.new(SIX_EIGHT)
     }
-    @score = MeasureScore.new(THREE_FOUR, 120,
+    @score = Score::Measured.new(THREE_FOUR, 120,
       parts: @parts,
       program: @prog,
       tempo_changes: tcs,
@@ -94,7 +94,7 @@ describe MeasureScore do
     context 'meter change at offset 0' do
       before :all do
         @change = Change::Immediate.new(THREE_FOUR)
-        @score2 = MeasureScore.new(FOUR_FOUR, 120, meter_changes: { 0 => @change })
+        @score2 = Score::Measured.new(FOUR_FOUR, 120, meter_changes: { 0 => @change })
         @mdurs2 = @score2.measure_durations
       end
   
@@ -113,7 +113,7 @@ describe MeasureScore do
     
     context 'no meter changes' do
       before :all do
-        @score3 = MeasureScore.new(FOUR_FOUR, 120)
+        @score3 = Score::Measured.new(FOUR_FOUR, 120)
         @mdurs3 = @score3.measure_durations
       end
   
@@ -131,10 +131,10 @@ describe MeasureScore do
     end
   end
   
-  describe '#to_note_score' do
-    it 'should use MeasureScoreConverter#convert_score' do
-      nscore1 = @score.to_note_score
-      nscore2 = MeasureScoreConverter.new(@score).convert_score
+  describe '#to_unmeasured' do
+    it 'should use MeasuredScoreConverter#convert_score' do
+      nscore1 = @score.to_unmeasured
+      nscore2 = MeasuredScoreConverter.new(@score).convert_score
       nscore1.should eq(nscore2)
     end
   end

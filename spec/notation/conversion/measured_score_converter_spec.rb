@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe MeasureScoreConverter do
+describe MeasuredScoreConverter do
   describe '#initialize' do
     context 'current score is invalid' do
       it 'should raise NotValidError' do
-        score = MeasureScore.new(1, 120)
-        expect { MeasureScoreConverter.new(score) }.to raise_error(NotValidError)
+        score = Score::Measured.new(1, 120)
+        expect { MeasuredScoreConverter.new(score) }.to raise_error(NotValidError)
       end
     end    
   end
@@ -14,19 +14,19 @@ describe MeasureScoreConverter do
     before :each do
       @changeA = Change::Immediate.new(Dynamics::PP)
       @changeB = Change::Gradual.new(Dynamics::F, 2)
-      @score = MeasureScore.new(FOUR_FOUR, 120,
+      @score = Score::Measured.new(FOUR_FOUR, 120,
         parts: {"simple" => Part.new(Dynamics::MP, dynamic_changes: { 1 => @changeA, 3 => @changeB })}
       )
     end
     
     it 'should return Hash with original part names' do
-      parts = MeasureScoreConverter.new(@score).convert_parts
+      parts = MeasuredScoreConverter.new(@score).convert_parts
       parts.should be_a Hash
       parts.keys.sort.should eq(@score.parts.keys.sort)
     end
     
     it 'should convert part dynamic change offsets from measure-based to note-based' do
-      parts = MeasureScoreConverter.new(@score).convert_parts
+      parts = MeasuredScoreConverter.new(@score).convert_parts
       parts.should have_key("simple")
       part = parts["simple"]
       part.dynamic_changes.keys.sort.should eq([1,3])
@@ -38,7 +38,7 @@ describe MeasureScoreConverter do
       change.duration.should eq(2)
       
       @score.start_meter = THREE_FOUR
-      parts = MeasureScoreConverter.new(@score).convert_parts
+      parts = MeasuredScoreConverter.new(@score).convert_parts
       parts.should have_key("simple")
       part = parts["simple"]
       part.dynamic_changes.keys.sort.should eq([Rational(3,4),Rational(9,4)])
@@ -52,13 +52,13 @@ describe MeasureScoreConverter do
     
     context 'gradual changes with positive elapsed and/or remaining' do
       it 'should change elapsed and remaining so they reflect note-based offsets' do
-        score = MeasureScore.new(THREE_FOUR,120, parts: {
+        score = Score::Measured.new(THREE_FOUR,120, parts: {
           "abc" => Part.new(Dynamics::P, dynamic_changes: {
               2 => Change::Gradual.new(Dynamics::F,2,1,3),
               7 => Change::Gradual.new(Dynamics::F,1,4,5)
           })
         })
-        converter = MeasureScoreConverter.new(score)
+        converter = MeasuredScoreConverter.new(score)
         parts = converter.convert_parts
         dcs = parts["abc"].dynamic_changes
         
@@ -72,8 +72,8 @@ describe MeasureScoreConverter do
   describe '#convert_program' do
     before :each do
       @prog = Program.new([0...4,2...5])
-      @score = MeasureScore.new(FOUR_FOUR, 120, program: @prog)
-      @converter = MeasureScoreConverter.new(@score)
+      @score = Score::Measured.new(FOUR_FOUR, 120, program: @prog)
+      @converter = MeasuredScoreConverter.new(@score)
     end
     
     it 'shuld return Program with same number of segments' do
@@ -83,7 +83,7 @@ describe MeasureScoreConverter do
     end
   
     it 'should convert program segments offsets from measure-based to note-based' do
-      prog = MeasureScoreConverter.new(@score).convert_program
+      prog = MeasuredScoreConverter.new(@score).convert_program
       prog.segments.size.should eq(2)
       prog.segments[0].first.should eq(0)
       prog.segments[0].last.should eq(4)
@@ -91,7 +91,7 @@ describe MeasureScoreConverter do
       prog.segments[1].last.should eq(5)
       
       @score.start_meter = THREE_FOUR
-      prog = MeasureScoreConverter.new(@score).convert_program
+      prog = MeasuredScoreConverter.new(@score).convert_program
       prog.segments.size.should eq(2)
       prog.segments[0].first.should eq(0)
       prog.segments[0].last.should eq(3)
@@ -102,8 +102,8 @@ describe MeasureScoreConverter do
   
   describe '#convert_start_tempo' do
     it 'should return a converted tempo object, with same type as givn tempo class' do
-      score = MeasureScore.new(SIX_EIGHT, 120)
-      converter = MeasureScoreConverter.new(score)
+      score = Score::Measured.new(SIX_EIGHT, 120)
+      converter = MeasuredScoreConverter.new(score)
       tempo = converter.convert_start_tempo
       tempo.should eq(180)
     end
@@ -112,11 +112,11 @@ describe MeasureScoreConverter do
   describe '#convert_tempo_changes' do
     context 'immediate tempo changes' do
       before :all do
-        @score = MeasureScore.new(THREE_FOUR, 120,
+        @score = Score::Measured.new(THREE_FOUR, 120,
           tempo_changes: { 1 => Change::Immediate.new(100),
             2.5 => Change::Immediate.new(90)}
         )
-        @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
+        @tcs = MeasuredScoreConverter.new(@score).convert_tempo_changes
       end
       
       it 'should change offset from measure-based to note-based' do
@@ -132,12 +132,12 @@ describe MeasureScoreConverter do
     context 'gradual tempo changes' do
       context 'no meter changes within tempo change duration' do
         before :all do
-          @score = MeasureScore.new(THREE_FOUR, 120,
+          @score = Score::Measured.new(THREE_FOUR, 120,
             tempo_changes: { 2 => Change::Gradual.new(100,2) },
             meter_changes: { 1 => Change::Immediate.new(TWO_FOUR),
                              4 => Change::Immediate.new(SIX_EIGHT) }
           )
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
+          @tcs = MeasuredScoreConverter.new(@score).convert_tempo_changes
         end
   
         it 'should change tempo change offset to note-based' do
@@ -157,11 +157,11 @@ describe MeasureScoreConverter do
         before :all do
           @tc_moff, @mc_moff = 2, 4
           @tc = Change::Gradual.new(100,4)
-          @score = MeasureScore.new(THREE_FOUR, 120,
+          @score = Score::Measured.new(THREE_FOUR, 120,
             tempo_changes: { @tc_moff => @tc },
             meter_changes: { @mc_moff => Change::Immediate.new(SIX_EIGHT) }
           )
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
+          @tcs = MeasuredScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
           
           mend = @tc_moff + @tc.impending + @tc.remaining
@@ -205,12 +205,12 @@ describe MeasureScoreConverter do
         before :all do
           @tc_moff, @mc1_moff, @mc2_moff = 2, 4, 5
           @tc = Change::Gradual.new(100,5)
-          @score = MeasureScore.new(THREE_FOUR, 120,
+          @score = Score::Measured.new(THREE_FOUR, 120,
             tempo_changes: { @tc_moff =>  @tc},
             meter_changes: { @mc1_moff => Change::Immediate.new(SIX_EIGHT),
                              @mc2_moff => Change::Immediate.new(TWO_FOUR) }
           )
-          @tcs = MeasureScoreConverter.new(@score).convert_tempo_changes
+          @tcs = MeasuredScoreConverter.new(@score).convert_tempo_changes
           @mnoff_map = @score.measure_note_map
           
           mend = @tc_moff + @tc.impending + @tc.remaining
@@ -263,10 +263,10 @@ describe MeasureScoreConverter do
     context 'gradual tempo changes with positive elapsed and/or remaining' do
       context 'no meter change during tempo change' do
         it 'should simply change elapsed and remaining so they reflect note-based offsets' do
-          score = MeasureScore.new(THREE_FOUR,120, tempo_changes: {
+          score = Score::Measured.new(THREE_FOUR,120, tempo_changes: {
             3 => Change::Gradual.new(100,5,2,3)
           })
-          converter = MeasureScoreConverter.new(score)
+          converter = MeasuredScoreConverter.new(score)
           tcs = converter.convert_tempo_changes
           
           tcs.keys.should eq([Rational(9,4)])
@@ -276,12 +276,12 @@ describe MeasureScoreConverter do
       
       context 'meter changes during tempo change' do
         it 'should split tempo change, converting and adjusting elapsed/remaining with each sub-change' do
-          score = MeasureScore.new(THREE_FOUR,120,
+          score = Score::Measured.new(THREE_FOUR,120,
             meter_changes: { 4 => Change::Immediate.new(SIX_EIGHT),
                              6 => Change::Immediate.new(TWO_FOUR) },
             tempo_changes: { 3 => Change::Gradual.new(100,5,2,3) }
           )
-          converter = MeasureScoreConverter.new(score)
+          converter = MeasuredScoreConverter.new(score)
           tcs = converter.convert_tempo_changes
           
           tcs.keys.should eq([Rational(9,4), Rational(12,4), Rational(18,4)])
@@ -294,23 +294,23 @@ describe MeasureScoreConverter do
   end
   
   describe '#convert_score' do    
-    it 'should return a NoteScore' do
-      score = MeasureScore.new(FOUR_FOUR, 120)
-      converter = MeasureScoreConverter.new(score)
-      converter.convert_score.should be_a NoteScore
+    it 'should return an unmeasured score' do
+      score = Score::Measured.new(FOUR_FOUR, 120)
+      converter = MeasuredScoreConverter.new(score)
+      converter.convert_score.should be_a Score::Unmeasured
     end
   
     it 'should use output from convert_start_tempo' do
-      score = MeasureScore.new(FOUR_FOUR, 120)
-      converter = MeasureScoreConverter.new(score)
+      score = Score::Measured.new(FOUR_FOUR, 120)
+      converter = MeasuredScoreConverter.new(score)
       nscore = converter.convert_score
       nscore.start_tempo.should eq(converter.convert_start_tempo)
     end
     
     it 'should use output from convert_program' do
       prog = Program.new([0...4,2...5])
-      score = MeasureScore.new(FOUR_FOUR, 120, program: prog)
-      converter = MeasureScoreConverter.new(score)
+      score = Score::Measured.new(FOUR_FOUR, 120, program: prog)
+      converter = MeasuredScoreConverter.new(score)
       nscore = converter.convert_score
       nscore.program.should eq(converter.convert_program)
     end
@@ -318,10 +318,10 @@ describe MeasureScoreConverter do
     it 'should use output from convert_parts' do
       changeA = Change::Immediate.new(Dynamics::PP)
       changeB = Change::Gradual.new(Dynamics::F, 2)
-      score = MeasureScore.new(FOUR_FOUR, 120,
+      score = Score::Measured.new(FOUR_FOUR, 120,
         parts: {"simple" => Part.new(Dynamics::MP, dynamic_changes: { 1 => changeA, 3 => changeB })}
       )
-      converter = MeasureScoreConverter.new(score)
+      converter = MeasuredScoreConverter.new(score)
       nscore = converter.convert_score
       nscore.parts.should eq(converter.convert_parts)
     end

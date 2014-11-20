@@ -1,12 +1,12 @@
 module Musicality
 
-# Converts MeasureScore to NoteScore by converting measure-based offsets to
+# Converts measured score to unmeasured by converting measure-based offsets to
 # note-based offsets, and eliminating the use of meters. Also, tempo is
 # coverted from beats-per-minute to quarter-notes per minute.
-class MeasureScoreConverter
+class MeasuredScoreConverter
   def initialize score
     unless score.valid?
-      raise NotValidError, "The given score can not be converted to a NoteScore, because \
+      raise NotValidError, "The given score can not be converted because \
                             it is invalid, with these errors: #{score.errors}"
     end
     
@@ -15,7 +15,7 @@ class MeasureScoreConverter
   end
   
   def convert_score
-    NoteScore.new(convert_start_tempo,
+    Score::Unmeasured.new(convert_start_tempo,
       parts: convert_parts, program: convert_program,
       tempo_changes: convert_tempo_changes)
   end
