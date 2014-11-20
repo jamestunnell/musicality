@@ -49,6 +49,24 @@ describe MeasureScoreConverter do
       change.value.should eq(@changeB.value)
       change.duration.should eq(1.5)
     end
+    
+    context 'gradual changes with positive elapsed and/or remaining' do
+      it 'should change elapsed and remaining so they reflect note-based offsets' do
+        score = MeasureScore.new(THREE_FOUR,120, parts: {
+          "abc" => Part.new(Dynamics::P, dynamic_changes: {
+              2 => Change::Gradual.new(Dynamics::F,2,1,3),
+              7 => Change::Gradual.new(Dynamics::F,1,4,5)
+          })
+        })
+        converter = MeasureScoreConverter.new(score)
+        parts = converter.convert_parts
+        dcs = parts["abc"].dynamic_changes
+        
+        dcs.keys.should eq([Rational(6,4), Rational(21,4)])
+        dcs[Rational(3,2)].should eq(Change::Gradual.new(Dynamics::F,Rational(6,4),Rational(3,4),Rational(9,4)))
+        dcs[Rational(21,4)].should eq(Change::Gradual.new(Dynamics::F,Rational(3,4),Rational(12,4),Rational(15,4)))
+      end
+    end
   end
   
   describe '#convert_program' do
@@ -238,6 +256,38 @@ describe MeasureScoreConverter do
           pc3_start_noff = @mnoff_map[@mc2_moff]
           pc3_end_noff = pc3_start_noff + @tcs[pc3_start_noff].duration
           pc3_end_noff.should eq(@mnoff_map[@tc_moff + @tc.duration])
+        end
+      end
+    end
+    
+    context 'gradual tempo changes with positive elapsed and/or remaining' do
+      context 'no meter change during tempo change' do
+        it 'should simply change elapsed and remaining so they reflect note-based offsets' do
+          score = MeasureScore.new(THREE_FOUR,120, tempo_changes: {
+            3 => Change::Gradual.new(100,5,2,3)
+          })
+          converter = MeasureScoreConverter.new(score)
+          tcs = converter.convert_tempo_changes
+          
+          tcs.keys.should eq([Rational(9,4)])
+          tcs[Rational(9,4)].should eq(Change::Gradual.new(100,Rational(15,4),Rational(6,4),Rational(9,4)))
+        end
+      end
+      
+      context 'meter changes during tempo change' do
+        it 'should split tempo change, converting and adjusting elapsed/remaining with each sub-change' do
+          score = MeasureScore.new(THREE_FOUR,120,
+            meter_changes: { 4 => Change::Immediate.new(SIX_EIGHT),
+                             6 => Change::Immediate.new(TWO_FOUR) },
+            tempo_changes: { 3 => Change::Gradual.new(100,5,2,3) }
+          )
+          converter = MeasureScoreConverter.new(score)
+          tcs = converter.convert_tempo_changes
+          
+          tcs.keys.should eq([Rational(9,4), Rational(12,4), Rational(18,4)])
+          tcs[Rational(9,4)].should eq(Change::Gradual.new(100,0.75,1.5,4))
+          tcs[Rational(12,4)].should eq(Change::Gradual.new(Tempo::BPM.to_qnpm(100,SIX_EIGHT.beat_duration),1.5,2.25,2.5))
+          tcs[Rational(18,4)].should eq(Change::Gradual.new(Tempo::BPM.to_qnpm(100,TWO_FOUR.beat_duration),1,3.75,1.5))
         end
       end
     end

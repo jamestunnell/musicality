@@ -27,10 +27,7 @@ class MeasureScoreConverter
         when Change::Immediate
           [@mnoff_map[moff],change]
         when Change::Gradual
-          noff1 = @mnoff_map[moff-change.elapsed]
-          noff2 = @mnoff_map[moff]
-          noff3 = @mnoff_map[moff+change.duration]
-          noff4 = @mnoff_map[moff+change.duration+change.remaining]
+          noff1, noff2, noff3, noff4 = change.offsets(moff).map {|x| @mnoff_map[x] }
           [noff2, Change::Gradual.new(change.value,
             noff3-noff2, noff2-noff1, noff4-noff3)]
         end
