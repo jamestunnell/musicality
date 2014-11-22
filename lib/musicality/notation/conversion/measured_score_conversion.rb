@@ -1,7 +1,7 @@
 module Musicality
 
 class Score
-  class Measured < Score
+  class Measured < TempoBased
     # Convert to unmeasured score by converting measure-based offsets to
     # note-based offsets, and eliminating the use of meters. Also, tempo is
     # coverted from beats-per-minute to quarter-notes per minute.

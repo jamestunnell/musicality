@@ -16,18 +16,13 @@ measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
 end
 
 unmeasured_score = Score::Unmeasured.new(30) do |s|
-  s.program = Program.new([0...2, 0...2,2...4,0...2])
-  s.parts["lead"] = Part.new(Dynamics::MF) do |p|
-    riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \
-            /6Bb3 /4 /12Db4= /4Db4=                      /8=Db4 /8C4".to_notes
-    p.notes = riff + riff.map {|n| n.transpose(2) }
-  end
-  
-  s.parts["bass"] = Part.new(Dynamics::MP) do |p|
-    riff = "/6Bb2 /4 /3Ab2 /6F2 /12Ab2 \
-            /6Bb2 /4 /3Ab2 /4Ab2".to_notes
-    p.notes = riff + riff.map {|n| n.transpose(2) }
-  end
+  s.program = measured_score.program
+  s.parts = measured_score.parts
+end
+
+timed_score = Score::Timed.new do |s|
+  s.program = measured_score.program
+  s.parts = measured_score.parts
 end
 
 describe Score::Measured do
@@ -230,9 +225,70 @@ describe Score::Unmeasured do
   end
 end
 
+describe Score::Timed do
+  before :all do
+    @score = timed_score
+    @h = @score.pack
+  end
+  
+  describe '#pack' do
+    it 'should return a hash' do
+      @h.should be_a Hash
+    end
+    
+    it 'should return a hash with keys: "type","parts", and "program"' do
+      ["type","parts","program"].each do |key|
+        @h.should have_key(key)
+      end
+    end
+    
+    it 'should set "type" key to "Timed"' do
+      @h["type"].should eq("Timed")
+    end
+    
+    it 'should pack program as whatever type Program#pack returns' do
+      t = @score.program.pack.class
+      @h['program'].should be_a t
+    end
+    
+    it 'should pack program segments as strings' do
+      @h['program'].each {|x| x.should be_a String }
+    end
+
+    it 'should pack parts as hash' do
+      @h['parts'].should be_a Hash
+    end
+    
+    it 'should pack parts as whatever Part#pack returns' do
+      @score.parts.each do |name,part|
+        packing = part.pack
+        @h['parts'][name].should eq packing
+      end
+    end
+  end
+  
+  describe '.unpack' do
+    before :all do
+      @score2 = Score::Timed.unpack @h
+    end
+    
+    it 'should return a Score::Timed' do
+      @score2.should be_a Score::Timed
+    end
+    
+    it 'should successfuly unpack the parts' do
+      @score2.parts.should eq @score.parts
+    end
+    
+    it 'should successfuly unpack the program' do
+      @score2.program.should eq @score.program
+    end
+  end
+end
+
 describe Score do
   describe '.unpack' do
-    [ unmeasured_score, measured_score ].each do |score|
+    [ timed_score, unmeasured_score, measured_score ].each do |score|
       context "given packing from a #{score.class} object" do
         it "should return a #{score.class} object equal to original" do
           score2 = Score.unpack(score.pack)

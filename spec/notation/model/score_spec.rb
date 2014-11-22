@@ -132,3 +132,46 @@ describe Score::Unmeasured do
     end
   end
 end
+
+describe Score::Timed do
+  describe '#initialize' do
+    it 'should use empty containers for parameters not given' do
+      s = Score::Timed.new
+      s.parts.should be_empty
+      s.program.segments.should be_empty
+    end
+    
+    it 'should assign given parameters' do
+      parts = { "piano (LH)" => Samples::SAMPLE_PART }
+      program = Program.new [0...0.75, 0...0.75]
+      
+      s = Score::Timed.new(parts: parts, program: program)
+      s.parts.should eq parts
+      s.program.should eq program
+    end
+  end
+  
+  describe '#valid?' do
+    {
+      'valid part' => [ :parts => { "piano" => Samples::SAMPLE_PART }],
+      'valid program' => [ :program => Program.new([0..2,0..2]) ]
+    }.each do |context_str,args|
+      context context_str do
+        it 'should return true' do
+          Score::Timed.new(*args).should be_valid
+        end
+      end
+    end
+    
+    {
+      'invalid part' => [ :parts => { "piano" => Part.new(-0.1) }],
+      'invalid program' => [ :program => Program.new([2..0]) ],
+    }.each do |context_str,args|
+      context context_str do
+        it 'should return false' do
+          Score::Timed.new(*args).should be_invalid
+        end
+      end 
+    end
+  end
+end

@@ -2,22 +2,14 @@ module Musicality
 
 class Score
   include Validatable
+  attr_accessor :parts, :program
   
-  attr_accessor :start_tempo, :parts, :program, :tempo_changes
-  
-  def initialize start_tempo, tempo_changes: {}, parts: {}, program: Program.new
-    @start_tempo = start_tempo
-    @tempo_changes = tempo_changes
+  def initialize parts: {}, program: Program.new
     @parts = parts
     @program = program
-    
     yield(self) if block_given?
   end
-  
-  def check_methods
-    [:check_start_tempo, :check_tempo_changes]
-  end
-    
+
   def validatables
     [ @program ] + @parts.values
   end
@@ -27,37 +19,58 @@ class Score
   end
   
   def ==(other)
-    return @start_tempo == other.start_tempo &&
-    @tempo_changes == other.tempo_changes &&
-    @parts == other.parts &&
-    @program == other.program
+    return @parts == other.parts && @program == other.program
   end
-    
+  
   def duration
     @parts.map {|p| p.duration }.max
   end
   
-  def check_start_tempo
-    if @start_tempo <= 0
-      raise NonPositiveError, "start tempo (#{@start_tempo}) is not positive"
+  class Timed < Score
+  end
+  
+  class TempoBased < Score
+    attr_accessor :start_tempo, :tempo_changes
+
+    def initialize start_tempo, tempo_changes: {}, parts: {}, program: Program.new
+      @start_tempo = start_tempo
+      @tempo_changes = tempo_changes
+      super(parts: parts, program: program)
+      
+      yield(self) if block_given?
+    end
+    
+    def check_methods
+      [:check_start_tempo, :check_tempo_changes]
+    end
+  
+    def ==(other)
+      return super(other) && @start_tempo == other.start_tempo &&
+      @tempo_changes == other.tempo_changes
+    end
+    
+    def check_start_tempo
+      if @start_tempo <= 0
+        raise NonPositiveError, "start tempo (#{@start_tempo}) is not positive"
+      end
+    end
+    
+    def check_tempo_changes
+      badvalues = @tempo_changes.select {|k,v| v.value <= 0 }
+      if badvalues.any?
+        raise NonPositiveError, "tempo changes (#{badvalues}) are not positive"
+      end    
     end
   end
   
-  def check_tempo_changes
-    badvalues = @tempo_changes.select {|k,v| v.value <= 0 }
-    if badvalues.any?
-      raise NonPositiveError, "tempo changes (#{badvalues}) are not positive"
-    end    
+  # Tempo-based score without meter, bar lines, or fixed pulse (beat).
+  # Offsets are note-based, and tempo values are in quarter-notes-per-minute.
+  class Unmeasured < Score::TempoBased
   end
   
-  # Score without meter, bar lines, or fixed pulse (beat). Offsets are
-  # note-based, and tempo values are in quarter-notes-per-minute.
-  class Unmeasured < Score
-  end
-  
-  # Score with meter, bar lines, and a fixed pulse (beat). Offsets are
-  # measure-based, and tempo values are in beats-per-minute.
-  class Measured < Score
+  # Tempo-based score with meter, bar lines, and a fixed pulse (beat).
+  # Offsets are measure-based, and tempo values are in beats-per-minute.
+  class Measured < Score::TempoBased
     attr_accessor :start_meter, :meter_changes
     
     def initialize start_meter, start_tempo, meter_changes: {}, tempo_changes: {}, parts: {}, program: Program.new
