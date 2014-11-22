@@ -46,11 +46,18 @@ require 'musicality/notation/packing/part_packing'
 require 'musicality/notation/packing/program_packing'
 require 'musicality/notation/packing/score_packing'
 
+require 'musicality/notation/util/interpolation'
+require 'musicality/notation/util/piecewise_function'
+require 'musicality/notation/util/value_computer'
+
 require 'musicality/notation/conversion/tempo_conversion'
 require 'musicality/notation/conversion/change_conversion'
 require 'musicality/notation/conversion/measure_note_map'
 require 'musicality/notation/conversion/measured_score_converter'
 require 'musicality/notation/conversion/measured_score_conversion'
+require 'musicality/notation/conversion/note_time_converter'
+require 'musicality/notation/conversion/unmeasured_score_converter'
+require 'musicality/notation/conversion/unmeasured_score_conversion'
 
 #
 # Performance
@@ -59,9 +66,6 @@ require 'musicality/notation/conversion/measured_score_conversion'
 require 'musicality/performance/model/note_attacks'
 require 'musicality/performance/model/note_sequence'
 
-require 'musicality/performance/util/interpolation'
-require 'musicality/performance/util/piecewise_function'
-require 'musicality/performance/util/value_computer'
 require 'musicality/performance/util/optimization'
 require 'musicality/performance/util/note_linker'
 
@@ -69,4 +73,3 @@ require 'musicality/performance/conversion/glissando_converter'
 require 'musicality/performance/conversion/portamento_converter'
 require 'musicality/performance/conversion/note_sequence_extractor'
 require 'musicality/performance/conversion/score_collator'
-require 'musicality/performance/conversion/note_time_converter'

@@ -57,7 +57,7 @@ describe Score::Measured do
       @score.parts.values.each do |part|
         part.dynamic_changes.each do |moff,change|
           @moffs.should include(moff)
-          @moffs.should include(moff + change.duration)
+          change.offsets(moff).each {|offset| @moffs.should include(offset) }
         end
       end
     end

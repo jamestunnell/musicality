@@ -1,8 +1,8 @@
 module Musicality
 
-# Converts measured score to unmeasured by converting measure-based offsets to
-# note-based offsets, and eliminating the use of meters. Also, tempo is
-# coverted from beats-per-minute to quarter-notes per minute.
+# Converts measured score to unmeasured by converting measure-based offsets
+# and durations to note-based offsets, and eliminating the use of meters.
+# Also, tempo is coverted from beats-per-minute to quarter-notes per minute.
 class MeasuredScoreConverter
   def initialize score
     unless score.valid?
@@ -25,7 +25,7 @@ class MeasuredScoreConverter
       new_dcs = Hash[ part.dynamic_changes.map do |moff,change|
         case change
         when Change::Immediate
-          [@mnoff_map[moff],change]
+          [@mnoff_map[moff],change.clone]
         when Change::Gradual
           noff1, noff2, noff3, noff4 = change.offsets(moff).map {|x| @mnoff_map[x] }
           [noff2, Change::Gradual.new(change.value,
