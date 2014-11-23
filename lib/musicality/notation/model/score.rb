@@ -26,6 +26,10 @@ class Score
     @parts.map {|p| p.duration }.max
   end
   
+  def collated?
+    @program.segments.size == 1 && @program.segments[0].first == 0
+  end
+  
   class Timed < Score
   end
   

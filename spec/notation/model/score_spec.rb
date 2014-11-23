@@ -1,5 +1,39 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
+describe Score do
+  describe '#collated?' do
+    context 'has program with more than one segment' do
+      it 'should return false' do
+        score = Score.new(program: Program.new([0..2,0..2]))
+        score.collated?.should be false
+      end      
+    end
+    
+    context 'has program with 0 segments' do
+      it 'should return false' do
+        score = Score.new(program: Program.new([]))
+        score.collated?.should be false        
+      end
+    end
+    
+    context 'has program with 1 segment' do
+      context 'program segment starts at 0' do
+        it 'should return true' do
+          score = Score.new(program: Program.new([0..2]))
+          score.collated?.should be true
+        end
+      end
+      
+      context 'program segment does not start at 0' do
+        it 'should return false' do
+          score = Score.new(program: Program.new([1..2]))
+          score.collated?.should be false
+        end
+      end
+    end
+  end
+end
+
 describe Score::Measured do
   describe '#initialize' do
     it 'should use empty containers for parameters not given' do
