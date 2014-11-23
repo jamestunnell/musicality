@@ -42,3 +42,24 @@ task :build_parsers do
   Dir.chdir wd
 end
 task :spec => :build_parsers
+
+task :make_examples do
+  current_dir = Dir.getwd
+  examples_dir = File.join(File.dirname(__FILE__), 'examples')
+  Dir.chdir examples_dir
+  
+  examples = []
+  Dir.glob('**/*.rb') do |file|
+    examples.push File.expand_path(file)
+  end
+  
+  examples.each do |example|
+    dirname = File.dirname(example)
+    filename = File.basename(example)
+    
+    Dir.chdir dirname
+    ruby filename
+  end
+
+  Dir.chdir current_dir
+end

@@ -52,12 +52,12 @@ require 'musicality/notation/util/value_computer'
 
 require 'musicality/notation/conversion/tempo_conversion'
 require 'musicality/notation/conversion/change_conversion'
-require 'musicality/notation/conversion/measure_note_map'
-require 'musicality/notation/conversion/measured_score_converter'
-require 'musicality/notation/conversion/measured_score_conversion'
 require 'musicality/notation/conversion/note_time_converter'
 require 'musicality/notation/conversion/unmeasured_score_converter'
 require 'musicality/notation/conversion/unmeasured_score_conversion'
+require 'musicality/notation/conversion/measure_note_map'
+require 'musicality/notation/conversion/measured_score_converter'
+require 'musicality/notation/conversion/measured_score_conversion'
 
 #
 # Performance

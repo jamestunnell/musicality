@@ -8,6 +8,11 @@ class Score
     def to_unmeasured
       MeasuredScoreConverter.new(self).convert_score
     end
+
+    def to_timed tempo_sample_rate
+      unmeasured = MeasuredScoreConverter.new(self).convert_score
+      unmeasured.to_timed(tempo_sample_rate)
+    end
     
     def measure_note_map
       Conversion::measure_note_map(measure_offsets,measure_durations)

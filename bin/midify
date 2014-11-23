@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+
+exe_name = File.basename(__FILE__)
+
+doc = <<DOCOPT
+Loads a musicality score from YAML file, and converts it to a MIDI file.
+
+Usage:
+  #{exe_name} <input> [PART PROGRAM] ... [options]
+  #{exe_name} <input> <output> [PART PROGRAM] ... [options]
+  #{exe_name} -h | --help
+  #{exe_name} --version
+
+Arguments:
+  input A musicality score file (may be packed as a hash) in YAML format
+  output Midi filename
+  PART name of a part in the score
+  PROGRAM MIDI program (instrument) number for the given part
+  
+Options:
+  --srate=SRATE sampling rate for converting tempo-based score to time-based
+                score, and for sampling dynamic change values [default: 200]
+  -h --help     Show this screen.
+  --version     Show version.
+
+DOCOPT
+
+require 'docopt'
+begin
+  args = Docopt::docopt(doc)
+  puts args
+rescue Docopt::Exit => e
+  puts e.message
+  exit
+end
+
+require 'yaml'
+require 'musicality'
+include Musicality
+
+fin_name = args["<input>"]
+File.open(fin_name) do |fin|
+  print "Reading file '#{fin_name}'..."
+  score = YAML.load(fin.read)
+  
+  if score.is_a? Hash
+    score = Score.unpack(score)
+  end
+  puts "done"
+  
+  unless score.is_a? Score::Timed
+    print "Converting to timed score..."
+    score = score.to_timed(args["--srate"])
+    puts "done"
+  end
+  
+  if score.valid?
+    part_names = args["PART"]
+    program_nums = args["PROGRAM"].map {|str| str.to_i }
+    instr_map = Hash[[part_names,program_nums].transpose]
+    
+    print "Making MIDI sequence..."
+    sequencer = ScoreSequencer.new(score)
+    seq = sequencer.make_midi_seq(instr_map)
+    puts "done"  
+  
+    fout_name = args["<output>"]
+    if fout_name.nil?
+      fout_name = "#{File.dirname(fin_name)}/#{File.basename(fin_name,File.extname(fin_name))}.mid"
+    end
+    print "Writing MIDI file '#{fout_name}'..."
+    File.open(fout_name, 'wb'){ |fout| seq.write(fout) }
+    puts "done"    
+  else
+    puts "Score is not valid. See errors:"
+    puts score.errors.join("\n")
+  end
+end
