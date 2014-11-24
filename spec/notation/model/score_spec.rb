@@ -32,6 +32,22 @@ describe Score do
       end
     end
   end
+  
+  describe '#duration' do
+    context 'no parts' do
+      it 'should return 0' do
+        Score.new.duration.should eq(0)
+      end
+    end
+    
+    context 'one part' do
+      it 'should return the part duration' do
+        Score.new(parts: {"part1" => Part.new(Dynamics::PP,
+          notes: "/4 /4 /2 1".to_notes)
+        }).duration.should eq(2)
+      end
+    end
+  end
 end
 
 describe Score::Measured do
@@ -66,6 +82,58 @@ describe Score::Measured do
     end
   end
   
+  describe '#measures_long' do
+    context 'with no meter changes' do
+      context 'with no parts' do
+        it 'should return 0' do
+          Score::Measured.new(TWO_FOUR, 120).measures_long.should eq(0)
+        end
+      end
+
+      context 'with one part' do
+        it 'should return the duration of the part, in measures' do
+          Score::Measured.new(TWO_FOUR, 120, parts: {
+            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes)
+          }).measures_long.should eq(3.5)
+        end
+      end
+      
+      context 'with two parts' do
+        it 'should return the duration of the longest part, in measures' do
+          Score::Measured.new(TWO_FOUR, 120, parts: {
+            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+          }).measures_long.should eq(4)
+        end
+      end
+    end
+    
+    context 'with meter changes' do
+      it 'should return the duration of the longest part, in measures' do
+        Score::Measured.new(TWO_FOUR, 120,
+          meter_changes: {
+            2 => Change::Immediate.new(FOUR_FOUR),
+          },
+          parts: {
+            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+          }
+        ).measures_long.should eq(3)
+        
+        Score::Measured.new(TWO_FOUR, 120,
+          meter_changes: {
+            2 => Change::Immediate.new(FOUR_FOUR),
+            4 => Change::Immediate.new(SIX_EIGHT),
+          },
+          parts: {
+            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
+          }
+        ).measures_long.should eq(3.5)
+      end
+    end
+  end
+
   describe '#valid?' do
     {
       'valid start tempo' => [ FOUR_FOUR, 40 ],
@@ -134,6 +202,15 @@ describe Score::Unmeasured do
       s.tempo_changes.should eq tcs
     end
   end
+
+  describe '#notes_long' do
+    it 'should return the duration of the longest part' do
+      Score::Unmeasured.new(120, parts: {
+        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+      }).notes_long.should eq(2)
+    end
+  end
   
   describe '#valid?' do
     {
@@ -185,6 +262,15 @@ describe Score::Timed do
     end
   end
   
+  describe '#seconds_long' do
+    it 'should return the duration of the longest part' do
+      Score::Timed.new(parts: {
+        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+      }).seconds_long.should eq(2)
+    end
+  end
+
   describe '#valid?' do
     {
       'valid part' => [ :parts => { "piano" => Samples::SAMPLE_PART }],

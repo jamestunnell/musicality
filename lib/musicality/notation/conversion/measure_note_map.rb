@@ -1,7 +1,7 @@
 module Musicality
 
 module Conversion
-  # Converte offsets from measure-based to note-based.
+  # Convert offsets from measure-based to note-based.
   # @param [Array] measure_offsets Measure offsets to be converted
   # @param [Hash] measure_durations Map measure durations to measure offsets where the duration takes effect.
   # @raise [NonZeroError] if first measure duration is not mapped to offset 0

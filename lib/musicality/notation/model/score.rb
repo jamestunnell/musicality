@@ -23,7 +23,7 @@ class Score
   end
   
   def duration
-    @parts.map {|p| p.duration }.max
+    @parts.map {|name,part| part.duration }.max || 0.to_r
   end
   
   def collated?
@@ -31,6 +31,9 @@ class Score
   end
   
   class Timed < Score
+    def seconds_long
+      self.duration
+    end
   end
   
   class TempoBased < Score
@@ -51,6 +54,10 @@ class Score
     def ==(other)
       return super(other) && @start_tempo == other.start_tempo &&
       @tempo_changes == other.tempo_changes
+    end
+    
+    def notes_long
+      self.duration
     end
     
     def check_start_tempo
@@ -125,6 +132,27 @@ class Score
     def ==(other)
       return super(other) && @start_meter == other.start_meter &&
         @meter_changes == other.meter_changes
+    end
+    
+    def measures_long
+      noff_end = self.notes_long
+      noff_prev = 0.to_r
+      moff_prev, mdur_prev = 0.to_r, @start_meter.measure_duration
+      
+      @meter_changes.sort.each do |moff,change|
+        mdur = change.value.measure_duration
+        notes_elapsed = mdur_prev * (moff - moff_prev)
+        noff = noff_prev + notes_elapsed
+        
+        if noff >= noff_end
+          break
+        else
+          noff_prev = noff
+        end
+        
+        moff_prev, mdur_prev = moff, mdur
+      end
+      return moff_prev + Rational(noff_end - noff_prev, mdur_prev)
     end
   end
 end
