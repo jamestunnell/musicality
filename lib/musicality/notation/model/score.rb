@@ -67,7 +67,7 @@ class Score
     end
     
     def check_tempo_changes
-      badvalues = @tempo_changes.select {|k,v| v.value <= 0 }
+      badvalues = @tempo_changes.select {|k,v| v.end_value <= 0 }
       if badvalues.any?
         raise NonPositiveError, "tempo changes (#{badvalues}) are not positive"
       end    
@@ -99,7 +99,7 @@ class Score
     end
     
     def validatables
-      super() + [ @start_meter ] + @meter_changes.values.map {|v| v.value}
+      super() + [ @start_meter ] + @meter_changes.values.map {|v| v.end_value}
     end
     
     def check_startmeter_type
@@ -109,7 +109,7 @@ class Score
     end
     
     def check_meterchange_types
-      badtypes = @meter_changes.select {|k,v| !v.value.is_a?(Meter) }
+      badtypes = @meter_changes.select {|k,v| !v.end_value.is_a?(Meter) }
       if badtypes.any?
         raise TypeError, "meter change values #{nonmeter_values} are not Meter objects"
       end
@@ -140,7 +140,7 @@ class Score
       moff_prev, mdur_prev = 0.to_r, @start_meter.measure_duration
       
       @meter_changes.sort.each do |moff,change|
-        mdur = change.value.measure_duration
+        mdur = change.end_value.measure_duration
         notes_elapsed = mdur_prev * (moff - moff_prev)
         noff = noff_prev + notes_elapsed
         

@@ -13,7 +13,7 @@ describe Part do
       p.start_dynamic.should eq Dynamics::PPP
       
       notes = [Note::whole([A2]), Note::half]
-      dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.new(Dynamics::MF,1) }
+      dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
       p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs)
       p.notes.should eq notes
       p.dynamic_changes.should eq dcs
@@ -38,7 +38,7 @@ describe Part do
       #  :dynamic_changes => { -0.2 => Change::Immediate.new(0.5) }],
       'dynamic change values outside 0..1' => [
         0.5, :notes => [ Note::whole ],
-        :dynamic_changes => { 0.2 => Change::Immediate.new(-0.01), 0.3 => Change::Gradual.new(1.01,0.2) }],
+        :dynamic_changes => { 0.2 => Change::Immediate.new(-0.01), 0.3 => Change::Gradual.linear(1.01,0.2) }],
       'notes with 0 duration' => [ 0.5, :notes => [ Note.new(0) ]],
       'notes with negative duration' => [ 0.5, :notes => [ Note.new(-1) ]],
     }.each do |context_str, args|
@@ -56,7 +56,7 @@ describe Part do
         :notes => [ Note::whole([C4]), Note::quarter ],
         :dynamic_changes => {
           0.5 => Change::Immediate.new(Dynamics::MP),
-          1.2 => Change::Gradual.new(Dynamics::FF, 0.05) } ],
+          1.2 => Change::Gradual.linear(Dynamics::FF, 0.05) } ],
     }.each do |context_str, args|
       context context_str do
         it 'should return true' do

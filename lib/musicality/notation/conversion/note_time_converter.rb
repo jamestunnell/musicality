@@ -1,18 +1,36 @@
 module Musicality
-  
+
 # Convert offsets in unmeasured note time to just plain time. 
 class NoteTimeConverter
   # @param [ValueComputer] tempo_computer Given an offset, returns tempo
   # value in quarter-notes-per-minute
   # @param [Numeric] sample_rate Rate at which tempo values are sampled
   # in the conversion (samples/sec).
-  def initialize tempo_computer, sample_rate
-    @tempo_computer = tempo_computer
+  def initialize sample_rate
     @sample_period = Rational(1,sample_rate)
   end
+
+  class Unmeasured < NoteTimeConverter
+    def initialize tempo_computer, sample_rate
+      @tempo_computer = tempo_computer
+      super(sample_rate)
+    end
+
+    def notes_per_second_at offset
+      Tempo::QNPM.to_nps(@tempo_computer.value_at offset)
+    end
+  end
   
-  def notes_per_second_at offset
-    Tempo::QNPM.to_nps(@tempo_computer.value_at offset)
+  class Measured < NoteTimeConverter
+    def initialize tempo_computer, bdur_computer, sample_rate
+      @tempo_computer = tempo_computer
+      @bdur_computer = bdur_computer
+      super(sample_rate)
+    end
+
+    def notes_per_second_at offset
+      Tempo::BPM.to_nps(@tempo_computer.value_at(offset), @bdur_computer.value_at(offset))
+    end
   end
   
   # Calculate the time elapsed between given start/end note offset. Using the

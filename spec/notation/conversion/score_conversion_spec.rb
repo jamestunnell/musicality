@@ -8,7 +8,7 @@ describe Score::Measured do
         dynamic_changes: {
           1 => Change::Immediate.new(Dynamics::MF),
           5 => Change::Immediate.new(Dynamics::FF),
-          6 => Change::Gradual.new(Dynamics::MF,2),
+          6 => Change::Gradual.linear(Dynamics::MF,2),
           14 => Change::Immediate.new(Dynamics::PP),
         }
       )
@@ -16,7 +16,7 @@ describe Score::Measured do
     @prog = Program.new([0...3,4...7,1...20,17..."45/2".to_r])
     tcs = {
       0 => Change::Immediate.new(120),
-      4 => Change::Gradual.new(60,2),
+      4 => Change::Gradual.linear(60,2),
       11 => Change::Immediate.new(110)
     }
     mcs = {
@@ -107,7 +107,7 @@ describe Score::Measured do
       end
       
       it 'should begin with meter change at offset 0, instead of start meter' do
-        @mdurs2[0].should eq(@change.value.measure_duration)
+        @mdurs2[0].should eq(@change.end_value.measure_duration)
       end
     end
     
@@ -131,10 +131,45 @@ describe Score::Measured do
     end
   end
   
-  describe '#to_unmeasured' do
-    it 'should use MeasuredScoreConverter#convert_score' do
-      nscore1 = @score.to_unmeasured
-      nscore2 = MeasuredScoreConverter.new(@score).convert_score
+  describe '#to_timed' do
+    it 'should use ScoreConverter::Measured#convert_score' do
+      nscore1 = @score.to_timed(200)
+      nscore2 = ScoreConverter::Measured.new(@score,200).convert_score
+      nscore1.should eq(nscore2)
+    end
+  end
+end
+
+describe Score::Unmeasured do
+  before :all do
+    @parts = {
+      "piano" => Part.new(Dynamics::MP,
+        notes: [Note.quarter(C4), Note.eighth(F3), Note.whole(C4), Note.half(D4)]*12,
+        dynamic_changes: {
+          1 => Change::Immediate.new(Dynamics::MF),
+          5 => Change::Immediate.new(Dynamics::FF),
+          6 => Change::Gradual.linear(Dynamics::MF,2),
+          14 => Change::Immediate.new(Dynamics::PP),
+        }
+      )
+    }
+    @prog = Program.new([0...3,4...7,1...20,17..."45/2".to_r])
+    tcs = {
+      0 => Change::Immediate.new(120),
+      4 => Change::Gradual.linear(60,2),
+      11 => Change::Immediate.new(110)
+    }
+    @score = Score::Unmeasured.new(120,
+      parts: @parts,
+      program: @prog,
+      tempo_changes: tcs,
+    )
+  end
+  
+  describe '#to_timed' do
+    it 'should use ScoreConverter::Unmeasured#convert_score' do
+      nscore1 = @score.to_timed(200)
+      nscore2 = ScoreConverter::Unmeasured.new(@score,200).convert_score
       nscore1.should eq(nscore2)
     end
   end

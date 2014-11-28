@@ -15,10 +15,13 @@ class ValueComputer
         when Change::Immediate
           add_immediate_change change, offset
         when Change::Gradual
-          add_linear_change change, offset
-        #  add_sigmoid_change change, offset
+          case change.transition
+          when Change::Gradual::LINEAR
+            add_linear_change change, offset
+          when Change::Gradual::SIGMOID
+            add_sigmoid_change change, offset
+          end
         end
-        
       end
     end
   end
@@ -71,7 +74,7 @@ class ValueComputer
   # @param [Numeric] offset
   def add_immediate_change value_change, offset
     func = nil
-    value = value_change.value
+    value = value_change.end_value
     domain = offset..domain_max
     func = lambda {|x| value }
     
@@ -87,7 +90,7 @@ class ValueComputer
   def add_linear_change value_change, offset
     
     func = nil
-    value = value_change.value
+    value = value_change.end_value
     duration = value_change.duration
     domain = offset..domain_max
     
@@ -120,7 +123,7 @@ class ValueComputer
     
     func = nil
     start_value = @piecewise_function.eval offset
-    end_value = value_change.value
+    end_value = value_change.end_value
     value_diff = end_value - start_value
     duration = value_change.duration
     domain = offset.to_f..domain_max
@@ -129,28 +132,23 @@ class ValueComputer
     if duration == 0
       add_immediate_change(value_change,offset)
     else
-      raise ArgumentError, "abruptness is not between 0 and 1" unless abruptness.between?(0,1)
-      
-      min_magn = 2
-      max_magn = 6
-      tanh_domain_magn = abruptness * (max_magn - min_magn) + min_magn
-      tanh_domain = -tanh_domain_magn..tanh_domain_magn
-
-      tanh_range = Math::tanh(tanh_domain.first)..Math::tanh(tanh_domain.last)
-      tanh_span = tanh_range.last - tanh_range.first
+      sigm_domain = -5..5
+      sigm_range = sigm(sigm_domain.first)..sigm(sigm_domain.last)
+      sigm_span = sigm_range.last - sigm_range.first
 
       func = lambda do |x|
         raise RangeError, "#{x} is not in the domain" if !domain.include?(x)
           if x < (domain.first + duration)
             start_domain = domain.first...(domain.first + duration)
-            x2 = transform_domains(start_domain, tanh_domain, x)
-            y = Math::tanh x2
-            z = (y / tanh_span) + 0.5 # ranges from 0 to 1
+            x2 = transform_domains(start_domain, sigm_domain, x)
+            y = sigm(x2) - sigm_range.first
+            z = (y / sigm_span)
             start_value + (z * value_diff)
           else
             end_value
           end
       end
+      
       @piecewise_function.add_piece domain, func
     end
   end
@@ -161,8 +159,9 @@ class ValueComputer
     x2 = perc * (end_domain.last - end_domain.first) + end_domain.first
   end
 
-  # 0 to 1
-  def logistic x
+  # Sigmoid function using the logisitic function, which ranges from 0 to 1,
+  # with x from -5 to 5 being a good domain
+  def sigm x
     1.0 / (1 + Math::exp(-x))
   end
 end

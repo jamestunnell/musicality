@@ -7,7 +7,7 @@ describe Part do
       notes: Note.split_parse("/4Bb2 /8 /8F3= /2F3 /4Bb2 /8 /8F3= /2F3"),
       dynamic_changes: {
         1 => Change::Immediate.new(Dynamics::PP),
-        2 => Change::Gradual.new(Dynamics::FF, 2.0)
+        2 => Change::Gradual.linear(Dynamics::FF, 2.0)
       }
     )
     

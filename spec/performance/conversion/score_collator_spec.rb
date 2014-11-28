@@ -106,7 +106,7 @@ describe ScoreCollator do
     before :all do
       @change0 = Change::Immediate.new(120)
       @change1 = Change::Immediate.new(200)
-      @change2 = Change::Gradual.new(100,1)
+      @change2 = Change::Gradual.linear(100,1)
     end
     
     context 'tempo change starts at end of program segment' do
@@ -134,8 +134,8 @@ describe ScoreCollator do
         @tcs[0.to_r].should be_a Change::Immediate
       end
       
-      it 'should be used as starting tempo change value' do
-        @tcs[0.to_r].value.should eq @change2.value
+      it 'should be used as starting tempo change end_value' do
+        @tcs[0.to_r].end_value.should eq @change2.end_value
       end
     end
     
@@ -146,8 +146,9 @@ describe ScoreCollator do
         collator = ScoreCollator.new(score)
         tcs = collator.collate_tempo_changes
         tcs.size.should eq 1
-        tcs[0.to_r].value.should eq @change2.value
-        tcs[0.to_r].duration.should eq(0.5)
+        tcs[0.to_r].should be_a Change::Gradual::Trimmed
+        tcs[0.to_r].end_value.should eq @change2.end_value
+        tcs[0.to_r].remaining.should eq(0.5)
       end
     end
     
@@ -160,8 +161,9 @@ describe ScoreCollator do
         tcs.size.should eq 3
         tcs[0.to_r].should eq @change0
         tcs[1.to_r].should eq @change1
-        tcs[2.to_r].value.should eq @change2.value
-        tcs[2.to_r].duration.should eq(0.5)
+        tcs[2.to_r].should be_a Change::Gradual::Trimmed
+        tcs[2.to_r].end_value.should eq @change2.end_value
+        tcs[2.to_r].remaining.should eq(0.5)
       end
     end
   end

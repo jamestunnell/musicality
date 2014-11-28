@@ -138,7 +138,7 @@ describe Score::Measured do
     {
       'valid start tempo' => [ FOUR_FOUR, 40 ],
       'valid tempo changes' => [ FOUR_FOUR, 30,
-        :tempo_changes => { 1 => Change::Gradual.new(40, 2), 2 => Change::Immediate.new(50) } ],
+        :tempo_changes => { 1 => Change::Gradual.linear(40, 2), 2 => Change::Immediate.new(50) } ],
       'valid meter changes' => [ FOUR_FOUR, 120,
         :meter_changes => { 1 => Change::Immediate.new(TWO_FOUR) } ],
       'valid part' => [ FOUR_FOUR, 120, :parts => { "piano" => Samples::SAMPLE_PART }],
@@ -161,7 +161,7 @@ describe Score::Measured do
       'non-meter values in meter changes' => [ FOUR_FOUR, 120,
         :meter_changes => { 1 => Change::Immediate.new(5) } ],
       'non-immediate meter change' => [ FOUR_FOUR, 120,
-        :meter_changes => { 1 => Change::Gradual.new(TWO_FOUR,1) } ],
+        :meter_changes => { 1 => Change::Gradual.linear(TWO_FOUR,1) } ],
       'non-integer meter change offset' => [ FOUR_FOUR, 120,
         :meter_changes => { 1.1 => Change::Immediate.new(TWO_FOUR) } ],
       'invalid part' => [ FOUR_FOUR, 120, :parts => { "piano" => Part.new(-0.1) }],
@@ -216,7 +216,7 @@ describe Score::Unmeasured do
     {
       'valid start tempo' => [ 40 ],
       'valid tempo changes' => [ 30,
-        :tempo_changes => { 1 => Change::Gradual.new(40, 2), 2 => Change::Immediate.new(50) } ],
+        :tempo_changes => { 1 => Change::Gradual.linear(40, 2), 2 => Change::Immediate.new(50) } ],
       'valid part' => [ 30, :parts => { "piano" => Samples::SAMPLE_PART }],
       'valid program' => [ 30, :program => Program.new([0..2,0..2]) ]
     }.each do |context_str,args|
@@ -231,7 +231,7 @@ describe Score::Unmeasured do
       'start tempo valid is zero' => [ 0 ],
       'start tempo valid is negative' => [ -1 ],
       'tempo change value is not a valid value' => [ 30,
-        :tempo_changes => { 1 => Change::Gradual.new(-1,1) } ],
+        :tempo_changes => { 1 => Change::Gradual.linear(-1,1) } ],
       'invalid part' => [ 30, :parts => { "piano" => Part.new(-0.1) }],
       'invalid program' => [ 30, :program => Program.new([2..0]) ],
     }.each do |context_str,args|

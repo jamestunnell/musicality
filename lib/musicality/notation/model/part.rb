@@ -44,7 +44,7 @@ class Part
   end
   
   def ensure_dynamic_change_values_range
-    outofrange = @dynamic_changes.values.select {|v| !v.value.between?(0,1) }
+    outofrange = @dynamic_changes.values.select {|v| !v.end_value.between?(0,1) }
     if outofrange.any?
       raise RangeError, "dynamic change values #{outofrange} are not between 0 and 1"
     end

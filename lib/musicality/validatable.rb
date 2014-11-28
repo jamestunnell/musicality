@@ -1,7 +1,12 @@
 # assumes that @checks is defined as an array of no-arg lambdas, each
 # lambda raising an error (with useful msg) when check fails
 module Validatable
-  attr_reader :errors
+  def errors
+    if @errors.nil?
+      self.validate
+    end
+    return @errors
+  end
   
   def check_methods; []; end
   def validatables; []; end

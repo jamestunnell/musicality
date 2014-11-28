@@ -51,27 +51,30 @@ class ScoreCollator
       value = comp.value_at seg.first
       new_changes[segment_start_offset] = Change::Immediate.new(value)
       
-      # add any immediate changes in segment
-      changes.select {|o,c| c.is_a?(Change::Immediate) && seg.include?(o) }.each do |off,c|
-	new_changes[(off - seg.first) + segment_start_offset] = c.clone
-      end
-      
-      # add gradual changes
-      changes.select {|o,c| c.is_a?(Change::Gradual)}.each do |off, change|
+      changes.each do |off,change|
 	adj_start_off = (off - seg.first) + segment_start_offset
-	end_off = off + change.duration
-	if seg.include?(off) # change that are wholly included in segment
-	  if end_off <= seg.last
-	    new_changes[adj_start_off] = change.clone
-	  else # change that overlap segment end
-	    over = end_off - seg.last
-	    new_changes[adj_start_off] = Change::Gradual.new(change.value,
-	      change.duration - over, change.elapsed, change.remaining + over)
+	
+	new_change = case change
+	when Change::Immediate
+	  change.clone if seg.include?(off)
+	when Change::Gradual::Trimmed
+	  raise NotImplementedError, "trimmed gradual changes are not supported yet"
+	when Change::Gradual
+	  end_off = off + change.duration
+	  if off < seg.last && end_off > seg.first
+	    preceding = seg.first > off ? seg.first - off : 0
+	    trailing = end_off > seg.last ? end_off - seg.last : 0
+	    if preceding == 0 && trailing == 0
+	      change.clone
+	    else
+	      adj_start_off += preceding
+	      change.trim(preceding, trailing)
+	    end
 	  end
-	elsif end_off > seg.first && end_off < seg.last # change that overlap segment start
-	  under = seg.first - off
-	  new_changes[segment_start_offset] = Change::Gradual.new(change.value,
-	    change.duration - under, change.elapsed + under, change.remaining)
+	end
+	
+	unless new_change.nil?
+	  new_changes[adj_start_off] = new_change
 	end
       end
     end

@@ -2,45 +2,41 @@ module Musicality
 
 class Change
   class Immediate < Change
-    def pack
-      pack_common
-    end
-    
-    def self.unpack packing
-      new(packing["value"])
+    def change_type_str; "Immediate"; end
+    def pack; super(); end
+    def self.unpack(packing)
+      new(packing["end_value"])
     end
   end
   
   class Gradual < Change
+    def change_type_str; "Gradual"; end
     def pack
-      packing = pack_common.merge("impending" => @impending)
-      unless @remaining == 0
-        packing["remaining"] = @remaining
-      end
-      unless @elapsed == 0
-        packing["elapsed"] = @elapsed
-      end
-      return packing
+      super().merge("duration" => @duration, "transition" => @transition.to_s)
+    end
+    def self.unpack packing
+      new(packing["end_value"], packing["duration"], packing["transition"].to_sym)
     end
     
-    def self.unpack packing
-      elapsed = packing["elapsed"] || 0
-      remaining = packing["remaining"] || 0
-      new(packing["value"], packing["impending"], elapsed, remaining)
+    class Trimmed < Gradual
+      def change_type_str; "Gradual::Trimmed"; end
+      def pack
+        super().merge("preceding" => @preceding, "remaining" => @remaining)
+      end
+      def self.unpack packing
+        Gradual.unpack(packing).to_trimmed(packing["preceding"], packing["remaining"])
+      end
     end
+  end
+
+  def pack
+    { "end_value" => @end_value, "type" => self.change_type_str }
   end
 
   def self.unpack packing
     type = const_get(packing["type"])
     type.unpack(packing)
-  end
-  
-  private
-  
-  def pack_common
-    { "type" => self.class.to_s.split("::")[-1],
-      "value" => @value }
-  end
+  end  
 end
 
 end
