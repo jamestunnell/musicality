@@ -58,7 +58,19 @@ class ScoreCollator
 	when Change::Immediate
 	  change.clone if seg.include?(off)
 	when Change::Gradual::Trimmed
-	  raise NotImplementedError, "trimmed gradual changes are not supported yet"
+	  end_off = off + change.remaining
+	  if off < seg.last && end_off > seg.first
+	    add_preceding = seg.first > off ? seg.first - off : 0
+	    add_trailing = end_off > seg.last ? end_off - seg.last : 0
+
+	    if add_preceding == 0 && add_trailing == 0
+	      change.clone
+	    else
+	      adj_start_off += add_preceding
+	      change.untrim.trim(change.preceding + add_preceding,
+				 change.trailing + add_trailing)
+	    end
+	  end
 	when Change::Gradual
 	  end_off = off + change.duration
 	  if off < seg.last && end_off > seg.first

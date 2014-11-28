@@ -83,6 +83,43 @@ describe ScoreCollator do
       end
     end
     
+    context 'part contains trimmed gradual changes' do
+      it 'should exclude the change when it is not at all in a program segment' do
+        score = Score::Measured.new(FOUR_FOUR, 120,
+          parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
+            2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,1)
+          }) },
+          program: Program.new([7...9])
+        )
+        collator = ScoreCollator.new(score)
+        parts = collator.collate_parts
+        dcs = parts[1].dynamic_changes
+        dcs.size.should eq(1)
+        dcs[0.to_r].should eq(Change::Immediate.new(Dynamics::PP))
+        
+        score.program = Program.new([0...1])
+        collator = ScoreCollator.new(score)
+        parts = collator.collate_parts
+        dcs = parts[1].dynamic_changes
+        dcs.size.should eq(1)
+        dcs[0.to_r].should eq(Change::Immediate.new(Dynamics::FF))
+      end
+      
+      it 'should trim the change further if needed' do
+        score = Score::Measured.new(FOUR_FOUR, 120,
+          parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
+            2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,1)
+          }) },
+          program: Program.new([3...4])
+        )
+        collator = ScoreCollator.new(score)
+        parts = collator.collate_parts
+        dcs = parts[1].dynamic_changes
+        dcs.size.should eq(1)
+        dcs[0.to_r].should eq(Change::Gradual.linear(Dynamics::PP,5).trim(2,2))
+      end
+    end
+    
     it 'should preserve links' do
       notes = Note.split_parse("1Db4~Bb4")
       score = Score::Measured.new(

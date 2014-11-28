@@ -85,6 +85,14 @@ class Change
         super(end_value, duration, transition)
       end
       
+      def trailing
+        @duration - @preceding - @remaining
+      end
+      
+      def untrim
+        Gradual.new(@end_value, @duration, @transition)
+      end
+      
       def ==(other)
         super(other) && @preceding == other.preceding && @remaining == other.remaining
       end

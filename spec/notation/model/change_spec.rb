@@ -130,4 +130,27 @@ describe Change::Gradual::Trimmed do
     expect { Change::Gradual::Trimmed.linear(11,3,preceding: 1,remaining: 0) }.to raise_error(NonPositiveError)
     expect { Change::Gradual::Trimmed.linear(11,3,preceding: 1,remaining: -1) }.to raise_error(NonPositiveError)
   end
+  
+  describe '#untrim' do
+    before :all do
+      @trimmed = Change::Gradual.linear(51,12).trim(2,2)
+      @untrimmed = @trimmed.untrim
+    end
+    
+    it 'should return a Change::Gradual' do
+      @untrimmed.should be_a Change::Gradual
+    end
+    
+    it 'should keep end_value, duration, and transition' do
+      @untrimmed.end_value.should eq(@trimmed.end_value)
+      @untrimmed.duration.should eq(@trimmed.duration)
+      @untrimmed.transition.should eq(@trimmed.transition)
+    end
+  end
+  
+  describe '#trailing' do
+    it 'should return the amount of transition unused at the end' do
+      Change::Gradual.linear(41,19).trim(4,9).trailing.should eq(9)
+    end
+  end
 end
