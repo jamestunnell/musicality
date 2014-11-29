@@ -1,7 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe ValueComputer do
-  describe '#value_at' do
+  describe '#at' do
     before :all do
       @immed_change = Change::Immediate.new(0.6)
       @lin_change = Change::Gradual.linear(0.6, 1.0)
@@ -15,7 +15,7 @@ describe ValueComputer do
       
       it "should always return default value if no changes are given" do
         [ValueComputer::DOMAIN_MIN, -1000, 0, 1, 5, 100, 10000, ValueComputer::DOMAIN_MAX].each do |offset|
-          @comp.value_at(offset).should eq(0.5)
+          @comp.at(offset).should eq(0.5)
         end
       end
     end
@@ -26,19 +26,19 @@ describe ValueComputer do
       end
       
       it "should be the default value just before the first change" do
-        @comp.value_at(0.999).should eq(0.5)
+        @comp.at(0.999).should eq(0.5)
       end
           
       it "should transition to the second value immediately" do
-        @comp.value_at(1.0).should eq(0.6)
+        @comp.at(1.0).should eq(0.6)
       end
 
       it "should be the first value for all time before" do
-        @comp.value_at(ValueComputer::DOMAIN_MIN).should eq(0.5)
+        @comp.at(ValueComputer::DOMAIN_MIN).should eq(0.5)
       end
       
       it "should be at the second value for all time after" do
-        @comp.value_at(ValueComputer::DOMAIN_MAX).should eq(0.6)
+        @comp.at(ValueComputer::DOMAIN_MAX).should eq(0.6)
       end
     end
     
@@ -48,27 +48,27 @@ describe ValueComputer do
       end
       
       it "should be the first (starting) value just before the second value" do
-        @comp.value_at(0.999).should eq(0.2)
+        @comp.at(0.999).should eq(0.2)
       end
           
       it "should be the first (starting) value exactly at the second value" do
-        @comp.value_at(1.0).should eq(0.2)
+        @comp.at(1.0).should eq(0.2)
       end
     
       it "should be 1/4 to the second value after 1/4 transition duration has elapsed" do
-        @comp.value_at(Rational(5,4).to_f).should eq(0.3)
+        @comp.at(Rational(5,4).to_f).should eq(0.3)
       end
     
       it "should be 1/2 to the second value after 1/2 transition duration has elapsed" do
-        @comp.value_at(Rational(6,4).to_f).should eq(0.4)
+        @comp.at(Rational(6,4).to_f).should eq(0.4)
       end
     
       it "should be 3/4 to the second value after 3/4 transition duration has elapsed" do
-        @comp.value_at(Rational(7,4).to_f).should eq(0.5)
+        @comp.at(Rational(7,4).to_f).should eq(0.5)
       end
     
       it "should be at the second value after transition duration has elapsed" do
-        @comp.value_at(Rational(8,4).to_f).should eq(0.6)
+        @comp.at(Rational(8,4).to_f).should eq(0.6)
       end
     end
 
@@ -78,23 +78,23 @@ describe ValueComputer do
       end
       
       it "should be the first (starting) value just before the second value" do
-        @comp.value_at(0.999).should eq(0.2)
+        @comp.at(0.999).should eq(0.2)
       end
           
       it "should be the first (starting) value exactly at the second value" do
-        @comp.value_at(1.0).should eq(0.2)
+        @comp.at(1.0).should eq(0.2)
       end
     
       it "should be 1/2 to the second value after 1/2 transition duration has elapsed" do
-        @comp.value_at(1.5).should be_within(1e-5).of(0.4)
+        @comp.at(1.5).should be_within(1e-5).of(0.4)
       end
     
       it "should be at the second value exactly where transition duration has elapsed" do
-        @comp.value_at(2).should eq(0.6)
+        @comp.at(2).should eq(0.6)
       end
       
       it "should be at the second value just after transition duration has elapsed" do
-        @comp.value_at(2.001).should eq(0.6)
+        @comp.at(2.001).should eq(0.6)
       end      
     end
   end

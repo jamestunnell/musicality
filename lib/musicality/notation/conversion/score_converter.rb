@@ -92,7 +92,7 @@ class ScoreConverter
       new_program = ScoreConverter.convert_program(score.program, mn_map)
       new_tempo_changes = ScoreConverter.convert_changes(score.tempo_changes, mn_map)
       new_beat_durations = Hash[ score.beat_durations.map do |moff,bdur|
-        [mn_map[moff], bdur]
+        [mn_map[moff], Change::Immediate.new(bdur) ]
       end]
       tempo_computer = ValueComputer.new(score.start_tempo, new_tempo_changes)
       bdur_computer = ValueComputer.new(score.start_meter.beat_duration, new_beat_durations)

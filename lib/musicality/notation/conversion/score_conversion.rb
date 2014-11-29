@@ -37,7 +37,7 @@ class Score
       end.sort
       
       if bdurs.empty? || bdurs[0][0] != 0
-        bdurs.unshift([0,@start_meter.beat_duration])
+        bdurs.unshift([0.to_r,@start_meter.beat_duration])
       end
     
       return Hash[ bdurs ]
@@ -49,7 +49,7 @@ class Score
       end.sort
       
       if mdurs.empty? || mdurs[0][0] != 0
-        mdurs.unshift([0,@start_meter.measure_duration])
+        mdurs.unshift([0.to_r,@start_meter.measure_duration])
       end
     
       return Hash[ mdurs ]

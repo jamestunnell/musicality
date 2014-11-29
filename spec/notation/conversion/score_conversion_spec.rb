@@ -87,7 +87,7 @@ describe Score::Measured do
       end
       
       it 'should map start meter to offset 0' do
-        @mdurs[0].should eq(@score.start_meter.measure_duration)
+        @mdurs[0.to_r].should eq(@score.start_meter.measure_duration)
       end
     end
     
@@ -126,7 +126,7 @@ describe Score::Measured do
       end
       
       it 'should begin with start meter' do
-        @mdurs3[0].should eq(@score3.start_meter.measure_duration)
+        @mdurs3[0.to_r].should eq(@score3.start_meter.measure_duration)
       end
     end
   end

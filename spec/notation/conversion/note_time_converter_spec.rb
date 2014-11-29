@@ -7,7 +7,7 @@ describe NoteTimeConverter::Unmeasured do
         120, 1 => Change::Gradual.linear(100,1), 2 => Change::Gradual.linear(150,1))
       converter = NoteTimeConverter::Unmeasured.new(tc,200)
       (0..2).step(0.2).each do |offset|
-        nps = Tempo::QNPM.to_nps(tc.value_at(offset))
+        nps = Tempo::QNPM.to_nps(tc.at(offset))
         converter.notes_per_second_at(offset).should eq(nps)
       end
     end
@@ -88,7 +88,7 @@ describe NoteTimeConverter::Measured do
       bdc = ValueComputer.new(0.25.to_r, 2.5 => Change::Immediate.new(0.375.to_r))
       converter = NoteTimeConverter::Measured.new(tc,bdc,200)
       (0..3.2).step(0.2).each do |offset|
-        nps = Tempo::BPM.to_nps(tc.value_at(offset), bdc.value_at(offset))
+        nps = Tempo::BPM.to_nps(tc.at(offset), bdc.at(offset))
         converter.notes_per_second_at(offset).should eq(nps)
       end
     end

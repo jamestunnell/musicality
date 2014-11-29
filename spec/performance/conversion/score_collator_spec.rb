@@ -87,7 +87,7 @@ describe ScoreCollator do
       it 'should exclude the change when it is not at all in a program segment' do
         score = Score::Measured.new(FOUR_FOUR, 120,
           parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
-            2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,1)
+            2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,0)
           }) },
           program: Program.new([7...9])
         )

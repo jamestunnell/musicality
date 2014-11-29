@@ -13,6 +13,10 @@ class Function
       @pieces = { }
     end
     
+    def ==(other)
+      @pieces == other.pieces
+    end
+    
     # Add a function piece, which covers the given domain (includes domain start 
     # but not the end).
     # @param [Range] domain The function domain. If this overlaps an existing domain,
@@ -80,10 +84,10 @@ class Function
     
     # Evaluate the piecewise function by finding a function piece whose domain 
     # includes the given independent value.
-    def eval x
+    def at x
       @pieces.each do |domain, func|
         if domain.include? x
-          return func.eval(x)
+          return func.at(x)
         end
       end
       raise ArgumentError, "The input #{x} is not in the domain."

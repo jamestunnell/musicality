@@ -17,7 +17,7 @@ class NoteTimeConverter
     end
 
     def notes_per_second_at offset
-      Tempo::QNPM.to_nps(@tempo_computer.value_at offset)
+      Tempo::QNPM.to_nps(@tempo_computer.at offset)
     end
   end
   
@@ -29,7 +29,7 @@ class NoteTimeConverter
     end
 
     def notes_per_second_at offset
-      Tempo::BPM.to_nps(@tempo_computer.value_at(offset), @bdur_computer.value_at(offset))
+      Tempo::BPM.to_nps(@tempo_computer.at(offset), @bdur_computer.at(offset))
     end
   end
   

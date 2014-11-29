@@ -48,7 +48,7 @@ class ScoreCollator
       seg = seg.first...seg.last
       
       # add segment start value
-      value = comp.value_at seg.first
+      value = comp.at seg.first
       new_changes[segment_start_offset] = Change::Immediate.new(value)
       
       changes.each do |off,change|

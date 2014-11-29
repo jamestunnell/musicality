@@ -16,6 +16,15 @@ describe Change::Immediate do
       c2.should_not be c
     end
   end
+  
+  describe '#to_transition' do
+    it 'should return an immediate transition' do
+      ch = Change::Immediate.new(20)
+      f = ch.to_transition(0,0)
+      f.should be_a Transition::Immediate
+      f.at(0).should eq(20)
+    end
+  end
 end
 
 describe Change::Gradual do
@@ -55,6 +64,76 @@ describe Change::Gradual do
     it 'should keep end value, and change duration based on given offset map' do
       @c2.end_value.should eq(@change.end_value)
       @c2.duration.should eq(2)
+    end
+  end
+  
+  describe '#to_transition' do
+    context 'linear transition' do
+      before :all do
+        @change = Change::Gradual.linear(130,20)
+        @offset = 3
+        @start_value = 50
+        @func = @change.to_transition(@offset, @start_value)
+      end
+      
+      it 'should return a linear transition' do
+        @func.should be_a Transition::Linear
+      end
+      
+      it 'should make function that evaluates to start_value before start offset' do
+        @func.at(@offset-1).should eq(@start_value)
+      end
+
+      it 'should make function that evaluates to start_value at start offset' do
+        @func.at(@offset).should eq(@start_value)
+      end
+      
+      it 'should make function that evaluates to end_value at start offset + duration' do
+        @func.at(@offset + @change.duration).should eq(@change.end_value)
+      end
+      
+      it 'should make function that evaluates to 1/2 between start/end value at 1/2 between start/end offset' do
+        tgt = (@change.end_value + @start_value) / 2.0
+        @func.at(@offset + @change.duration/2.0).should eq(tgt)
+      end
+      
+      it 'should make function that evaluates to end value after change has elapsed' do
+        @func.at(@offset + @change.duration + 1).should eq(@change.end_value)
+      end
+    end
+    
+    context 'sigmoid transition' do
+      before :all do
+        @change = Change::Gradual.sigmoid(130,20)
+        @offset = 3
+        @start_value = 50
+        @func = @change.to_transition(@offset, @start_value)
+      end
+      
+      it 'should return a sigmoid function' do
+        @func.should be_a Transition::Sigmoid
+      end
+
+      it 'should make function that evaluates to start_value before start offset' do
+        @func.at(@offset-1).should eq(@start_value)
+      end
+      
+      it 'should make function that evaluates to start_value at start offset' do
+        @func.at(@offset).should eq(@start_value)
+      end
+      
+      it 'should make function that evaluates to end_value at start offset + duration' do
+        @func.at(@offset + @change.duration).should eq(@change.end_value)
+      end
+      
+      it 'should make function that evaluates to 1/2 between start/end value at 1/2 between start/end offset' do
+        tgt = (@change.end_value + @start_value) / 2.0
+        @func.at(@offset + @change.duration/2.0).should eq(tgt)
+      end
+      
+      it 'should make function that evaluates to end value after change has elapsed' do
+        @func.at(@offset + @change.duration + 1).should eq(@change.end_value)
+      end
     end
   end
 end
@@ -108,6 +187,40 @@ describe Change::Gradual::Trimmed do
       @c2.duration.should eq(7)
       @c2.preceding.should eq(3)
       @c2.remaining.should eq(2)
+    end
+  end
+  
+  describe '#to_transition' do
+    Change::Gradual::TRANSITIONS.each do |transition|
+      context "#{transition} transition" do
+        before :all do
+          untrimmed = Change::Gradual.new(130,20, transition)
+          untrimmed_offset = 0
+          untrimmed_start_val = 50
+          @untrimmed_trans = untrimmed.to_transition(untrimmed_offset, untrimmed_start_val)
+          
+          trimmed = untrimmed.trim(5,3)
+          trimmed_offset = untrimmed_offset + trimmed.preceding
+          trimmed_start_val = @untrimmed_trans.at(trimmed_offset)
+          @trimmed_trans = trimmed.to_transition(trimmed_offset, trimmed_start_val)
+          
+          @xrange = trimmed_offset..(trimmed_offset + trimmed.remaining)
+          srate = 50
+        end
+        
+        it 'should produce function that stays at start value before offset' do
+          @trimmed_trans.at(@xrange.first - 1).should eq(@trimmed_trans.at(@xrange.first))
+        end
+        
+        it 'should produce function that stays at end value after transition' do
+          @trimmed_trans.at(@xrange.last + 1).should eq(@trimmed_trans.at(@xrange.last))
+        end
+        
+        it 'should produce function that samples same as equivalent untrimmed' do
+          srate = 50
+          @trimmed_trans.sample(@xrange, srate).should eq(@untrimmed_trans.sample(@xrange, srate))
+        end
+      end
     end
   end
 end
