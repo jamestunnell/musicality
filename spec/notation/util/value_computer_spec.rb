@@ -14,7 +14,7 @@ describe ValueComputer do
       end
       
       it "should always return default value if no changes are given" do
-        [ValueComputer.domain_min, -1000, 0, 1, 5, 100, 10000, ValueComputer.domain_max].each do |offset|
+        [ValueComputer::DOMAIN_MIN, -1000, 0, 1, 5, 100, 10000, ValueComputer::DOMAIN_MAX].each do |offset|
           @comp.value_at(offset).should eq(0.5)
         end
       end
@@ -34,11 +34,11 @@ describe ValueComputer do
       end
 
       it "should be the first value for all time before" do
-        @comp.value_at(ValueComputer.domain_min).should eq(0.5)
+        @comp.value_at(ValueComputer::DOMAIN_MIN).should eq(0.5)
       end
       
       it "should be at the second value for all time after" do
-        @comp.value_at(ValueComputer.domain_max).should eq(0.6)
+        @comp.value_at(ValueComputer::DOMAIN_MAX).should eq(0.6)
       end
     end
     

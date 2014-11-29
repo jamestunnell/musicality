@@ -47,6 +47,7 @@ require 'musicality/notation/packing/program_packing'
 require 'musicality/notation/packing/score_packing'
 
 require 'musicality/notation/util/interpolation'
+require 'musicality/notation/util/function'
 require 'musicality/notation/util/piecewise_function'
 require 'musicality/notation/util/value_computer'
 

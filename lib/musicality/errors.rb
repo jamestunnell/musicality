@@ -6,4 +6,5 @@ module Musicality
   class NonRationalError < StandardError; end
   class NonIncreasingError < StandardError; end
   class NotValidError < StandardError; end
+  class DomainError < StandardError; end
 end

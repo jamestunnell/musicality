@@ -9,6 +9,10 @@ class Change
     def remap base_offset, map
       self.clone
     end
+    
+    def to_function offset, start_value
+      Function::Constant.new(@end_value)
+    end
   end
   
   class Gradual < Change
@@ -19,6 +23,17 @@ class Change
     def remap base_offset, map
       newdur = map[base_offset + @duration] - map[base_offset]
       Gradual.new(@end_value, newdur, @transition)
+    end
+    
+    def to_function offset, start_value
+      p1 = [ offset, start_value ]
+      p2 = [ offset + @duration, @end_value ]
+      case @transition
+      when LINEAR
+        Function::Linear.new(p1,p2)
+      when SIGMOID
+        Function::Sigmoid.new(p1,p2)
+      end
     end
     
     class Trimmed < Gradual
