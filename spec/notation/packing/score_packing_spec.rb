@@ -1,6 +1,7 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
+  s.meter_changes[1] = Change::Immediate.new(THREE_FOUR)
   s.program = Program.new([0...2, 0...2,2...4,0...2])
   s.parts["lead"] = Part.new(Dynamics::MF) do |p|
     riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \
@@ -58,9 +59,9 @@ describe Score::Measured do
       end
     end
 
-    it 'should pack meter change values as strings' do
+    it 'should pack meter change end values as strings' do
       @h['meter_changes'].each do |offset,packed_v|
-        packed_v[0].should be_a String
+        packed_v["end_value"].should be_a String
       end
     end
     

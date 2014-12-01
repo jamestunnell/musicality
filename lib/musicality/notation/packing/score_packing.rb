@@ -53,7 +53,7 @@ class Score
     def pack
       return super().merge("start_meter" => start_meter.to_s,
         "meter_changes" => Hash[ meter_changes.map do |off,change|
-          [off,change.pack.merge("value" => change.value.to_s)]
+          [off,change.pack(:with => :to_s)]
         end ]
       )
     end
@@ -62,7 +62,7 @@ class Score
       score = superclass.unpack(packing)
       unpacked_start_meter = Meter.parse(packing["start_meter"])
       unpacked_mcs = Hash[ packing["meter_changes"].map do |off,p|
-        [off, Change.unpack(p.merge("value" => Meter.parse(p["value"]))) ]
+         [off, Change.unpack(p, :with => :to_meter) ]
       end ]
       
       new(unpacked_start_meter, score.start_tempo,
