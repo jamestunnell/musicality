@@ -26,6 +26,43 @@ describe Change::Immediate do
   end
 end
 
+describe Change::Gradual do
+  describe '#pack' do
+    before :all do
+      @c = Change::Gradual.linear(200,2.5)
+      @p = @c.pack
+    end
+    
+    it 'should return a Hash' do
+      @p.should be_a Hash
+    end
+    
+    it 'should have "type", "end_value", "duration", "transition", and "start_value" keys' do
+      @p.keys.sort.should eq(["duration","end_value","start_value","transition","type"])
+    end
+    
+    it 'should assign "Gradual" to "type" key' do
+      @p["type"].should eq("Gradual")
+    end
+    
+    it 'should assign end_value to "end_value" key' do
+      @p["end_value"].should eq(@c.end_value)
+    end
+    
+    it 'should assign duration to "duration" key' do
+      @p["duration"].should eq(@c.duration)
+    end
+    
+    it 'should assign start value to "start_value" key' do
+      @p["start_value"].should eq(@c.start_value)
+    end
+
+    it 'should assign transition to "transition" key' do
+      @p["transition"].should eq(@c.transition)
+    end
+  end
+end
+
 describe Change::Gradual::Trimmed do
   describe '#pack' do
     before :all do
@@ -37,8 +74,8 @@ describe Change::Gradual::Trimmed do
       @p.should be_a Hash
     end
     
-    it 'should have "type", "end_value", "duration", "preceding", and "remaining" keys' do
-      @p.keys.sort.should eq(["duration","end_value","preceding","remaining","transition","type"])
+    it 'should have "type", "end_value", "duration", "start_value", "transition", "preceding", "remaining" keys' do
+      @p.keys.sort.should eq(["duration","end_value","preceding","remaining","start_value","transition","type"])
     end
     
     it 'should assign "Gradual::Trimmed" to "type" key' do
@@ -53,43 +90,20 @@ describe Change::Gradual::Trimmed do
       @p["duration"].should eq(@c.duration)
     end
     
+    it 'should assign start value to "start_value" key' do
+      @p["start_value"].should eq(@c.start_value)
+    end
+
+    it 'should assign transition to "transition" key' do
+      @p["transition"].should eq(@c.transition)
+    end
+
     it 'should assign preceding to "preceding" key' do
       @p["preceding"].should eq(@c.preceding)
     end
     
     it 'should assign remaining to "remaining" key' do
       @p["remaining"].should eq(@c.remaining)
-    end
-  end
-end
-
-describe Change::Gradual do
-  describe '#pack' do
-    before :all do
-      @c = Change::Gradual.linear(200,2.5)
-      @p = @c.pack
-    end
-    
-    it 'should return a Hash' do
-      @p.should be_a Hash
-    end
-    
-    it 'should have "type", "end_value", and "duration" keys' do
-      @p.should have_key("type")
-      @p.should have_key("end_value")
-      @p.should have_key("duration")
-    end
-    
-    it 'should assign "Gradual" to "type" key' do
-      @p["type"].should eq("Gradual")
-    end
-    
-    it 'should assign end_value to "end_value" key' do
-      @p["end_value"].should eq(@c.end_value)
-    end
-    
-    it 'should assign duration to "duration" key' do
-      @p["duration"].should eq(@c.duration)
     end
   end
 end
@@ -123,16 +137,20 @@ describe Change do
         @c2.should be_a Change::Gradual
       end
       
-      it 'should successfully unpack the end_value' do
+      it 'should unpack the end_value' do
         @c2.end_value.should eq @c.end_value
       end
       
-      it 'should successfully unpack the change duration' do
+      it 'should unpack the change duration' do
         @c2.duration.should eq @c.duration
       end
 
-      it 'should successfully unpack the change transition' do
+      it 'should unpack the change transition' do
         @c2.transition.should eq @c.transition
+      end
+      
+      it 'should unpack the change start_value' do
+        @c2.start_value.should eq @c.start_value
       end
     end
     
@@ -157,6 +175,10 @@ describe Change do
 
       it 'should successfully unpack the change transition' do
         @c2.transition.should eq @c.transition
+      end
+      
+      it 'should unpack the change start_value' do
+        @c2.start_value.should eq @c.start_value
       end
       
       it 'should successfully unpack the change preceding' do

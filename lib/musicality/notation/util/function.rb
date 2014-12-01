@@ -12,7 +12,7 @@ class Function
     perc = (x - start_domain.first) / (start_domain.last - start_domain.first).to_f
     return perc * (end_domain.last - end_domain.first) + end_domain.first
   end
-  
+
   class Constant < Function
     attr_reader :value
     
@@ -25,7 +25,7 @@ class Function
     end
     
     def ==(other)
-      @value == other.value
+      super(other) && @value == other.value
     end
   end
   
@@ -42,7 +42,7 @@ class Function
     end
     
     def ==(other)
-      @slope == other.slope && @intercept == other.intercept
+      super(other) && @slope == other.slope && @intercept == other.intercept
     end
   end
   
@@ -51,49 +51,49 @@ class Function
       1.0 / (1 + Math::exp(-x))
     end
     
-    def self.inv_sigm y
-      -Math::log((1-y)/y.to_f)
-    end
+    #def self.inv_sigm y
+    #  -Math::log((1-y)/y.to_f)
+    #end
     
     SIGM_DOMAIN = -5..5
     SIGM_RANGE = Sigmoid.sigm(SIGM_DOMAIN.first)..Sigmoid.sigm(SIGM_DOMAIN.last)
     SIGM_SPAN = SIGM_RANGE.last - SIGM_RANGE.first
     
-    attr_reader :y0, :dy, :transition_domain
+    attr_reader :y0, :dy, :domain
     def initialize p0, p1
       @y0, y1 = p0[1], p1[1]
       @dy = y1 - @y0
-      @transition_domain = p0[0]..p1[0]
+      @domain = p0[0]..p1[0]
     end
     
     def at(x)
-      x2 = Function.transform_domains(@transition_domain, SIGM_DOMAIN, x)
-      y2 = (Sigmoid.sigm(x2) - SIGM_RANGE.first) / SIGM_SPAN
-      @y0 + y2 * @dy
+      x_ = Function.transform_domains(@domain, SIGM_DOMAIN, x)
+      y_ = (Sigmoid.sigm(x_) - SIGM_RANGE.first) / SIGM_SPAN
+      y = @y0 + y_ * @dy
+      return y
     end
     
-    def ==(other)
-      @y0 == other.y0 && @dy == other.dy &&
-      @transition_domain == other.transition_domain
-    end
-  end
-  
-  class InverseSigmoid < Function
-    INV_SIGM_DOMAIN = 0..1
-    INV_SIGM_RANGE = -5..5
-    INV_SIGM_SPAN = 10
+    #def from(y)
+    #  y2 = (y - @y0) / @dy
+    #  x2 = Sigmoid.inv_sigm(y2 * SIGM_SPAN + SIGM_RANGE.first)
+    #  x = Function.transform_domains(SIGM_DOMAIN, @domain, x2)
+    #  return x
+    #end
     
-    def self.inv_sigm y
-      -Math::log((1-y)/y.to_f)
+    # Given a domain, an xy-point in that domain, and the y-value at
+    # the end of the domain, find the y-value at the start of the domain,
+    # assuming the the function is sigmoid.
+    def self.find_y0 domain, pt, y1
+      x,y = pt
+      x_ = Function.transform_domains(domain, SIGM_DOMAIN, x)
+      y_ = (sigm(x_) - SIGM_RANGE.first) / SIGM_SPAN
+      return Function::Linear.new([y_,y],[1,y1]).at(0)
     end
-    
-    def initialize p0, p1
-    end
-    
-    def at(y)
       
+    def ==(other)
+      super(other) && @y0 == other.y0 && @dy == other.dy
     end
-  end
+  end  
 end
 
 end

@@ -12,10 +12,12 @@ class Change
   class Gradual < Change
     def change_type_str; "Gradual"; end
     def pack
-      super().merge("duration" => @duration, "transition" => @transition.to_s)
+      super().merge("duration" => @duration, "transition" => @transition,
+                    "start_value" => @start_value)
     end
     def self.unpack packing
-      new(packing["end_value"], packing["duration"], packing["transition"].to_sym)
+      new(packing["end_value"], packing["duration"], packing["transition"],
+          start_value: packing["start_value"])
     end
     
     class Trimmed < Gradual

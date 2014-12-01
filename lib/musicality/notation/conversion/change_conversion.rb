@@ -10,8 +10,8 @@ class Change
       self.clone
     end
     
-    def to_transition offset, start_value
-      Transition::Immediate.new([offset,start_value],[offset,@end_value])
+    def to_transition offset, value
+      Transition::new(Function::Constant.new(@end_value), offset..offset)
     end
   end
   
@@ -25,15 +25,14 @@ class Change
       Gradual.new(@end_value, newdur, @transition)
     end
     
-    def to_transition offset, start_value
-      p0 = [ offset, start_value ]
-      p1 = [ offset + @duration, @end_value ]
-      case @transition
-      when LINEAR
-        Transition::Linear.new(p0,p1)
-      when SIGMOID
-        Transition::Sigmoid.new(p0,p1)
+    def to_transition offset, value
+      p1 = [ offset, @start_value || value ]
+      p2 = [ offset + @duration, @end_value ]
+      func = case @transition
+      when LINEAR then Function::Linear.new(p1, p2)
+      when SIGMOID then Function::Sigmoid.new(p1, p2)
       end
+      Transition.new(func, p1[0]..p2[0])
     end
     
     class Trimmed < Gradual
@@ -52,24 +51,17 @@ class Change
                     remaining: map[x1 + @remaining] - y1)
       end
       
-      def to_transition offset, start_value
-        x0 = offset - @preceding
-        x1 = x0 + @duration
-        
-        case @transition
+      def to_transition offset, value
+        x1,x2,x3 = offset - @preceding, offset, offset + @remaining
+        x4 = x1 + @duration
+        func = case @transition
         when LINEAR
-          lin = Function::Linear.new([offset,start_value],[x1, @end_value])
-          p0, p1 = [x0, lin.at(x0)], [x1, @end_value ]
-          x_ = offset + @remaining
-          y_ = lin.at(x_)
-          Transition.new([offset, start_value],[x_, y_],Function::Linear.new(p0,p1))
+          Function::Linear.new(@start_value.nil? ? [x2,value] : [x1,@start_value],[x4, @end_value])
         when SIGMOID
-          y_ = inv_sigm(x0..x1, offset)
-          y__ = inv_sigm(x0..x1, offset + @remaining)
-          lin = Function::Linear.new([y_,start_value],[1, @end_value])
-          p0, p1 = [x0, lin.at(0)], [x1, @end_value]
-          Transition.new([offset, start_value],[offset + @remaining, lin.at(y__)],Function::Sigmoid.new(p0,p1))
+          y1 = @start_value || Function::Sigmoid.find_y0(x1..x4, [x2, value], @end_value)
+          Function::Sigmoid.new([x1,y1],[x4, @end_value])
         end
+        Transition.new(func, x2..x3)
       end
       
       private

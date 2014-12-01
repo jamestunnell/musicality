@@ -25,20 +25,20 @@ class Change
   end
   
   class Gradual < Change
-    attr_reader :duration, :transition
     LINEAR = :linear
     SIGMOID = :sigmoid
     TRANSITIONS = [LINEAR,SIGMOID]
     
-    def self.linear end_value, duration
-      Gradual.new(end_value, duration, LINEAR)
+    def self.linear end_value, duration, start_value: nil
+      Gradual.new(end_value, duration, LINEAR, start_value: start_value)
     end
 
-    def self.sigmoid end_value, duration
-      Gradual.new(end_value, duration, SIGMOID)
+    def self.sigmoid end_value, duration, start_value: nil
+      Gradual.new(end_value, duration, SIGMOID, start_value: start_value)
     end
     
-    def initialize end_value, duration, transition
+    attr_reader :duration, :transition, :start_value
+    def initialize end_value, duration, transition, start_value: nil
       if duration <= 0
         raise NonPositiveError, "duration (#{duration}) is <= 0"
       end
@@ -49,30 +49,34 @@ class Change
       
       @duration = duration
       @transition = transition
+      @start_value = start_value
       super(end_value)
     end
     
     def ==(other)
       super(other) && @duration == other.duration &&
-      @transition == other.transition
+      @transition == other.transition &&
+      @start_value == other.start_value
     end
     
-    def clone
-      Gradual.new(@end_value, @duration, @transition)
-    end
+    def clone; Gradual.new(@end_value, @duration, @transition); end
+    def relative?; @start_value.nil?; end
+    def absolute?; !@start_value.nil?; end
     
     class Trimmed < Gradual
       attr_reader :preceding, :remaining
       
-      def self.linear end_value, duration, preceding: 0, remaining: 0
-        Trimmed.new(end_value, duration, LINEAR, preceding: preceding, remaining: remaining)
+      def self.linear end_value, duration, start_value: nil, preceding: 0, remaining: 0
+        Trimmed.new(end_value, duration, LINEAR, start_value: start_value,
+                    preceding: preceding, remaining: remaining)
       end
       
-      def self.sigmoid end_value, duration, preceding: 0, remaining: 0
-        Trimmed.new(end_value, duration, SIGMOID, preceding: preceding, remaining: remaining)
+      def self.sigmoid end_value, duration, start_value: nil, preceding: 0, remaining: 0
+        Trimmed.new(end_value, duration, SIGMOID, start_value: start_value,
+                    preceding: preceding, remaining: remaining)
       end
       
-      def initialize end_value, duration, transition, preceding: 0, remaining: 0
+      def initialize end_value, duration, transition, start_value: nil, preceding: 0, remaining: 0
         if preceding < 0
           raise NegativeError, "preceding (#{preceding}) is < 0"
         end
@@ -82,7 +86,7 @@ class Change
         end
         
         @preceding, @remaining = preceding, remaining
-        super(end_value, duration, transition)
+        super(end_value, duration, transition, start_value: start_value)
       end
       
       def trailing
@@ -90,7 +94,7 @@ class Change
       end
       
       def untrim
-        Gradual.new(@end_value, @duration, @transition)
+        Gradual.new(@end_value, @duration, @transition, start_value: @start_value)
       end
       
       def ==(other)
@@ -98,28 +102,28 @@ class Change
       end
     
       def clone
-        Trimmed.new(@end_value, @duration, @transition,
+        Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
                     preceding: @preceding, remaining: @remaining)
       end
     end
     
     def trim_left(amount)
-      Trimmed.new(@end_value, @duration, @transition,
+      Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
                   preceding: amount, remaining: (@duration - amount))
     end
     
     def trim_right(amount)
-      Trimmed.new(@end_value, @duration, @transition,
+      Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
                   preceding: 0, remaining: (@duration - amount))
     end
     
     def trim(ltrim, rtrim)
-      Trimmed.new(@end_value, @duration, @transition, 
+      Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
                   preceding: ltrim, remaining: (@duration - ltrim - rtrim))
     end
     
     def to_trimmed(preceding, remaining)
-      Trimmed.new(@end_value, @duration, @transition,
+      Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
                   preceding: preceding, remaining: remaining)
     end
   end

@@ -33,18 +33,41 @@ describe Change::Gradual do
       ch.duration.should eq(2)
     end
     
+    it 'should set start_value to nil if not given' do
+      Change::Gradual.linear(5,2).start_value.should be nil
+    end
+    
+    it 'should set start_value if given' do
+      Change::Gradual.linear(5,2, start_value: 3).start_value.should eq(3)
+    end
+    
     it 'should raise NonPositiveError if duration is <= 0' do
       expect { Change::Gradual.new(11,0,Change::Gradual::LINEAR) }.to raise_error(NonPositiveError)
       expect { Change::Gradual.new(11,-1,Change::Gradual::LINEAR) }.to raise_error(NonPositiveError)
     end
   end
   
-  context '.linear' do
-    before(:all){ @change = Change::Gradual.linear(55,20) }
+  describe '#relative?' do
+    context 'start_value is nil' do
+      it 'should return true' do
+        Change::Gradual.linear(25,3).relative?.should be true
+      end
+    end
     
-    it 'should assign end_value and duration as normal' do
+    context 'start_value is not nil' do
+      it 'should return false' do
+        Change::Gradual.linear(25,3, start_value: 10).relative?.should be false
+      end
+    end
+  end
+  
+  context '.linear' do
+    before(:all){ @change = Change::Gradual.linear(55,20, start_value: 25) }
+    
+    it 'should assign end_value, duration, and start_value as normal' do
       @change.end_value.should eq(55)
       @change.duration.should eq(20)
+      @change.start_value.should eq(25)
     end
     
     it 'should set transition to linear' do
@@ -53,11 +76,12 @@ describe Change::Gradual do
   end
 
   context '.sigmoid' do
-    before(:all){ @change = Change::Gradual.sigmoid(55,20) }
+    before(:all){ @change = Change::Gradual.sigmoid(55,20, start_value: 25) }
     
-    it 'should assign end_value and duration as normal' do
+    it 'should assign end_value, duration, and start_value as normal' do
       @change.end_value.should eq(55)
       @change.duration.should eq(20)
+      @change.start_value.should eq(25)
     end
     
     it 'should set transition to SIGMOID' do
@@ -66,16 +90,29 @@ describe Change::Gradual do
   end
   
   describe '==' do
-    it 'should return true if two gradual changes have the same value and duration' do
-      Change::Gradual.linear(5,2).should eq(Change::Gradual.linear(5,2))
+    context 'two gradual changes have the same end value, duration, and start value' do
+      it 'should return true' do
+        Change::Gradual.linear(5,2).should eq(Change::Gradual.linear(5,2))
+        Change::Gradual.linear(5,2,start_value:0).should eq(Change::Gradual.linear(5,2,start_value:0))
+      end
     end
     
-    it 'should return false if two gradual changes do not have the same value' do
-      Change::Gradual.linear(5,2).should_not eq(Change::Gradual.linear(4,2))
+    context 'two gradual changes do not have the same end value' do
+      it 'should return false' do
+        Change::Gradual.linear(5,2).should_not eq(Change::Gradual.linear(4,2))
+      end
     end
     
-    it 'should return false if two gradual changes do not have the same duration' do
-      Change::Gradual.linear(5,2).should_not eq(Change::Gradual.linear(5,1))
+    context 'two gradual changes do not have the same duration' do
+      it 'should return false' do
+        Change::Gradual.linear(5,2).should_not eq(Change::Gradual.linear(5,1))
+      end
+    end
+    
+    context 'two gradual changes do not have the start value' do
+      it 'should return false' do
+        Change::Gradual.linear(5,2, start_value: 3).should_not eq(Change::Gradual.linear(5,1))
+      end
     end
   end
   

@@ -82,6 +82,10 @@ class Function
       end
     end
     
+    def domain_include? x
+      !@pieces.keys.detect {|domain| domain.include?(x)}.nil?
+    end
+    
     # Evaluate the piecewise function by finding a function piece whose domain 
     # includes the given independent value.
     def at x
@@ -90,7 +94,7 @@ class Function
           return func.at(x)
         end
       end
-      raise ArgumentError, "The input #{x} is not in the domain."
+      raise DomainError, "The input #{x} is not in the domain."
     end
   end
 end

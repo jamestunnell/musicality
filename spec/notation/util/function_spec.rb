@@ -29,4 +29,15 @@ describe Function::Sigmoid do
     f.at(7).should eq(11)
     f.at(8).should be > 11
   end
+  
+  describe '.find_y0' do
+    it 'should return the starting y-value for the given sigmoid domain' do
+      x0, x1 = 3, 6
+      y0, y1 = 5, 10
+      f = Function::Sigmoid.new([x0,y0],[x1,y1])
+      pt = [4,f.at(4)]
+      y0_ = Function::Sigmoid.find_y0(x0..x1, pt, y1)
+      y0_.should eq(y0)
+    end
+  end
 end
