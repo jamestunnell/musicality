@@ -134,8 +134,8 @@ class Score
         @meter_changes == other.meter_changes
     end
     
-    def measures_long
-      noff_end = self.notes_long
+    def measures_long note_dur = self.notes_long
+      noff_end = note_dur
       noff_prev = 0.to_r
       moff_prev, mdur_prev = 0.to_r, @start_meter.measure_duration
       

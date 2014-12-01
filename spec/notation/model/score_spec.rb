@@ -132,6 +132,21 @@ describe Score::Measured do
         ).measures_long.should eq(3.5)
       end
     end
+    
+    context 'given specific note duration' do
+      it 'should change the given note duration to measures' do
+        score = Score::Measured.new(TWO_FOUR, 120,
+            meter_changes: {
+              2 => Change::Immediate.new(FOUR_FOUR),
+              4 => Change::Immediate.new(SIX_EIGHT)
+        })
+        
+        { 1 => 2, 1.5 => 2.5, 2 => 3, 3 => 4, 3.75 => 5
+        }.each do |note_dur, meas_dur|
+          score.measures_long(note_dur).should eq(meas_dur)
+        end
+      end
+    end
   end
 
   describe '#valid?' do
