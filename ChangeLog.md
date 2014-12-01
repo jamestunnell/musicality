@@ -1,4 +1,7 @@
-### 0.3.0 / 2014-11-24
+### 0.3.1 / 2014-12-01
+* Add (optional) argument to Score::Measured#measures_long, to convert a specific note duration to measure duration. If not specified, the note duration of the longest part is used (as before).
+
+### 0.3.0 / 2014-12-01
 * Conversion of both tempo-based scores (measured and unmeasured) directly to time-based score
 * Trimming of gradual changes, useful in collating scores
 * Refactoring of ValueComputer using Function and Transition utility classes
