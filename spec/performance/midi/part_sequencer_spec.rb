@@ -3,7 +3,8 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe PartSequencer do
   describe '#make_midi_track' do
     before :all do
-      part = Part.new(Dynamics::PP, notes: "/4C4 /4D4 /8 /8D4 /8E4 /2C4".to_notes * 2)
+      part = Part.new(Dynamics::PP, notes: "/4C4 /4D4 /8 /8D4 /8E4 /2C4".to_notes * 2,
+                      dynamic_changes: { 1 => Change::Gradual.linear(Dynamics::FF,2) })
       @midi_seq = MIDI::Sequence.new
       @part_name = "mypart"
       @channel = 2

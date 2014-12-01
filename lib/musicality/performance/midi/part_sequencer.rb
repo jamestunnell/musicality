@@ -81,7 +81,7 @@ class PartSequencer
     dyn_comp = ValueComputer.new(start_dyn,dyn_changes)
     finish = 0
     if dyn_changes.any?
-      finish = dyn_change.map {|off,ch| ch.offsets(off).max }.max
+      finish = dyn_changes.map {|off,ch| ch.offsets(off).max }.max
     end
     samples = dyn_comp.sample(0..finish, sample_rate)
     
