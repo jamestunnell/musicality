@@ -1,3 +1,7 @@
+### 0.4.0 / 2014-12-02
+* Make Program inherit from Array.
+* Make Program#initialize take either a single array or variable number of args.
+
 ### 0.3.1 / 2014-12-01
 * Add (optional) argument to Score::Measured#measures_long, to convert a specific note duration to measure duration. If not specified, the note duration of the longest part is used (as before).
 
