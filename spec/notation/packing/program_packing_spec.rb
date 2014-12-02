@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Program do
   before :all do
-    @p = Program.new([0...5,3.0...6.5,("1/2".to_r)...("3/2".to_r)])
+    @p = Program.new(0...5,3.0...6.5,("1/2".to_r)...("3/2".to_r))
     @a = @p.pack
     @p2 = Program.unpack(@a)
   end

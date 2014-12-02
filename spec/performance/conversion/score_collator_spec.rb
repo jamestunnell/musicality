@@ -15,7 +15,7 @@ describe ScoreCollator do
         it 'should not be included in the part' do
           score = Score::Measured.new(FOUR_FOUR, 120,
             parts: {1 => @part},
-            program: Program.new(["1/4".to_r..."5/4".to_r]))
+            program: Program.new("1/4".to_r..."5/4".to_r))
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
@@ -29,7 +29,7 @@ describe ScoreCollator do
         it 'should not be included in the part, and a rest is inserted' do
           score = Score::Measured.new(FOUR_FOUR, 120,
             parts: {1 => @part},
-            program: Program.new(["1/8".to_r..."5/4".to_r]))
+            program: Program.new("1/8".to_r..."5/4".to_r))
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
@@ -47,7 +47,7 @@ describe ScoreCollator do
         it 'should not be included in the part' do
           score = Score::Measured.new(FOUR_FOUR, 120,
             parts: {1 => @part},
-            program: Program.new([0.to_r..."3/4".to_r]))
+            program: Program.new(0.to_r..."3/4".to_r))
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
@@ -59,7 +59,7 @@ describe ScoreCollator do
         it 'should be included in the part, but truncated' do
           score = Score::Measured.new(FOUR_FOUR, 120,
             parts: {1 => @part},
-            program: Program.new([0.to_r...1.to_r]))
+            program: Program.new(0.to_r...1.to_r))
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
@@ -72,7 +72,7 @@ describe ScoreCollator do
         it 'should insert a rest between last note end and segment end' do
           score = Score::Measured.new(FOUR_FOUR, 120,
             parts: {1 => @part},
-            program: Program.new([0.to_r..."6/4".to_r]))
+            program: Program.new(0.to_r..."6/4".to_r))
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
@@ -89,7 +89,7 @@ describe ScoreCollator do
           parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
             2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,0)
           }) },
-          program: Program.new([7...9])
+          program: Program.new(7...9)
         )
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
@@ -97,7 +97,7 @@ describe ScoreCollator do
         dcs.size.should eq(1)
         dcs[0.to_r].should eq(Change::Immediate.new(Dynamics::PP))
         
-        score.program = Program.new([0...1])
+        score.program = Program.new(0...1)
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
         dcs = parts[1].dynamic_changes
@@ -110,7 +110,7 @@ describe ScoreCollator do
           parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
             2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,1)
           }) },
-          program: Program.new([3...4])
+          program: Program.new(3...4)
         )
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
@@ -125,7 +125,7 @@ describe ScoreCollator do
       score = Score::Measured.new(
         FOUR_FOUR,120,
         parts: { "lead" => Part.new(Dynamics::MP, notes: notes) },
-        program: Program.new([0..1,0..1]),
+        program: Program.new(0..1,0..1),
       )
       collator = ScoreCollator.new(score)
       parts = collator.collate_parts
@@ -149,7 +149,7 @@ describe ScoreCollator do
     context 'tempo change starts at end of program segment' do
       it 'should not be included in the tempo changes' do
         score = Score::Measured.new(FOUR_FOUR, 120, tempo_changes: {
-          1 => @change1, 2 => @change2 }, program: Program.new([0..2]))
+          1 => @change1, 2 => @change2 }, program: Program.new(0..2))
         collator = ScoreCollator.new(score)
         tcs = collator.collate_tempo_changes
         tcs.size.should eq 2
@@ -161,7 +161,7 @@ describe ScoreCollator do
     context 'tempo change starts and ends before segment' do
       before :all do
         score = Score::Measured.new(FOUR_FOUR, 120, tempo_changes: {
-          2 => @change2 }, program: Program.new([4..5]))
+          2 => @change2 }, program: Program.new(4..5))
         collator = ScoreCollator.new(score)
         @tcs = collator.collate_tempo_changes
       end
@@ -179,7 +179,7 @@ describe ScoreCollator do
     context 'tempo change starts before segment, but ends during segment' do
       it 'should e included in the tempo changes, but truncated' do
         score = Score::Measured.new(FOUR_FOUR, 120, tempo_changes: {
-          1.5.to_r => @change2 }, program: Program.new([2..4]))
+          1.5.to_r => @change2 }, program: Program.new(2..4))
         collator = ScoreCollator.new(score)
         tcs = collator.collate_tempo_changes
         tcs.size.should eq 1
@@ -192,7 +192,7 @@ describe ScoreCollator do
     context 'tempo change starts during segment, lasts until after' do
       it 'should be included in the tempo changes, but truncated' do
         score = Score::Measured.new(FOUR_FOUR, 120, tempo_changes: {
-          1 => @change1, 2 => @change2 }, program: Program.new([0..2.5]))
+          1 => @change1, 2 => @change2 }, program: Program.new(0..2.5))
         collator = ScoreCollator.new(score)
         tcs = collator.collate_tempo_changes
         tcs.size.should eq 3
@@ -211,7 +211,7 @@ describe ScoreCollator do
       change1 = Change::Immediate.new(THREE_FOUR)
       change2 = Change::Immediate.new(SIX_EIGHT)
       score = Score::Measured.new(FOUR_FOUR, 120, meter_changes: {
-        1 => change1, 2 => change2 }, program: Program.new([0...2]))
+        1 => change1, 2 => change2 }, program: Program.new(0...2))
       collator = ScoreCollator.new(score)
       tcs = collator.collate_meter_changes
       tcs.size.should eq 2

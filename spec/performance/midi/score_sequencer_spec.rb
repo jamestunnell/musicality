@@ -10,7 +10,7 @@ describe ScoreSequencer do
       @part2_name = "def"
       @part1 = Part.new(Dynamics::PP, notes: "/4C4 /4D4 /8 /8D4 /8E4 3/8C4".to_notes * 2)
       @part2 = Part.new(Dynamics::FF, notes: "/4E4 3/4F4 /4E4".to_notes * 2)
-      @score = Score::Timed.new(program: Program.new([0..2.5]),
+      @score = Score::Timed.new(program: Program.new(0..2.5),
                                 parts: {@part1_name => @part2, @part2_name => @part2})
       @instr_map = {@part1_name => 33, @part2_name => 25}
       @midi_seq = ScoreSequencer.new(@score).make_midi_seq(@instr_map)

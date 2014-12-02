@@ -25,9 +25,9 @@ class ScoreConverter
   end
   
   def self.convert_program program, offset_map
-    Program.new(program.segments.map do |segment|
+    program.map do |segment|
       offset_map[segment.first]...offset_map[segment.last]
-    end)
+    end.to_program
   end
   
   class TempoBased

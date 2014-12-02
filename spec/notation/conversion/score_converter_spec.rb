@@ -74,7 +74,7 @@ describe ScoreConverter::Measured do
   
   describe '#convert_program' do
     before :each do
-      @prog = Program.new([0...4,2...5])
+      @prog = Program.new(0...4,2...5)
       @score = Score::Measured.new(FOUR_FOUR, 120, program: @prog)
       @converter = ScoreConverter::Measured.new(@score,200)
     end
@@ -111,7 +111,7 @@ describe ScoreConverter::Measured do
     end
   
     it 'should use output from convert_program' do
-      prog = Program.new([0...4,2...5])
+      prog = Program.new(0...4,2...5)
       score = Score::Measured.new(FOUR_FOUR, 120, program: prog)
       converter = ScoreConverter::Measured.new(score,200)
       nscore = converter.convert_score
@@ -197,7 +197,7 @@ describe ScoreConverter::Unmeasured do
   
   describe '#convert_program' do
     before :each do
-      @prog = Program.new([0...4,2...5])
+      @prog = Program.new(0...4,2...5)
       @score = Score::Unmeasured.new(120, program: @prog)
       @converter = ScoreConverter::Unmeasured.new(@score,200)
       @prog2 = @converter.convert_program
@@ -225,7 +225,7 @@ describe ScoreConverter::Unmeasured do
     end
   
     it 'should use output from convert_program' do
-      prog = Program.new([0...4,2...5])
+      prog = Program.new(0...4,2...5)
       score = Score::Unmeasured.new(120, program: prog)
       converter = ScoreConverter::Unmeasured.new(score,200)
       nscore = converter.convert_score

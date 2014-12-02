@@ -4,50 +4,60 @@ module Musicality
 #
 # @author James Tunnell
 #
-class Program
+class Program < Array
   include Validatable
   
-  attr_accessor :segments
-  
-  def initialize segments = []
-    @segments = segments
+  def initialize *segments
+    if segments.size == 1 && segments[0].is_a?(Array)
+      super segments[0]
+    else
+      super(segments)
+    end
   end
-
+  
+  def segments; entries; end
+  
   def check_methods
-    [:ensure_increasing_segments, :ensure_nonnegative_segments]
+    [:ensure_ranges, :ensure_increasing_segments, :ensure_nonnegative_segments]
   end
   
   # @return [Float] the sum of all program segment lengths
   def length
-    segments.inject(0.0) { |length, segment| length + (segment.last - segment.first) }
-  end
-  
-  def == other
-    return other.respond_to?(:segments) && @segments == other.segments
+    inject(0.0) { |length, segment| length + (segment.last - segment.first) }
   end
 
-  def include? offset
-    @segments.each do |segment|
-      if segment.include?(offset)
-        return true
-      end
+  def include_offset? offset
+    !detect {|seg| seg.include?(offset) }.nil?
+  end
+  
+  private
+  
+  def ensure_ranges
+    non_ranges = select{|x| !x.is_a?(Range) }
+    if non_ranges.any?
+      raise TypeError, "Non-Range element(s) found: #{non_ranges}"
     end
-    return false
   end
   
   def ensure_increasing_segments
-    non_increasing = @segments.select {|seg| seg.first >= seg.last }
+    non_increasing = select {|seg| seg.first >= seg.last }
     if non_increasing.any?
-      raise NonIncreasingError, "Non-increasing segments found #{non_increasing}"
+      raise NonIncreasingError, "Non-increasing range(s) found: #{non_increasing}"
     end
   end
   
   def ensure_nonnegative_segments
-    negative = @segments.select {|seg| seg.first < 0 || seg.last < 0 }
+    negative = select {|seg| seg.first < 0 || seg.last < 0 }
     if negative.any?
-      raise NegativeError, "Segments #{negative} have negative values"
+      raise NegativeError, "Range(s) with negative value(s) found: #{negative}"
     end
   end
 end
 
+end
+
+class Array
+  def to_program
+    Musicality::Program.new(*entries)
+  end
 end

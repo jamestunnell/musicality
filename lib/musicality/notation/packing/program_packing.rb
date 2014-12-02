@@ -2,14 +2,11 @@ module Musicality
 
 class Program
   def pack
-    @segments.map do |seg|
-      seg.to_s
-    end
+    map {|seg| seg.to_s }
   end
   
   def self.unpack packing
-    segments = packing.map {|str| Segment.parse(str) }
-    new segments
+    packing.map {|str| Segment.parse(str) }.to_program
   end
 end
 
