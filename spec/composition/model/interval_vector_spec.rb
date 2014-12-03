@@ -62,28 +62,28 @@ describe IntervalVector do
     end
   end
 
-  #describe '#to_pcs' do
-  #  before :all do
-  #    @iv = IntervalVector.new([4,5,-3,0,14,-55])
-  #    @base_pcs = [0,3,-3,11,-11]
-  #    @pcs_arrays = @base_pcs.map {|pc| @iv.to_pcs(pc) }
-  #  end
-  #
-  #  it 'should return an array of integers with size equal # of intervals' do
-  #    @pcs_arrays.each do |pcs|
-  #      pcs.should be_a Array
-  #      pcs.size.should eq(@iv.size)
-  #      pcs.each {|pc| pc.should be_a Integer }
-  #    end
-  #  end
-  #  
-  #  it 'should make each pc by adding the base pitch to the interval, then converting to pitch class' do
-  #    @pcs_arrays.each_with_index do |pcs,i|
-  #      base_pc = @base_pcs[i]
-  #      pcs.each_with_index do |pc,j|
-  #        pc.should eq((@iv[j] + base_pc).to_pc)
-  #      end
-  #    end
-  #  end
-  #end
+  describe '#to_pcs' do
+    before :all do
+      @iv = IntervalVector.new([4,5,-3,0,14,-55])
+      @base_pcs = [0,3,-3,11,-11]
+      @pcs_arrays = @base_pcs.map {|pc| @iv.to_pcs(pc) }
+    end
+  
+    it 'should return an array of integers with size equal # of intervals' do
+      @pcs_arrays.each do |pcs|
+        pcs.should be_a Array
+        pcs.size.should eq(@iv.size)
+        pcs.each {|pc| pc.should be_a Integer }
+      end
+    end
+    
+    it 'should make each pc by adding the base pitch to the interval, then converting to pitch class' do
+      @pcs_arrays.each_with_index do |pcs,i|
+        base_pc = @base_pcs[i]
+        pcs.each_with_index do |pc,j|
+          pc.should eq((@iv[j] + base_pc).to_pc)
+        end
+      end
+    end
+  end
 end

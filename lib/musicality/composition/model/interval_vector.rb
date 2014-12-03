@@ -20,9 +20,9 @@ class IntervalVector < Array
     map {|int| base_pitch.transpose(int) }
   end
   
-  #def to_pcs base_pc
-  #  map {|int| base_pc + int }.to_pcs
-  #end
+  def to_pcs base_pc
+    map {|int| base_pc + int }.to_pcs
+  end
 end
 
 end

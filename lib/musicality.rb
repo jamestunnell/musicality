@@ -63,6 +63,8 @@ require 'musicality/notation/conversion/score_conversion'
 # Composition
 #
 
+require 'musicality/composition/model/pitch_class'
+require 'musicality/composition/model/pitch_classes'
 require 'musicality/composition/model/interval_vector'
 
 require 'musicality/composition/note_generation'
