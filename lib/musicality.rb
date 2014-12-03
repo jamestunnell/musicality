@@ -62,7 +62,8 @@ require 'musicality/notation/conversion/score_conversion'
 #
 # Composition
 #
-require 'musicality/composition/note_generator'
+require 'musicality/composition/note_generation'
+require 'musicality/composition/transposition'
 
 #
 # Performance
