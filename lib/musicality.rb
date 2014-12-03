@@ -60,6 +60,11 @@ require 'musicality/notation/conversion/score_converter'
 require 'musicality/notation/conversion/score_conversion'
 
 #
+# Composition
+#
+require 'musicality/composition/note_generator'
+
+#
 # Performance
 #
 
