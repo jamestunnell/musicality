@@ -16,7 +16,7 @@ class Part
   end
   
   def check_methods
-    [:ensure_start_dynamic, :ensure_dynamic_change_values_range ]
+    [:check_start_dynamic, :check_dynamic_changes]
   end
   
   def validatables
@@ -37,13 +37,13 @@ class Part
     return @notes.inject(0) { |sum, note| sum + note.duration }
   end
   
-  def ensure_start_dynamic
+  def check_start_dynamic
     unless @start_dynamic.between?(0,1)
       raise RangeError, "start dynamic #{@start_dynamic} is not between 0 and 1"
     end
   end
   
-  def ensure_dynamic_change_values_range
+  def check_dynamic_changes
     outofrange = @dynamic_changes.values.select {|v| !v.end_value.between?(0,1) }
     if outofrange.any?
       raise RangeError, "dynamic change values #{outofrange} are not between 0 and 1"

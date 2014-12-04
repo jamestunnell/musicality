@@ -22,12 +22,19 @@ class Note
   end
   
   def check_methods
-    [ :ensure_positive_duration ]
+    [ :ensure_positive_duration, :check_pitches ]
   end
   
   def ensure_positive_duration
     unless @duration > 0
       raise NonPositiveError, "duration #{@duration} is not positive"
+    end
+  end
+  
+  def check_pitches
+    non_pitches = @pitches.select {|p| !p.is_a?(Pitch) }
+    if non_pitches.any?
+      raise TypeError, "Found non-pitches: #{non_pitches}"
     end
   end
   

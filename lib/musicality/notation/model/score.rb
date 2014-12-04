@@ -10,14 +10,8 @@ class Score
     yield(self) if block_given?
   end
 
-  def validatables
-    @parts.values
-  end
-  
-  def check_methods
-    [:check_program_types, :check_parts_types,
-     :ensure_increasing_segments, :ensure_nonnegative_segments]
-  end
+  def validatables; @parts.values; end
+  def check_methods; [:check_program, :check_parts ]; end
   
   def clone
     Marshal.load(Marshal.dump(self))
@@ -69,14 +63,19 @@ class Score
     
     def check_start_tempo
       if @start_tempo <= 0
-        raise NonPositiveError, "start tempo (#{@start_tempo}) is not positive"
+        raise NonPositiveError, "Start tempo (#{@start_tempo}) is not positive"
       end
     end
     
     def check_tempo_changes
+      badtypes = @tempo_changes.select {|k,v| !v.end_value.is_a?(Numeric) }
+      if badtypes.any?
+        raise TypeError, "Found non-numeric tempo change values: #{badtypes}"
+      end
+      
       badvalues = @tempo_changes.select {|k,v| v.end_value <= 0 }
       if badvalues.any?
-        raise NonPositiveError, "tempo changes (#{badvalues}) are not positive"
+        raise NonPositiveError, "Found non-positive tempo changes values: #{badvalues}"
       end    
     end
   end
@@ -101,8 +100,7 @@ class Score
     end
     
     def check_methods
-      super() + [:check_startmeter_type, :check_meterchange_types,
-                 :check_meterchange_durs, :check_meterchange_offsets]
+      super() + [:check_start_meter, :check_meter_changes]
     end
     
     def validatables
@@ -137,61 +135,53 @@ class Score
     
     private
     
-    def check_startmeter_type
+    def check_start_meter
       unless @start_meter.is_a? Meter
-        raise TypeError, "start meter #{@start_meter} is not a Meter object"
+        raise TypeError, "Start meter #{@start_meter} is not a Meter object"
       end
     end
     
-    def check_meterchange_types
+    def check_meter_changes
       badtypes = @meter_changes.select {|k,v| !v.end_value.is_a?(Meter) }
       if badtypes.any?
-        raise TypeError, "meter change values #{nonmeter_values} are not Meter objects"
+        raise TypeError, "Found meter change values that are not Meter objects: #{nonmeter_values}"
       end
-    end
-    
-    def check_meterchange_offsets
+      
       badoffsets = @meter_changes.select {|k,v| k != k.to_i }
       if badoffsets.any?
-        raise NonIntegerError, "meter changes #{badoffsets} have non-integer offsets"
+        raise NonIntegerError, "Found meter changes at non-integer offsets: #{badoffsets}"
       end
-    end
-    
-    def check_meterchange_durs
+      
       nonzero_duration = @meter_changes.select {|k,v| !v.is_a?(Change::Immediate) }
       if nonzero_duration.any?
-        raise NonZeroError, "meter changes #{nonzero_duration} are not immediate"
+        raise NonZeroError, "Found meter changes that are not immediate: #{nonzero_duration}"
       end
     end
   end
   
   private
     
-  def check_program_types
+  def check_program
     non_ranges = @program.select {|x| !x.is_a?(Range) }
     if non_ranges.any?
       raise TypeError, "Non-Range program element(s) found: #{non_ranges}"
     end
-  end
-  
-  def check_parts_types
-    non_parts = @parts.values.select {|x| !x.is_a?(Part) }
-    if non_parts.any?
-      raise TypeError, "Non-Part part value(s) found: #{non_parts}"
-    end
-  end
-  
-  def ensure_increasing_segments
+    
     non_increasing = @program.select {|seg| seg.first >= seg.last }
     if non_increasing.any?
       raise NonIncreasingError, "Non-increasing program range(s) found: #{non_increasing}"
     end
-  end
-  
-  def ensure_nonnegative_segments
+    
     negative = @program.select {|seg| seg.first < 0 || seg.last < 0 }
     if negative.any?
       raise NegativeError, "Program range(s) with negative value(s) found: #{negative}"
+    end
+  end
+  
+  def check_parts
+    non_parts = @parts.values.select {|x| !x.is_a?(Part) }
+    if non_parts.any?
+      raise TypeError, "Non-Part part value(s) found: #{non_parts}"
     end
   end
 end
