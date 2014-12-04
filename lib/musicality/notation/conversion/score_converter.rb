@@ -27,7 +27,7 @@ class ScoreConverter
   def self.convert_program program, offset_map
     program.map do |segment|
       offset_map[segment.first]...offset_map[segment.last]
-    end.to_program
+    end
   end
   
   class TempoBased
@@ -44,7 +44,7 @@ class ScoreConverter
         part.notes.each {|note| noffs.add(noff += note.duration) }
         part.dynamic_changes.each {|noff2,change| noffs += change.offsets(noff2) }
       end
-      noffs += @program.segments.map {|seg| [seg.first, seg.last] }.flatten
+      noffs += @program.map {|seg| [seg.first, seg.last] }.flatten
       return noffs.sort
     end
 

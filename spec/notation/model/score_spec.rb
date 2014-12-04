@@ -4,14 +4,14 @@ describe Score do
   describe '#collated?' do
     context 'has program with more than one segment' do
       it 'should return false' do
-        score = Score.new(program: Program.new(0..2,0..2))
+        score = Score.new(program: [0..2,0..2])
         score.collated?.should be false
       end      
     end
     
     context 'has program with 0 segments' do
       it 'should return false' do
-        score = Score.new(program: Program.new)
+        score = Score.new(program: [])
         score.collated?.should be false        
       end
     end
@@ -19,14 +19,14 @@ describe Score do
     context 'has program with 1 segment' do
       context 'program segment starts at 0' do
         it 'should return true' do
-          score = Score.new(program: Program.new(0..2))
+          score = Score.new(program: [0..2])
           score.collated?.should be true
         end
       end
       
       context 'program segment does not start at 0' do
         it 'should return false' do
-          score = Score.new(program: Program.new(1..2))
+          score = Score.new(program: [1..2])
           score.collated?.should be false
         end
       end
@@ -48,6 +48,32 @@ describe Score do
       end
     end
   end
+  
+  describe '#valid?' do
+    context 'non-Range objects' do
+      it 'should return false' do
+        Score.new(program: [1,2,3]).should_not be_valid
+      end
+    end
+    
+    context 'increasing, positive segments' do
+      it 'should return true' do
+        Score.new(program: [0..2,1..2,0..4]).should be_valid
+      end
+    end
+    
+    context 'decreasing, positive segments' do
+      it 'should return false' do
+        Score.new(program: [2..0,2..1,04..0]).should be_invalid
+      end
+    end
+
+    context 'increasing, negative segments' do
+      it 'should return false' do
+        Score.new(program: [-1..2,-2..0,-2..2]).should be_invalid
+      end
+    end
+  end
 end
 
 describe Score::Measured do
@@ -55,7 +81,7 @@ describe Score::Measured do
     it 'should use empty containers for parameters not given' do
       s = Score::Measured.new(FOUR_FOUR,120)
       s.parts.should be_empty
-      s.program.segments.should be_empty
+      s.program.should be_empty
     end
     
     it 'should assign given parameters' do
@@ -65,7 +91,7 @@ describe Score::Measured do
       s.start_tempo.should eq 120
       
       parts = { "piano (LH)" => Samples::SAMPLE_PART }
-      program = Program.new(0...0.75, 0...0.75)
+      program = [0...0.75, 0...0.75]
       mcs = { 1 => Change::Immediate.new(THREE_FOUR) }
       tcs = { 1 => Change::Immediate.new(100) }
       
@@ -157,7 +183,7 @@ describe Score::Measured do
       'valid meter changes' => [ FOUR_FOUR, 120,
         :meter_changes => { 1 => Change::Immediate.new(TWO_FOUR) } ],
       'valid part' => [ FOUR_FOUR, 120, :parts => { "piano" => Samples::SAMPLE_PART }],
-      'valid program' => [ FOUR_FOUR, 120, :program => Program.new(0..2,0..2) ]
+      'valid program' => [ FOUR_FOUR, 120, :program => [0..2,0..2] ]
     }.each do |context_str,args|
       context context_str do
         it 'should return true' do
@@ -180,7 +206,7 @@ describe Score::Measured do
       'non-integer meter change offset' => [ FOUR_FOUR, 120,
         :meter_changes => { 1.1 => Change::Immediate.new(TWO_FOUR) } ],
       'invalid part' => [ FOUR_FOUR, 120, :parts => { "piano" => Part.new(-0.1) }],
-      'invalid program' => [ FOUR_FOUR, 120, :program => Program.new(2..0) ],
+      'invalid program' => [ FOUR_FOUR, 120, :program => [2..0] ],
     }.each do |context_str,args|
       context context_str do
         it 'should return false' do
@@ -196,7 +222,7 @@ describe Score::Unmeasured do
     it 'should use empty containers for parameters not given' do
       s = Score::Unmeasured.new(30)
       s.parts.should be_empty
-      s.program.segments.should be_empty
+      s.program.should be_empty
     end
     
     it 'should assign given parameters' do
@@ -204,7 +230,7 @@ describe Score::Unmeasured do
       s.start_tempo.should eq(30)
       
       parts = { "piano (LH)" => Samples::SAMPLE_PART }
-      program = Program.new 0...0.75, 0...0.75
+      program = [0...0.75, 0...0.75]
       tcs = { 1 => Change::Immediate.new(40) }
       
       s = Score::Unmeasured.new(30,
@@ -233,7 +259,7 @@ describe Score::Unmeasured do
       'valid tempo changes' => [ 30,
         :tempo_changes => { 1 => Change::Gradual.linear(40, 2), 2 => Change::Immediate.new(50) } ],
       'valid part' => [ 30, :parts => { "piano" => Samples::SAMPLE_PART }],
-      'valid program' => [ 30, :program => Program.new(0..2,0..2) ]
+      'valid program' => [ 30, :program => [0..2,0..2] ]
     }.each do |context_str,args|
       context context_str do
         it 'should return true' do
@@ -248,7 +274,7 @@ describe Score::Unmeasured do
       'tempo change value is not a valid value' => [ 30,
         :tempo_changes => { 1 => Change::Gradual.linear(-1,1) } ],
       'invalid part' => [ 30, :parts => { "piano" => Part.new(-0.1) }],
-      'invalid program' => [ 30, :program => Program.new(2..0) ],
+      'invalid program' => [ 30, :program => [2..0] ],
     }.each do |context_str,args|
       context context_str do
         it 'should return false' do
@@ -264,12 +290,12 @@ describe Score::Timed do
     it 'should use empty containers for parameters not given' do
       s = Score::Timed.new
       s.parts.should be_empty
-      s.program.segments.should be_empty
+      s.program.should be_empty
     end
     
     it 'should assign given parameters' do
       parts = { "piano (LH)" => Samples::SAMPLE_PART }
-      program = Program.new 0...0.75, 0...0.75
+      program = [0...0.75, 0...0.75]
       
       s = Score::Timed.new(parts: parts, program: program)
       s.parts.should eq parts
@@ -289,7 +315,7 @@ describe Score::Timed do
   describe '#valid?' do
     {
       'valid part' => [ :parts => { "piano" => Samples::SAMPLE_PART }],
-      'valid program' => [ :program => Program.new(0..2,0..2) ]
+      'valid program' => [ :program => [0..2,0..2] ]
     }.each do |context_str,args|
       context context_str do
         it 'should return true' do
@@ -300,7 +326,7 @@ describe Score::Timed do
     
     {
       'invalid part' => [ :parts => { "piano" => Part.new(-0.1) }],
-      'invalid program' => [ :program => Program.new(2..0) ],
+      'invalid program' => [ :program => [2..0] ],
     }.each do |context_str,args|
       context context_str do
         it 'should return false' do

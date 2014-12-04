@@ -6,7 +6,7 @@ include Pitches
 include Meters
 
 score = Score::Measured.new(FOUR_FOUR, 120) do |s|
-  s.program = Program.new(0...4.0, 0...4.0)
+  s.program += [0...4]*2
   
   s.parts[1] = Part.new(Dynamics::MF) do |p|
     p.notes = "1C4 1Bb3 1Ab3 /2G3 /2Bb3".to_notes

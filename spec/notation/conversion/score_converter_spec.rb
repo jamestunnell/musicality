@@ -74,32 +74,32 @@ describe ScoreConverter::Measured do
   
   describe '#convert_program' do
     before :each do
-      @prog = Program.new(0...4,2...5)
+      @prog = [0...4,2...5]
       @score = Score::Measured.new(FOUR_FOUR, 120, program: @prog)
       @converter = ScoreConverter::Measured.new(@score,200)
     end
     
-    it 'shuld return Program with same number of segments' do
+    it 'shuld return array with same size' do
       prog = @converter.convert_program
-      prog.should be_a Program
-      prog.segments.size.should eq(@score.program.segments.size)
+      prog.should be_a Array
+      prog.size.should eq(@score.program.size)
     end
   
     it 'should convert program segments offsets from measure-based to note-based' do
       prog = ScoreConverter::Measured.new(@score,200).convert_program
-      prog.segments.size.should eq(2)
-      prog.segments[0].first.should eq(0)
-      prog.segments[0].last.should eq(8)
-      prog.segments[1].first.should eq(4)
-      prog.segments[1].last.should eq(10)
+      prog.size.should eq(2)
+      prog[0].first.should eq(0)
+      prog[0].last.should eq(8)
+      prog[1].first.should eq(4)
+      prog[1].last.should eq(10)
       
       @score.start_meter = THREE_FOUR
       prog = ScoreConverter::Measured.new(@score,200).convert_program
-      prog.segments.size.should eq(2)
-      prog.segments[0].first.should eq(0)
-      prog.segments[0].last.should eq(6)
-      prog.segments[1].first.should eq(3)
-      prog.segments[1].last.should eq(7.5)
+      prog.size.should eq(2)
+      prog[0].first.should eq(0)
+      prog[0].last.should eq(6)
+      prog[1].first.should eq(3)
+      prog[1].last.should eq(7.5)
     end
   end
   
@@ -111,7 +111,7 @@ describe ScoreConverter::Measured do
     end
   
     it 'should use output from convert_program' do
-      prog = Program.new(0...4,2...5)
+      prog =[0...4,2...5]
       score = Score::Measured.new(FOUR_FOUR, 120, program: prog)
       converter = ScoreConverter::Measured.new(score,200)
       nscore = converter.convert_score
@@ -197,23 +197,23 @@ describe ScoreConverter::Unmeasured do
   
   describe '#convert_program' do
     before :each do
-      @prog = Program.new(0...4,2...5)
+      @prog = [0...4,2...5]
       @score = Score::Unmeasured.new(120, program: @prog)
       @converter = ScoreConverter::Unmeasured.new(@score,200)
       @prog2 = @converter.convert_program
     end
     
-    it 'should return Program with same number of segments' do
-      @prog2.should be_a Program
-      @prog2.segments.size.should eq(@prog.segments.size)
+    it 'should return array with same size' do
+      @prog2.should be_a Array
+      @prog2.size.should eq(@prog.size)
     end
   
     it 'should convert program segments offsets from note-based to time-based' do
       prog = @prog2
-      prog.segments[0].first.should eq(0)
-      prog.segments[0].last.should eq(8)
-      prog.segments[1].first.should eq(4)
-      prog.segments[1].last.should eq(10)
+      prog[0].first.should eq(0)
+      prog[0].last.should eq(8)
+      prog[1].first.should eq(4)
+      prog[1].last.should eq(10)
     end
   end
   
@@ -225,7 +225,7 @@ describe ScoreConverter::Unmeasured do
     end
   
     it 'should use output from convert_program' do
-      prog = Program.new(0...4,2...5)
+      prog = [0...4,2...5]
       score = Score::Unmeasured.new(120, program: prog)
       converter = ScoreConverter::Unmeasured.new(score,200)
       nscore = converter.convert_score

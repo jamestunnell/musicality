@@ -13,7 +13,7 @@ class ScoreCollator
   end
   
   def collate_parts
-    segments = @score.program.segments
+    segments = @score.program
     
     Hash[
       @score.parts.map do |name, part|
@@ -29,12 +29,12 @@ class ScoreCollator
   
   def collate_tempo_changes
     collate_changes(@score.start_tempo,
-      @score.tempo_changes, @score.program.segments)
+      @score.tempo_changes, @score.program)
   end
   
   def collate_meter_changes
     collate_changes(@score.start_meter,
-      @score.meter_changes, @score.program.segments)
+      @score.meter_changes, @score.program)
   end
   
   private

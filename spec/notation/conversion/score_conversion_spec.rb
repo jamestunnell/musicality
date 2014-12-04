@@ -13,7 +13,7 @@ describe Score::Measured do
         }
       )
     }
-    @prog = Program.new(0...3,4...7,1...20,17..."45/2".to_r)
+    @prog = [0...3,4...7,1...20,17..."45/2".to_r]
     tcs = {
       0 => Change::Immediate.new(120),
       4 => Change::Gradual.linear(60,2),
@@ -63,7 +63,7 @@ describe Score::Measured do
     end
     
     it 'should include offsets from program segments' do
-      @score.program.segments.each do |seg|
+      @score.program.each do |seg|
         @moffs.should include(seg.first)
         @moffs.should include(seg.last)
       end
@@ -153,7 +153,7 @@ describe Score::Unmeasured do
         }
       )
     }
-    @prog = Program.new(0...3,4...7,1...20,17..."45/2".to_r)
+    @prog = [0...3,4...7,1...20,17..."45/2".to_r]
     tcs = {
       0 => Change::Immediate.new(120),
       4 => Change::Gradual.linear(60,2),

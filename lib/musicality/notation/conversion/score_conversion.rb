@@ -27,7 +27,7 @@ class Score
       @parts.values.each do |part|
         part.dynamic_changes.each {|moff,change| moffs += change.offsets(moff) }
       end
-      moffs += @program.segments.map {|seg| [seg.first, seg.last] }.flatten
+      moffs += @program.map {|seg| [seg.first, seg.last] }.flatten
       return moffs.sort
     end
   

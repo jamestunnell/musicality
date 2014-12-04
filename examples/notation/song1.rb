@@ -7,7 +7,7 @@ include Articulations
 include Meters
 
 score = Score::Measured.new(FOUR_FOUR, 120) do |s|
-  s.program = Program.new(0...4.0, 0...4.0)
+  s.program += [0...4]*2
   
   s.parts[1] = Part.new(Dynamics::MF) do |p|
     p.notes = "3/8C2 /4Eb2 5/16F2 /16Eb2 \

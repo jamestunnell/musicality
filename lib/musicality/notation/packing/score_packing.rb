@@ -84,7 +84,7 @@ class Score
         [ name, part.pack ]
       end
     ]
-    packed_prog = program.pack
+    packed_prog = @program.map {|seg| seg.to_s }
     
     { "type" => self.class.to_s.split("::")[-1],
       "program" => packed_prog,
@@ -96,8 +96,7 @@ class Score
     unpacked_parts = Hash[ packing["parts"].map do |name,packed|
       [name, Part.unpack(packed)]
     end ]
-    
-    unpacked_prog = Program.unpack packing["program"]
+    unpacked_prog = packing["program"].map {|str| Segment.parse(str) }
     
     new(program: unpacked_prog,
       parts: unpacked_parts
