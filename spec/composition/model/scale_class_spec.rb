@@ -11,6 +11,14 @@ describe ScaleClass do
         end
       end
     end
+    
+    context 'given non-positive intervals' do
+      it 'should raise NonPositiveError' do
+        [ [3,6,-1,4], [-1,13], [4,4,4,-1,1] ].each do |intervals|
+          expect { ScaleClass.new(intervals) }.to raise_error(NonPositiveError)
+        end
+      end
+    end
   end
   
   describe '#intervals' do
