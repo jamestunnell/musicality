@@ -96,6 +96,14 @@ class Pitch
     Pitch.new(cent: (@total_cents + semitones * CENTS_PER_SEMITONE).round)
   end
   
+  def + semitones
+    transpose(semitones)
+  end
+
+  def - semitones
+    transpose(-semitones)
+  end
+  
   def total_semitones
     Rational(@total_cents, CENTS_PER_SEMITONE)
   end

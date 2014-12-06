@@ -4,14 +4,6 @@ valid = [ [2,2,1,2,2,2,1], [1]*12 ]
 
 describe ScaleClass do
   describe '#initialize' do
-    context 'given intervals that do not sum to 12' do
-      it 'should raise ArgumentError' do
-        [ [], [1]*11, [2]*5, [7,7], [2,2,2,2,2,1] ].each do |intervals|
-          expect { ScaleClass.new(intervals) }.to raise_error(ArgumentError)
-        end
-      end
-    end
-    
     context 'given non-positive intervals' do
       it 'should raise NonPositiveError' do
         [ [3,6,-1,4], [-1,13], [4,4,4,-1,1] ].each do |intervals|

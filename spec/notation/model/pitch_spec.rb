@@ -62,10 +62,33 @@ describe Pitch do
   end
   
   describe '#transpose' do
-    it 'should add the given interval to total semitones' do
+    it 'should make a new pitch, adding the given interval to total semitones' do
       [0,1,2,5,12,13,-1,-2,-5,-12,-13].each do |interval|
         pitch = Eb3.transpose(interval)
+        pitch.should_not be Eb3
         pitch.diff(Eb3).should eq(interval)
+      end
+    end
+  end
+  
+  describe '#+' do
+    it 'should produce same result as #transpose' do
+      [0,1,2,5,12,13,-1,-2,-5,-12,-13].each do |interval|
+        pitch = Eb3 + interval
+        pitch.should_not be Eb3
+        pitch2 = Eb3.transpose(interval)
+        pitch.should eq(pitch2)
+      end
+    end
+  end
+
+  describe '#-' do
+    it 'should produce same result as #transpose, with negative interval' do
+      [0,1,2,5,12,13,-1,-2,-5,-12,-13].each do |interval|
+        pitch = Eb3 - interval
+        pitch.should_not be Eb3
+        pitch2 = Eb3.transpose(-interval)
+        pitch.should eq(pitch2)
       end
     end
   end
