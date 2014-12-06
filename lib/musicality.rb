@@ -61,11 +61,11 @@ require 'musicality/notation/conversion/score_conversion'
 # Composition
 #
 
+require 'musicality/composition/util/domain'
+
 require 'musicality/composition/model/pitch_class'
 require 'musicality/composition/model/pitch_classes'
-require 'musicality/composition/model/interval_array'
 require 'musicality/composition/model/scale_class'
-require 'musicality/composition/model/cycle'
 
 require 'musicality/composition/note_generation'
 require 'musicality/composition/transposition'
