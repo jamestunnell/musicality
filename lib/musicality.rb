@@ -61,7 +61,10 @@ require 'musicality/notation/conversion/score_conversion'
 # Composition
 #
 
-require 'musicality/composition/util/domain'
+require 'musicality/composition/util/infinite_sequence'
+require 'musicality/composition/util/biinfinite_sequence'
+require 'musicality/composition/util/repeating_sequence'
+require 'musicality/composition/util/adding_sequence'
 
 require 'musicality/composition/model/pitch_class'
 require 'musicality/composition/model/pitch_classes'
