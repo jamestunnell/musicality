@@ -70,4 +70,29 @@ describe ScaleClass do
       end
     end
   end
+  
+  describe '#to_pitch_seq' do
+    before :all do
+      @sc = ScaleClass.new([2,2,1,2,2,2,1])
+      @start_pitch = C4
+      @first_octave = [C4,D4,E4,F4,G4,A4,B4,C5]
+      @prev_octave = [C3,D3,E3,F3,G3,A3,B3,C4]
+      @pseq = @sc.to_pitch_seq(@start_pitch)
+    end
+    
+    it 'should return a AddingSequence::BiInfinite' do
+      @pseq.should be_a AddingSequence::BiInfinite
+    end
+    
+    it 'should be centered at given start pitch' do
+      @pseq.at(0).should eq(@start_pitch)
+    end
+    
+    it 'should walk forward/backward through scale' do
+      @pseq.take(8).to_a.should eq(@first_octave)
+      @pseq.over(0...8).to_a.should eq(@first_octave)
+      @pseq.take_back(7).to_a.should eq(@prev_octave.reverse.drop(1))
+      @pseq.over(-7..0).to_a.should eq(@prev_octave)
+    end
+  end
 end

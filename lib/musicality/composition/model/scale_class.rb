@@ -21,8 +21,8 @@ class ScaleClass
     @intervals.each {|x| yield x }
   end
   
-  def to_scale_sequence start_pitch
-    Sequence::Adding.new(@intervals, start_pitch)
+  def to_pitch_seq start_pitch
+    AddingSequence::BiInfinite.new(@intervals, start_pitch)
   end
   
   def rotate n = 1
