@@ -69,6 +69,7 @@ require 'musicality/composition/util/adding_sequence'
 require 'musicality/composition/model/pitch_class'
 require 'musicality/composition/model/pitch_classes'
 require 'musicality/composition/model/scale_class'
+require 'musicality/composition/model/scale_classes'
 
 require 'musicality/composition/note_generation'
 require 'musicality/composition/transposition'
