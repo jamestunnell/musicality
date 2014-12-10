@@ -22,7 +22,7 @@ class ScaleClass
   end
   
   def to_pitch_seq start_pitch
-    AddingSequence::BiInfinite.new(@intervals, start_pitch)
+    AddingSequence.new(@intervals, start_pitch)
   end
   
   def rotate n = 1
