@@ -32,34 +32,19 @@ describe Score do
       end
     end
   end
-
-  before :all do
-    @empty_score = Score.new
-    @nonempty_score = Score.new(parts: {"part1" => Part.new(Dynamics::PP,
-      notes: "/4 /4 /2 1".to_notes)
-    })
-  end  
+  
   describe '#duration' do
     context 'no parts' do
       it 'should return 0' do
-        @empty_score.duration.should eq(0)
+        Score.new.duration.should eq(0)
       end
     end
     
     context 'one part' do
       it 'should return the part duration' do
-        @nonempty_score.duration.should eq(2)
-      end
-    end
-  end
-  
-  describe '#default_score' do
-    it 'should return an array with one segment from 0...duration' do
-      [ @empty_score, @empty_score ].each do |score|
-        p = score.default_program
-        p.should be_a Array
-        p.size.should eq(1)
-        p[0].should eq(0...score.duration)
+        Score.new(parts: {"part1" => Part.new(Dynamics::PP,
+          notes: "/4 /4 /2 1".to_notes)
+        }).duration.should eq(2)
       end
     end
   end

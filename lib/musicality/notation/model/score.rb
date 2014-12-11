@@ -29,10 +29,6 @@ class Score
     @program.size == 1 && @program[0].first == 0
   end
   
-  def default_program
-    [0...duration]
-  end
-  
   class Timed < Score
     def seconds_long
       self.duration
