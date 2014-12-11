@@ -11,6 +11,12 @@ describe RepeatingSequence do
     end
   end
   
+  describe '#pattern_size' do
+    it 'should return the pattern size' do
+      RepeatingSequence.new([1,2,3,4,5]).pattern_size.should eq(5)
+    end
+  end
+  
   before :all do
     @pattern = [2,1,5,4,3]
     @seq = RepeatingSequence.new(@pattern)

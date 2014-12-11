@@ -10,6 +10,8 @@ class RepeatingSequence
     @n = pattern.size
     @start_value = pattern.first
   end
+  
+  def pattern_size; @pattern.size; end
     
   def next_value cur_val, cur_idx
     @pattern[(cur_idx + 1) % @n]      

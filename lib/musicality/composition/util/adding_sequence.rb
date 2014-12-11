@@ -11,6 +11,8 @@ class AddingSequence
     @start_value = start_val
   end
   
+  def pattern_size; @pattern.size; end
+  
   def next_value cur_val, cur_idx
     cur_val + @pattern[cur_idx % @n]
   end  
