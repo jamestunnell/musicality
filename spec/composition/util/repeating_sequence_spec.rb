@@ -23,10 +23,31 @@ describe RepeatingSequence do
   end
   
   describe '#at' do
-    it 'should index into pattern using modulo' do
-      n = @pattern.size
-      (0..n*2).each do |i|
-        @seq.at(i).should eq(@pattern[i%n])
+    context 'given single offset' do
+      it 'should module index into pattern using given offset' do
+        n = @pattern.size
+        (0..n*2).each do |i|
+          @seq.at(i).should eq(@pattern[i%n])
+        end
+      end
+    end
+    
+    context 'given array of offsets' do
+      context 'not given block' do
+        it 'should return enumerator' do
+          @seq.at([1,2,3]).should be_a Enumerator
+        end
+      end
+      
+      context 'given block' do
+        it 'should yield sequence value for each offset' do
+          [ (0..@seq.pattern_size).to_a, (-@seq.pattern_size..0).to_a,
+           [-5,11,0,-33,2,15,-8] ].each do |offsets|
+            @seq.at(offsets).each_with_index do |val,i|
+              val.should eq(@seq.at(offsets[i]))
+            end
+          end
+        end
       end
     end
   end

@@ -24,32 +24,53 @@ describe AddingSequence do
   end
   
   describe '#at' do
-    context 'given offset of 0' do
-      it 'should return the start value' do
-        [ 0, -3, 7].each do |start_val|
-          AddingSequence.new(@pattern,start_val).at(0).should eq(start_val)
+    context 'given single offset' do
+      context 'given offset of 0' do
+        it 'should return the start value' do
+          [ 0, -3, 7].each do |start_val|
+            AddingSequence.new(@pattern,start_val).at(0).should eq(start_val)
+          end
+        end
+      end
+    
+      context 'given offset > 0' do
+        it 'should keep adding on pattern elements to start_val until the given offset is reached' do
+          [1,2,3,5,8,15,45].each do |offset|
+            val = @seq.at(offset)
+            rep_seq = RepeatingSequence.new(@pattern)
+            val2 = rep_seq.take(offset).inject(@start_value,:+)
+            val.should eq(val2)
+          end
+        end
+      end
+      
+      context 'given offset < 0' do
+        it 'should keep suctracting pattern elements from start_val until the given offset is reached' do
+          [-1,-2,-3,-5,-8,-15,-45].each do |offset|
+            val = @seq.at(offset)
+            rep_seq = RepeatingSequence.new(@pattern)
+            val2 = rep_seq.take_back(-offset).inject(@start_value,:-)
+            val.should eq(val2)
+          end
         end
       end
     end
     
-    context 'given offset > 0' do
-      it 'should keep adding on pattern elements to start_val until the given offset is reached' do
-        [1,2,3,5,8,15,45].each do |offset|
-          val = @seq.at(offset)
-          rep_seq = RepeatingSequence.new(@pattern)
-          val2 = rep_seq.take(offset).inject(@start_value,:+)
-          val.should eq(val2)
+    context 'given array of offsets' do
+      context 'not given block' do
+        it 'should return enumerator' do
+          @seq.at([1,2,3]).should be_a Enumerator
         end
       end
-    end
-    
-    context 'given offset < 0' do
-      it 'should keep suctracting pattern elements from start_val until the given offset is reached' do
-        [-1,-2,-3,-5,-8,-15,-45].each do |offset|
-          val = @seq.at(offset)
-          rep_seq = RepeatingSequence.new(@pattern)
-          val2 = rep_seq.take_back(-offset).inject(@start_value,:-)
-          val.should eq(val2)
+      
+      context 'given block' do
+        it 'should yield sequence value for each offset' do
+          [ (0..@seq.pattern_size).to_a, (-@seq.pattern_size..0).to_a,
+           [-5,11,0,-33,2,15,-8] ].each do |offsets|
+            @seq.at(offsets).each_with_index do |val,i|
+              val.should eq(@seq.at(offsets[i]))
+            end
+          end
         end
       end
     end
