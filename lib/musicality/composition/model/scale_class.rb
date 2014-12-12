@@ -25,6 +25,10 @@ class ScaleClass
     AddingSequence.new(@intervals, start_pitch)
   end
   
+  def to_scale pitch_class
+    Scale.new(pitch_class, @intervals)
+  end
+  
   def rotate n = 1
     ScaleClass.new(@intervals.rotate(n))
   end
