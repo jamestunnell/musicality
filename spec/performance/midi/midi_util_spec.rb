@@ -43,6 +43,32 @@ describe MidiUtil do
       end
     end
   end
+
+  describe '.notenum_to_pitch' do
+    context 'given 60' do
+      it 'should return C4' do
+        MidiUtil.notenum_to_pitch(60).should eq(C4)
+      end
+    end
+    
+    context 'given 69' do
+      it 'should return A4' do
+        MidiUtil.notenum_to_pitch(69).should eq(A4)
+      end
+    end
+    
+    context 'given 0' do
+      it 'should return octave below C0' do
+        MidiUtil.notenum_to_pitch(0).should eq(Pitch.new(octave:-1))
+      end
+    end
+    
+    context 'given 127' do
+      it 'should return G9' do
+        MidiUtil.notenum_to_pitch(127).should eq(G9)
+      end
+    end    
+  end
   
   describe '.dynamic_to_volume' do
     context 'given 0' do

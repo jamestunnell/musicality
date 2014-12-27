@@ -9,14 +9,21 @@ class MidiUtil
   end
   
   p0 = Pitch.new(octave:-1,semitone:0)
-  MIDI_NOTENUMS = Hash[
-    (0..127).map do |note_num|
-      [ p0.transpose(note_num), note_num ]
-    end
-  ]
+  PITCH_TO_NOTENUM = {}
+  NOTENUM_TO_PITCH = {}
+  
+  (0..127).each do |note_num|
+    pitch = p0.transpose(note_num)
+    PITCH_TO_NOTENUM[pitch] = note_num
+    NOTENUM_TO_PITCH[note_num] = pitch
+  end
   
   def self.pitch_to_notenum pitch
-    MIDI_NOTENUMS.fetch(pitch.round)
+    PITCH_TO_NOTENUM.fetch(pitch.round)
+  end
+  
+  def self.notenum_to_pitch notenum
+    NOTENUM_TO_PITCH.fetch(notenum)
   end
   
   def self.dynamic_to_volume dynamic
