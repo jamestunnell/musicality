@@ -43,6 +43,10 @@ class CounterpointGenerator
     @solutions.min_by {|sol| evaluate(sol,ideal_overlap,sample_rate) }
   end
   
+  def best_solutions n, ideal_overlap, sample_rate
+    @solutions.sort_by {|sol| evaluate(sol,ideal_overlap,sample_rate) }.take(n)
+  end
+  
   private
   
   def figure_solutions max_factorial
