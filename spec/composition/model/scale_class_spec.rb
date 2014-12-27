@@ -80,8 +80,8 @@ describe ScaleClass do
       @pseq = @sc.to_pitch_seq(@start_pitch)
     end
     
-    it 'should return a AddingSequence::BiInfinite' do
-      @pseq.should be_a AddingSequence::BiInfinite
+    it 'should return a AddingSequence' do
+      @pseq.should be_a AddingSequence
     end
     
     it 'should be centered at given start pitch' do

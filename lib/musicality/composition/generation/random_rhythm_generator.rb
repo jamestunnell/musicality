@@ -1,31 +1,31 @@
 module Musicality
 
 class RandomRhythmGenerator
+  attr_reader :durations, :probabilities
+  
   def initialize palette_with_probs
-    total_prob = palette_with_probs.values.inject(0,:+)
-    raise ArgumentError, "Total probability is not 1" if total_prob != 1
-    
-    durs, probs = palette_with_probs.entries.transpose
-    
-    offsets = AddingSequence.new(probs).over(1...probs.size).to_a
-    changes = durs[1..-1].map{|dur| Change::Immediate.new(dur) }
-    
-    value_changes = Hash[ [offsets, changes].transpose ]
-    @dur_comp = ValueComputer.new(durs.first, value_changes)
+    @durations, @probabilities = palette_with_probs.entries.transpose
+    @dur_sampler = RandomSampler.new(@durations,@probabilities)
   end
   
   def random_dur
-    @dur_comp.at(rand)
+    @dur_sampler.sample
   end
   
-  def random_rhythm target_dur
+  def random_rhythm target_dur, end_retries = 5
     rhythm = []
-    dur = total_dur = random_dur
+    total_dur = 0
+    retries = 0
     
-    while(total_dur <= target_dur)
-      rhythm.push(dur)
+    while(total_dur < target_dur && retries < end_retries)
       dur = random_dur
-      total_dur += dur
+      
+      if (dur + total_dur) <= target_dur
+        total_dur += dur
+        rhythm.push(dur)
+      else
+        retries += 1
+      end
     end
     
     if total_dur < target_dur
@@ -33,15 +33,6 @@ class RandomRhythmGenerator
     end
     
     return rhythm
-  end
-  
-  
-  class Uniform < RandomRhythmGenerator
-    def initialize total_dur, palette
-      n = palette.size
-      probabilities = [1/n.to_r]*n
-      super()
-    end
   end
 end
 
