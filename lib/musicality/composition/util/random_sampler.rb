@@ -14,8 +14,12 @@ class RandomSampler
     @val_comp = ValueComputer.new(vals.first, value_changes)
   end
   
-  def sample
-    @val_comp.at(rand)
+  def sample n=nil
+    if n.nil?
+      return @val_comp.at(rand)
+    else
+      return Array.new(n){ @val_comp.at(rand) }
+    end
   end
 end
 

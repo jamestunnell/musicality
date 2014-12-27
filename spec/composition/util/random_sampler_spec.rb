@@ -19,15 +19,27 @@ describe RandomSampler do
     ].map {|vals,probs| RandomSampler.new(vals,probs) }
   end
 
-  describe '#random_dur' do
-    it 'should return a random duration, according to the probabilities given at initialization' do
-      @samplers.each do |sampler|
-        counts = Hash[ sampler.values.map {|val| [val,0] } ]
-        1000.times { counts[sampler.sample] += 1 }
-        sampler.values.each_with_index do |val,i|
-          count = counts[val]
-          tgt_prob = sampler.probabilities[i]
-          (count / 1000.to_f).should be_within(0.05).of(tgt_prob)
+  describe '#sample' do
+    context 'given no arg' do
+      it 'should return a random value, according to the probabilities given at initialization' do
+        @samplers.each do |sampler|
+          counts = Hash[ sampler.values.map {|val| [val,0] } ]
+          1000.times { counts[sampler.sample] += 1 }
+          sampler.values.each_with_index do |val,i|
+            count = counts[val]
+            tgt_prob = sampler.probabilities[i]
+            (count / 1000.to_f).should be_within(0.05).of(tgt_prob)
+          end
+        end
+      end
+    end
+    
+    context 'given number of samples to take' do
+      it 'should return array with the given number of samples' do
+        @samplers.each do |sampler|
+          [1,2,5,10].each do |n|
+            sampler.sample(n).size.should eq(n)
+          end
         end
       end
     end
