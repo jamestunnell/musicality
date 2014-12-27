@@ -66,6 +66,7 @@ require 'musicality/composition/util/repeating_sequence'
 require 'musicality/composition/util/adding_sequence'
 require 'musicality/composition/util/compound_sequence'
 require 'musicality/composition/util/random_sampler'
+require 'musicality/composition/util/probabilities'
 
 require 'musicality/composition/model/pitch_class'
 require 'musicality/composition/model/pitch_classes'
