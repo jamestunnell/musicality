@@ -75,6 +75,9 @@ require 'musicality/composition/model/scale_classes'
 require 'musicality/composition/note_generation'
 require 'musicality/composition/transposition'
 
+require 'musicality/composition/generation/counterpoint_generator'
+require 'musicality/composition/generation/random_rhythm_generator'
+
 #
 # Performance
 #
