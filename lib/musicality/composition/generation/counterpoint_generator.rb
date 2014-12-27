@@ -23,7 +23,7 @@ class CounterpointGenerator
     ValueComputer.new(0, value_changes)
   end
   
-  def evaluate solution, sample_rate
+  def evaluate solution, ideal_overlap, sample_rate
     if solution.inject(0,:+) != @total_dur
       raise ArgumentError, "Given solution #{solution} does not have same duration as rhythm"
     end
@@ -34,11 +34,13 @@ class CounterpointGenerator
     r = rhythm_comp.sample(0...@total_dur, sample_rate)
     s = solution_comp.sample(0...@total_dur, sample_rate)
     n_same = [r,s].transpose.count {|pair| pair[0] == pair[1] }
-    return n_same/sample_rate.to_r
+    n_samples = (@total_dur*sample_rate).to_i
+    percent_overlap = (n_same/n_samples).to_f
+    return (ideal_overlap - percent_overlap).abs
   end
   
-  def best_solution sample_rate
-    @solutions.min_by {|sol| evaluate(sol,sample_rate) }
+  def best_solution ideal_overlap, sample_rate
+    @solutions.min_by {|sol| evaluate(sol,ideal_overlap,sample_rate) }
   end
   
   private
