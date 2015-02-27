@@ -42,8 +42,6 @@ class Score
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
       super(parts: parts, program: program)
-      
-      yield(self) if block_given?
     end
     
     def check_methods
@@ -96,7 +94,6 @@ class Score
       
       super(start_tempo, tempo_changes: tempo_changes,
             program: program, parts: parts)
-      yield(self) if block_given?
     end
     
     def check_methods
