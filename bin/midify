@@ -50,7 +50,7 @@ File.open(fin_name) do |fin|
   
   unless score.is_a? Score::Timed
     print "Converting to timed score..."
-    score = score.to_timed(args["--srate"])
+    score = score.to_timed(args["--srate"].to_i)
     puts "done"
   end
   
