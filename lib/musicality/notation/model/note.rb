@@ -80,17 +80,7 @@ class Note
     else
       dur_str = d.to_s
     end
-    
-    art_str = case @articulation
-    when Articulations::SLUR then "="
-    when Articulations::LEGATO then "|"
-    when Articulations::TENUTO then "_"
-    when Articulations::PORTATO then "%"
-    when Articulations::STACCATO then "."
-    when Articulations::STACCATISSIMO then "'"
-    else ""
-    end
-    
+
     pitch_links_str = @pitches.map do |p|
       if @links.has_key?(p)
         p.to_s + @links[p].to_s
@@ -98,9 +88,11 @@ class Note
         p.to_s
       end
     end.join(",")
-    
-    acc_str = @accented ? "!" : ""
-    return dur_str + art_str + pitch_links_str + acc_str
+
+    art_str = ARTICULATION_SYMBOLS[@articulation] || ""
+    acc_str = @accented ? ACCENT_SYMBOL : ""
+
+    return dur_str + pitch_links_str + art_str + acc_str
   end
 
   def self.add_note_method(name, dur)

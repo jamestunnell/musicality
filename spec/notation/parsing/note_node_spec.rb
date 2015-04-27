@@ -32,10 +32,10 @@ describe Parsing::NoteNode do
 
   context 'monophonic note' do
     {
-      '/2=C2=C2' => Note.new(Rational(1,2),[C2],articulation:SLUR, links:{C2=>Link::Slur.new(C2)}),
-      '4/2.D#6' => Note.new(Rational(4,2),[Eb6],articulation:STACCATO),
-      '28%Eb7!' => Note.new(Rational(28,1),[Eb7],articulation:PORTATO, accented: true),
-      "56/33'B1" => Note.new(Rational(56,33),[B1],articulation:STACCATISSIMO),
+      '/2C2=' => Note.new(Rational(1,2),[C2], links: { C2 => Link::Tie.new}),
+      '4/2D#6.' => Note.new(Rational(4,2),[Eb6],articulation:STACCATO),
+      '28Eb7%!' => Note.new(Rational(28,1),[Eb7],articulation:PORTATO, accented: true),
+      "56/33B1'" => Note.new(Rational(56,33),[B1],articulation:STACCATISSIMO),
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
       
@@ -60,9 +60,10 @@ describe Parsing::NoteNode do
 
   context 'polyphonic note' do
     {
-      '/2C2,D2,E2|F2' => Note.new(Rational(1,2),[C2,D2,E2],links:{E2=>Link::Legato.new(F2)}),
-      '4/2.D#6,G4' => Note.new(Rational(4,2),[Eb6,G4], articulation:STACCATO),
-      '28_Eb7,D7,G7' => Note.new(Rational(28,1),[Eb7,D7,G7],articulation:TENUTO),
+      '/2C2,D2,E2(' => Note.new(Rational(1,2),[C2,D2,E2],articulation: Articulations::SLUR),
+      '/2C2,D2,E2[' => Note.new(Rational(1,2),[C2,D2,E2],articulation: Articulations::LEGATO),
+      '4/2D#6,G4.' => Note.new(Rational(4,2),[Eb6,G4], articulation: Articulations::STACCATO),
+      '28Eb7,D7,G7_' => Note.new(Rational(28,1),[Eb7,D7,G7],articulation: Articulations::TENUTO),
       '56/33B1,B2,B3,B4,B5!' => Note.new(Rational(56,33),[B1,B2,B3,B4,B5], accented: true),
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)

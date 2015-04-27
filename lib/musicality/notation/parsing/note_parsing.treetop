@@ -9,9 +9,12 @@ grammar Note
 
   rule note
     duration
-    art:articulation?
-    pitch_links:(first:pitch_link more:("," pl:pitch_link)*)?
-    acc:accent?
+    more:(
+      first_pl:pitch_link
+      more_pl:("," pl:pitch_link)*
+      art:articulation?
+      acc:accent?
+    )?
     <NoteNode>
   end
 

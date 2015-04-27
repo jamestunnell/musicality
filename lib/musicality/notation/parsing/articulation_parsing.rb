@@ -84,12 +84,12 @@ module Articulation
       return cached
     end
 
-    if (match_len = has_terminal?("=", false, index))
+    if (match_len = has_terminal?("(", false, index))
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       r0.extend(Slur0)
       @index += match_len
     else
-      terminal_parse_failure("=")
+      terminal_parse_failure("(")
       r0 = nil
     end
 
@@ -115,12 +115,12 @@ module Articulation
       return cached
     end
 
-    if (match_len = has_terminal?("|", false, index))
+    if (match_len = has_terminal?("[", false, index))
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       r0.extend(Legato0)
       @index += match_len
     else
-      terminal_parse_failure("|")
+      terminal_parse_failure("[")
       r0 = nil
     end
 

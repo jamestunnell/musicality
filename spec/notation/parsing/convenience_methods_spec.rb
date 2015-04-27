@@ -9,7 +9,7 @@ class_cases = { Duration => {
   Note => {
     '/2' => Note::half,
     '99/10C2' => Note.new('99/10'.to_r, [C2]),
-    '5/2.Db4,Eb5' => Note.new('5/2'.to_r, [Db4,Eb5], articulation:STACCATO) 
+    '5/2Db4,Eb5.' => Note.new('5/2'.to_r, [Db4,Eb5], articulation:STACCATO) 
   },
   Pitch => {
     'C2' => C2,

@@ -1,83 +1,85 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-{
-  Link::Glissando => Link::Portamento,
-  Link::Portamento => Link::Glissando,
-  Link::Slur => Link::Legato,
-  Link::Legato => Link::Slur
-}.each do |klass,klass2|
+[
+  [Link::Glissando, Link::Portamento, LINK_SYMBOLS[Links::GLISSANDO]],
+  [Link::Portamento, Link::Glissando, LINK_SYMBOLS[Links::PORTAMENTO]],
+].each do |klass,klass2,link_symbol|
   describe klass do
+    before :all do
+      @tgt_pitch = C2
+      @obj = klass.new(@tgt_pitch)
+    end
+
     describe '#initialize' do
       it 'should assign the given pitch to :target_pitch' do
-        klass.new(C2).target_pitch.should eq(C2)
+        @obj.target_pitch.should eq(@tgt_pitch)
       end
     end
     
     describe '#==' do
       it 'should return true if two links have the same target pitch' do
-        klass.new(C2).should eq(klass.new(C2))
+        @obj.should eq(klass.new(@tgt_pitch))
       end
       
       it 'should return false if two links do not have the same target pitch' do
-        klass.new(C2).should_not eq(klass.new(F5))
+        @obj.should_not eq(klass.new(@tgt_pitch.transpose(1)))
       end
       
       it 'should return false if the link type is different' do
-        klass.new(C2).should_not eq(klass2.new(C2))
+        @obj.should_not eq(klass2.new(@tgt_pitch))
       end
     end
     
     describe '#clone' do
       it 'should return a link equal to original' do
-        l = klass.new(C4)
-        l.clone.should eq l
+        @obj.clone.should eq @obj
       end
     end
     
     describe '#to_yaml' do
       it 'should produce YAML that can be loaded' do
-        l = klass.new(C5)
-        YAML.load(l.to_yaml).should eq l
+        YAML.load(@obj.to_yaml).should eq @obj
       end
     end
     
     describe '#to_s' do
       it 'should produce string that include link char and target pitch str' do
-        l = klass.new(C3)
-        l.to_s.should eq(l.link_char + "C3")
+        @obj.to_s.should eq(link_symbol + @tgt_pitch.to_s)
       end
     end
   end
 end
 
 describe Link::Tie do
+  before :all do
+    @obj = Link::Tie.new
+  end
+
   describe '#==' do
     it 'should return true if another Tie object is given' do
-      Link::Tie.new.should eq(Link::Tie.new)
+      @obj.should eq(Link::Tie.new)
     end
     
-    it 'should return false if a non-Tie object is given' do
-      Link::Tie.new.should_not eq(Link::Portamento.new(C2))
+    it 'should return false if an object of another class is given' do
+      @obj.should_not eq(5)
     end
   end
   
   describe '#clone' do
     it 'should return a link equal to original' do
-      l = Link::Tie.new
-      l.clone.should eq l
+      @obj.clone.should eq @obj
     end
   end
   
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
-      l = Link::Tie.new
-      YAML.load(l.to_yaml).should eq l
+      YAML.load(@obj.to_yaml).should eq @obj
     end
   end
   
   describe '#to_s' do
-    it 'should return =' do
-      Link::Tie.new.to_s.should eq("=")
+    it "should return #{LINK_SYMBOLS[Links::TIE]}" do
+      @obj.to_s.should eq(LINK_SYMBOLS[Links::TIE])
     end
   end
 end

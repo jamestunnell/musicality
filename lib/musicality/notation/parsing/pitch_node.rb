@@ -3,13 +3,15 @@ module Parsing
   class PitchNode < Treetop::Runtime::SyntaxNode
     def to_pitch
       
-      sem = pitch_letter.to_semitone
+      modval = 0
       unless mod.empty?
-        sem += case mod.text_value
+        modval = case mod.text_value
         when "#" then 1
         when "b" then -1
         end
       end
+      sem = (pitch_letter.to_semitone + modval) % Musicality::Pitch::SEMITONES_PER_OCTAVE
+
       oct = octave.to_i
       ncents = 0
       unless cents.empty?

@@ -120,18 +120,21 @@ describe Note do
         [[C2],{}],
         [[A5,D6],{ A5 => Link::Tie.new }],
         [[C5,E6,Gb2],{ C5 => Link::Glissando.new(D5) }],
-        [[A5,D6],{ A5 => Link::Legato.new(B5), D6 => Link::Slur.new(E6) }],
         [[C5,E6,Gb2],{ C5 => Link::Portamento.new(D5), Gb2 => Link::Tie.new }],
       ]
       
       notes = []
       durations.each do |d|
-        articulations.each do |art|
-          pitches_links_sets.each do |pitches_links_set|
-            pitches,links = pitches_links_set
-            [true,false].each do |acc|
-              notes.push Note.new(d, pitches, articulation: art, links: links, accented: acc)
+        pitches_links_sets.each do |pitches_links_set|
+          pitches,links = pitches_links_set
+          if pitches.any?
+            articulations.each do |art|
+              [true,false].each do |acc|
+                notes.push Note.new(d, pitches, articulation: art, links: links, accented: acc)
+              end
             end
+          else
+            notes.push Note.new(d)
           end
         end
       end

@@ -25,83 +25,28 @@ module Link
     end
 
     i0 = index
-    r1 = _nt_slur_link
+    r1 = _nt_tie
     if r1
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      r2 = _nt_tie
+      r2 = _nt_glissando
       if r2
         r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
       else
-        r3 = _nt_legato_link
+        r3 = _nt_portamento
         if r3
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
         else
-          r4 = _nt_glissando
-          if r4
-            r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-            r0 = r4
-          else
-            r5 = _nt_portamento
-            if r5
-              r5 = SyntaxNode.new(input, (index-1)...index) if r5 == true
-              r0 = r5
-            else
-              @index = i0
-              r0 = nil
-            end
-          end
+          @index = i0
+          r0 = nil
         end
       end
     end
 
     node_cache[:link][start_index] = r0
-
-    r0
-  end
-
-  module SlurLink0
-    def target
-      elements[1]
-    end
-  end
-
-  def _nt_slur_link
-    start_index = index
-    if node_cache[:slur_link].has_key?(index)
-      cached = node_cache[:slur_link][index]
-      if cached
-        node_cache[:slur_link][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    if (match_len = has_terminal?("=", false, index))
-      r1 = true
-      @index += match_len
-    else
-      terminal_parse_failure("=")
-      r1 = nil
-    end
-    s0 << r1
-    if r1
-      r2 = _nt_pitch
-      s0 << r2
-    end
-    if s0.last
-      r0 = instantiate_node(SlurNode,input, i0...index, s0)
-      r0.extend(SlurLink0)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:slur_link][start_index] = r0
 
     r0
   end
@@ -130,51 +75,8 @@ module Link
     r0
   end
 
-  module LegatoLink0
-    def target
-      elements[1]
-    end
-  end
-
-  def _nt_legato_link
-    start_index = index
-    if node_cache[:legato_link].has_key?(index)
-      cached = node_cache[:legato_link][index]
-      if cached
-        node_cache[:legato_link][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    if (match_len = has_terminal?("|", false, index))
-      r1 = true
-      @index += match_len
-    else
-      terminal_parse_failure("|")
-      r1 = nil
-    end
-    s0 << r1
-    if r1
-      r2 = _nt_pitch
-      s0 << r2
-    end
-    if s0.last
-      r0 = instantiate_node(LegatoNode,input, i0...index, s0)
-      r0.extend(LegatoLink0)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:legato_link][start_index] = r0
-
-    r0
-  end
-
   module Glissando0
-    def target
+    def pitch
       elements[1]
     end
   end
@@ -217,7 +119,7 @@ module Link
   end
 
   module Portamento0
-    def target
+    def pitch
       elements[1]
     end
   end
@@ -234,11 +136,11 @@ module Link
     end
 
     i0, s0 = index, []
-    if (match_len = has_terminal?("/", false, index))
+    if (match_len = has_terminal?("|", false, index))
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("/")
+      terminal_parse_failure("|")
       r1 = nil
     end
     s0 << r1

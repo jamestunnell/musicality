@@ -7,7 +7,7 @@ grammar Articulation
   end
   
   rule slur
-    "=" {
+    "(" {
       def to_articulation
         Musicality::Articulations::SLUR
       end
@@ -15,7 +15,7 @@ grammar Articulation
   end
 
   rule legato
-    "|" {
+    "[" {
       def to_articulation
         Musicality::Articulations::LEGATO
       end

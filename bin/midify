@@ -7,13 +7,11 @@ Loads a musicality score from YAML file, and converts it to a MIDI file.
 
 Usage:
   #{exe_name} <input> [PART PROGRAM] ... [options]
-  #{exe_name} <input> <output> [PART PROGRAM] ... [options]
   #{exe_name} -h | --help
   #{exe_name} --version
 
 Arguments:
   input A musicality score file (may be packed as a hash) in YAML format
-  output Midi filename
   PART name of a part in the score
   PROGRAM MIDI program (instrument) number for the given part
   
@@ -22,6 +20,7 @@ Options:
                 score, and for sampling dynamic change values [default: 200]
   -h --help     Show this screen.
   --version     Show version.
+  --outfile=OUTF Name of output MIDI file
 
 DOCOPT
 
@@ -64,7 +63,7 @@ File.open(fin_name) do |fin|
     seq = sequencer.make_midi_seq(instr_map)
     puts "done"  
   
-    fout_name = args["<output>"]
+    fout_name = args["--outfile"]
     if fout_name.nil?
       fout_name = "#{File.dirname(fin_name)}/#{File.basename(fin_name,File.extname(fin_name))}.mid"
     end

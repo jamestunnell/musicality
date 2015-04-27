@@ -10,24 +10,26 @@ class Link
     Marshal.load(Marshal.dump(self))
   end
 
-  class Tie < Link
-    def initialize; end
-    
-    def ==(other)
-      self.class == other.class
-    end
-    
-    def transpose diff
-      self.clone.transpose! diff
-    end
-    
-    def transpose! diff
-      return self
-    end
-    
-    def to_s; "="; end
+  def transpose diff
+    self.clone.transpose! diff
   end
   
+  def transpose! diff
+    return self
+  end
+
+  def ==(other)
+    self.class == other.class
+  end
+
+  def to_s
+    self.class::LINK_CHAR
+  end
+
+  class Tie < Link
+    LINK_CHAR = LINK_SYMBOLS[Links::TIE]
+  end
+
   class TargetedLink < Link
     attr_accessor :target_pitch
     
@@ -36,7 +38,7 @@ class Link
     end
     
     def ==(other)
-      self.class == other.class && @target_pitch == other.target_pitch
+      super && @target_pitch == other.target_pitch
     end
     
     def transpose diff
@@ -49,24 +51,24 @@ class Link
     end
     
     def to_s
-      link_char + @target_pitch.to_s
+      super + @target_pitch.to_s
     end
   end
   
   class Glissando < TargetedLink
-    def link_char; "~"; end
+    LINK_CHAR = LINK_SYMBOLS[Links::GLISSANDO]
   end
   
   class Portamento < TargetedLink
-    def link_char; "/"; end
+    LINK_CHAR = LINK_SYMBOLS[Links::PORTAMENTO]
   end
-  
+
   class Slur < TargetedLink
-    def link_char; "="; end
+    LINK_CHAR = LINK_SYMBOLS[Links::SLUR]
   end
-  
+
   class Legato < TargetedLink
-    def link_char; "|"; end
+    LINK_CHAR = LINK_SYMBOLS[Links::LEGATO]
   end
 end
 

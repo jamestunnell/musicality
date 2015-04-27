@@ -3,14 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe Parsing::ArticulationParser do
   parser = Parsing::ArticulationParser.new
   
-  {
-    '=' => SLUR,
-    '|' => LEGATO,
-    '_' => TENUTO,
-    '%' => PORTATO,
-    '.' => STACCATO,
-    "'" => STACCATISSIMO
-  }.each do |str,art|
+  ARTICULATION_SYMBOLS.each do |art,str|
     res = parser.parse(str)
     it "should parse '#{str}'" do
       res.should_not be nil

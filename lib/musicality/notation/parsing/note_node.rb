@@ -6,34 +6,36 @@ module Parsing
     end
     
     def to_note
+      if more.empty?
+        return Musicality::Note.new(duration.to_r)
+      end
+
       pitches = []
       links = {}
-      
-      unless pitch_links.empty?
-        first = pitch_links.first
-        more = pitch_links.more
-        
-        pitches.push first.pitch.to_pitch
-        unless first.the_link.empty?
-          links[pitches[-1]] = first.the_link.to_link
-        end
-        
-        more.elements.each do |x|
-          pitches.push x.pl.pitch.to_pitch
-          unless x.pl.the_link.empty?
-            links[pitches[-1]] = x.pl.the_link.to_link
-          end
+
+      first_pl = more.first_pl
+      more_pl = more.more_pl
+
+      pitches.push first_pl.pitch.to_pitch
+      unless first_pl.the_link.empty?
+        links[pitches[-1]] = first_pl.the_link.to_link
+      end
+
+      more_pl.elements.each do |x|
+        pitches.push x.pl.pitch.to_pitch
+        unless x.pl.the_link.empty?
+          links[pitches[-1]] = x.pl.the_link.to_link
         end
       end
       
       artic = Musicality::Articulations::NORMAL
-      unless art.empty?
-        artic = art.to_articulation
+      unless more.art.empty?
+        artic = more.art.to_articulation
       end
-      
-      accent_flag = acc.empty? ? false : true
-      Musicality::Note.new(duration.to_r,
-        pitches, links: links, articulation: artic, accented: accent_flag)
+
+      accent_flag = !more.acc.empty?
+      Musicality::Note.new(duration.to_r, pitches,
+        links: links, articulation: artic, accented: accent_flag)
     end
   end
 end
