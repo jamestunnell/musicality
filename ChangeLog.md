@@ -1,8 +1,17 @@
-### 0.4.0 / 2014-12-02
-* Make Program inherit from Array.
-* Make Program#initialize take either a single array or variable number of args.
-
-### 0.3.1 / 2014-12-01
+### 0.5.0 / 2015-04-27
+* Alter note syntax
+ * shift articulation placement to after pitches
+ * disallow articulation and accent when pitches aren't present
+ * do not provide syntax for targeted slur and legato links
+* Add *basic* support for Lilypond engraving (sheet music printing)
+* Add `#to_midi_seq` convenience method to `Timed` and `TempoBased` scores.
+* Add some rudimentary composition features
+ * `ScaleClass` class: contains a series of increasing pitch intervals. Can be realized as a scale given a starting pitch class.
+ * `Scale` class: contains a starting pitch class, and a series of pitch intervals. Can be realized as a series of pitches given a starting octave.
+ * Biinfinite sequence generators for adding and repeating
+ * Random rhythm generator
+ * Counterpoint generator
+* Instead of `Program` class, use plain array for Score program
 * Add (optional) argument to Score::Measured#measures_long, to convert a specific note duration to measure duration. If not specified, the note duration of the longest part is used (as before).
 
 ### 0.3.0 / 2014-12-01
