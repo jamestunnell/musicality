@@ -45,7 +45,7 @@ include Musicality
 include Meters
 include Dynamics
 
-twinkle = Score::Measured.new(FOUR_FOUR, 120) do |s|
+twinkle = Score::Measured.new(TWO_FOUR, 120) do |s|
   s.parts["rhand"] = Part.new(MF) do |p|
     p.notes += ("/4C4 "*2 + "/4G4 "*2 +
                 "/4A4 "*2 + "/2G4").to_notes
@@ -53,7 +53,8 @@ twinkle = Score::Measured.new(FOUR_FOUR, 120) do |s|
   s.parts["lhand"] = Part.new(MF) do |p|
     p.notes += ("/2C3,E3,G3 "*2 + 
                 "/2F2,A2,C3 /2C3,E3,G3").to_notes
-    end
+  end
+  s.program.push 0...4
 end
 ```
 
