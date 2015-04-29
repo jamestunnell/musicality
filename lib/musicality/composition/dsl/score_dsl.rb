@@ -2,12 +2,6 @@ module Musicality
 
 class ScoreDSL
   def self.load fname
-    include Musicality
-    include Pitches
-    include Articulations
-    include Meters
-    include Dynamics
-
     dsl = ScoreDSL.new
     dsl.instance_eval(File.read(fname), fname)
     dsl
