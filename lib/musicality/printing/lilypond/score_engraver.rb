@@ -44,7 +44,7 @@ class ScoreEngraver
       output += "    \\time #{@start_meter.to_lilypond}\n"
     end
 
-    line = ""
+    line = "    "
     part.notes.each_index do |i|
       note = part.notes[i]
       begin
@@ -54,12 +54,12 @@ class ScoreEngraver
       end
 
       if (line.size + str.size) > MAX_LINE_LEN
-        output += "    " + line
-        line = ""
+        output += line + "\n"
+        line = "    "
       end
       line += str
     end
-    output += "    " + line
+    output += line + "\n"
 
     output += "  }\n"
   end
