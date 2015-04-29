@@ -2,11 +2,14 @@ module Musicality
 
 class Score
   include Validatable
-  attr_accessor :parts, :program
+  attr_accessor :parts, :program, :title, :composer
   
-  def initialize parts: {}, program: []
+  def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}
     @parts = parts
     @program = program
+    @title = title
+    @composer = composer
+    @sections = sections
     yield(self) if block_given?
   end
 
@@ -21,7 +24,7 @@ class Score
     return @parts == other.parts && @program == other.program
   end
   
-  def duration
+  def max_part_duration
     @parts.map {|name,part| part.duration }.max || 0.to_r
   end
   
@@ -31,17 +34,19 @@ class Score
   
   class Timed < Score
     def seconds_long
-      self.duration
+      max_part_duration
     end
+    alias duration seconds_long
   end
   
   class TempoBased < Score
     attr_accessor :start_tempo, :tempo_changes
 
-    def initialize start_tempo, tempo_changes: {}, parts: {}, program: []
+    # See Score#initialize for remaining kwargs
+    def initialize start_tempo, tempo_changes: {}, **kwargs
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
-      super(parts: parts, program: program)
+      super(**kwargs)
     end
     
     def check_methods
@@ -54,7 +59,7 @@ class Score
     end
     
     def notes_long
-      self.duration
+      max_part_duration
     end
     
     private
@@ -81,6 +86,7 @@ class Score
   # Tempo-based score without meter, bar lines, or fixed pulse (beat).
   # Offsets are note-based, and tempo values are in quarter-notes-per-minute.
   class Unmeasured < Score::TempoBased
+    alias duration notes_long
   end
   
   # Tempo-based score with meter, bar lines, and a fixed pulse (beat).
@@ -88,12 +94,12 @@ class Score
   class Measured < Score::TempoBased
     attr_accessor :start_meter, :meter_changes
     
-    def initialize start_meter, start_tempo, meter_changes: {}, tempo_changes: {}, parts: {}, program: []
+    # See Score::TempoBased#initialize for remaining kwargs
+    def initialize start_meter, start_tempo, meter_changes: {}, **kwargs
       @start_meter = start_meter
       @meter_changes = meter_changes
       
-      super(start_tempo, tempo_changes: tempo_changes,
-            program: program, parts: parts)
+      super(start_tempo, **kwargs)
     end
     
     def check_methods
@@ -129,6 +135,8 @@ class Score
       end
       return moff_prev + Rational(noff_end - noff_prev, mdur_prev)
     end
+
+    alias duration measures_long
     
     private
     

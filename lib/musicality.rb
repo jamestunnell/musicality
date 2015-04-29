@@ -82,6 +82,9 @@ require 'musicality/composition/transposition'
 require 'musicality/composition/generation/counterpoint_generator'
 require 'musicality/composition/generation/random_rhythm_generator'
 
+require 'musicality/composition/dsl/score_methods'
+require 'musicality/composition/dsl/score_dsl'
+
 #
 # Performance
 #
@@ -103,6 +106,10 @@ require 'musicality/performance/midi/midi_events'
 require 'musicality/performance/midi/part_sequencer'
 require 'musicality/performance/midi/score_sequencer'
 require 'musicality/performance/midi/score_sequencing'
+
+#
+# Printing
+#
 
 require 'musicality/printing/lilypond/errors'
 require 'musicality/printing/lilypond/pitch_engraving'

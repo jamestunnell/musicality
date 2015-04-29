@@ -9,4 +9,6 @@ module Musicality
   class NotValidError < StandardError; end
   class DomainError < StandardError; end
   class EmptyError < StandardError; end
+  class DurationMismatchError < StandardError; end
+
 end

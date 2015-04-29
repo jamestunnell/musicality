@@ -33,10 +33,10 @@ describe Score do
     end
   end
   
-  describe '#duration' do
+  describe '#max_part_duration' do
     context 'no parts' do
       it 'should return 0' do
-        Score.new.duration.should eq(0)
+        Score.new.max_part_duration.should eq(0)
       end
     end
     
@@ -44,7 +44,16 @@ describe Score do
       it 'should return the part duration' do
         Score.new(parts: {"part1" => Part.new(Dynamics::PP,
           notes: "/4 /4 /2 1".to_notes)
-        }).duration.should eq(2)
+        }).max_part_duration.should eq(2)
+      end
+    end
+
+    context 'two parts' do
+      it 'should return the part duration of the longer part' do
+        Score.new(parts: {"part1" => Part.new(Dynamics::PP,
+          notes: "/4 /4 /2 1".to_notes), "part2" => Part.new(Dynamics::MP,
+          notes: "4".to_notes)
+        }).max_part_duration.should eq(4)
       end
     end
   end
