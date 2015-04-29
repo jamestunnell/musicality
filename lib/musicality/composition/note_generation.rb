@@ -28,4 +28,19 @@ def make_notes rhythm, pitch_groups
 end
 module_function :make_notes
 
+def e(pitch_groups)
+  pitch_groups.map {|pg| Note.eighth(pg) }
+end
+module_function :e
+
+def q(pitch_groups)
+  pitch_groups.map {|pg| Note.quarter(pg) }
+end
+module_function :q
+
+def dq(pitch_groups)
+  pitch_groups.map {|pg| Note.dotted_quarter(pg) }
+end
+module_function :dq
+
 end
