@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+
+exe_name = File.basename(__FILE__)
+
+doc = <<DOCOPT
+Loads a musicality score from YAML file, and converts it to a Lilypond file for engraving.
+
+Usage:
+  #{exe_name} <input> [PART TITLE] ... [options]
+  #{exe_name} -h | --help
+  #{exe_name} --version
+
+Arguments:
+  input A musicality score file (may be packed as a hash) in YAML format
+  PART name of a part in the score (e.g. "lhand")
+  TITLE The title to give the part (e.g. "Left Hand")
+  
+Options:
+  --all         Select all parts for engraving, and use part name as the title if not given
+  -h --help     Show this screen.
+  --version     Show version.
+  --outfile=OUTF Name of output Lilypond file
+
+DOCOPT
+
+require 'docopt'
+begin
+  args = Docopt::docopt(doc)
+  puts args
+rescue Docopt::Exit => e
+  puts e.message
+  exit
+end
+
+require 'musicality'
+
+if args["--version"]
+  puts "#{exe_name} from musicality v#{Musicality::VERSION}"
+  exit
+end
+
+require 'yaml'
+include Musicality
+
+fin_name = args["<input>"]
+File.open(fin_name) do |fin|
+  print "Reading file '#{fin_name}'..."
+  score = YAML.load(fin.read)
+  
+  if score.is_a? Hash
+    score = Score.unpack(score)
+  end
+  puts "done"
+  
+  if score.valid?
+    part_names = args["PART"]
+    part_titles = args["TITLE"]
+    name_title_map = 
+
+    make_lilypond_args = {
+      :part_titles => Hash[[part_names,part_titles].transpose] 
+    }
+    unless args["--all"]
+      make_lilypond_args[:selected_parts] = part_names
+    end
+
+    print "Making Lilypond instructions..."
+    engraver = ScoreEngraver.new(score)
+    lilypond_text = engraver.make_lilypond(make_lilypond_args)
+    puts "done"
+
+    fout_name = args["--outfile"]
+    if fout_name.nil?
+      fout_name = "#{File.dirname(fin_name)}/#{File.basename(fin_name,File.extname(fin_name))}.ly"
+    end
+    print "Writing Lilypond file '#{fout_name}'..."
+    File.write(fout_name, lilypond_text)
+    puts "done"
+  else
+    puts "Score is not valid. See errors:"
+    puts score.errors.join("\n")
+  end
+end

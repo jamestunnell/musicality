@@ -33,8 +33,14 @@ rescue Docopt::Exit => e
   exit
 end
 
-require 'yaml'
 require 'musicality'
+
+if args["--version"]
+  puts "#{exe_name} in musicality v#{Musicality::VERSION}"
+  exit
+end
+
+require 'yaml'
 include Musicality
 
 fin_name = args["<input>"]
