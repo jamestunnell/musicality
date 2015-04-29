@@ -1,3 +1,6 @@
+### 0.7.0 / 2015-04-28
+* Replace Score's title and composer accessors with dual-methods Score#title and Score#composer that can be used to get/set. This makes them useful in the DSL context.
+
 ### 0.6.0 / 2015-04-28
 * Add Score DSL
 * Add composition convenience methods `e`, `q`, and `dq` for generating eighth, quarter, and dotted quarter notes
