@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
-  s.title = "The best song ever"
-  s.composer = "James T."
+  s.title "The best song ever"
+  s.composer "James T."
 
   s.meter_changes[1] = Change::Immediate.new(THREE_FOUR)
   s.meter_changes[7] = Change::Immediate.new(SIX_EIGHT)
@@ -31,15 +31,15 @@ end
 unmeasured_score = Score::Unmeasured.new(30) do |s|
   s.program = measured_score.program
   s.parts = measured_score.parts
-  s.title = measured_score.title
-  s.composer = measured_score.composer
+  s.title measured_score.title
+  s.composer measured_score.composer
 end
 
 timed_score = Score::Timed.new do |s|
   s.program = measured_score.program
   s.parts = measured_score.parts
-  s.title = measured_score.title
-  s.composer = measured_score.composer
+  s.title measured_score.title
+  s.composer measured_score.composer
 end
 
 [ measured_score, unmeasured_score, timed_score ].each do |score|

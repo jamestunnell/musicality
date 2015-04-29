@@ -2,7 +2,23 @@ module Musicality
 
 class Score
   include Validatable
-  attr_accessor :parts, :program, :title, :composer
+  attr_accessor :parts, :program
+
+  def title value = nil
+    if value.nil?
+      return @title
+    else
+      @title = value
+    end
+  end
+
+  def composer value = nil
+    if value.nil?
+      return @composer
+    else
+      @composer = value
+    end
+  end
   
   def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}
     @parts = parts
