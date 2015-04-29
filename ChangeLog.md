@@ -1,3 +1,8 @@
+### 0.6.0 / 2015-04-28
+* Add Score DSL
+* Add composition convenience methods `e`, `q`, and `dq` for generating eighth, quarter, and dotted quarter notes
+* Add part selection and titling to Lilypond score engraver
+
 ### 0.5.0 / 2015-04-27
 * Alter note syntax
  * shift articulation placement to after pitches
