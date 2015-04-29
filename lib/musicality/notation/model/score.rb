@@ -3,7 +3,8 @@ module Musicality
 class Score
   include Validatable
   attr_accessor :parts, :program
-
+  attr_writer :title, :composer
+  
   def title value = nil
     if value.nil?
       return @title

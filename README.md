@@ -58,13 +58,56 @@ twinkle = Score::Measured.new(TWO_FOUR, 120) do |s|
 end
 ```
 
-To continue the above example, a score can be prepare for MIDI playback using the `Score::Measured#to_midi_seq` method.
+## MIDI Sequencing
+
+A score can be prepared for MIDI playback using the `ScoreSequencer` class or `#to_midi_seq` method. To continue the previous example,
 ```ruby
 TEMPO_SAMPLE_RATE = 500
 seq = twinkle.to_midi_seq TEMPO_SAMPLE_RATE
 File.open('twinkle.mid', 'wb'){ |fout| seq.write(fout) }
 ```
-## 
+## Score DSL
+
+The score DSL is an internal DSL (built on Ruby) that consists of a *score* block with additional blocks inside this to add sections, notes, and tempo/meter/dynamic changes.
+
+Here is an example of a score file.
+```ruby
+measured_score FOUR_FOUR, 120 do
+  title "Twinkle, Twinkle, Little Star"
+
+  Cmaj = [C3,E3,G3]
+  Fmaj = [F2,A2,C3]
+  Gmaj = [G2,B2,D3]
+  section "A" do
+    notes(
+      "rhand" => q(C4,C4,G4,G4,A4,A4) + h(G4) +
+                 q(F4,F4,E4,E4,D4,D4) + h(C4),
+      "lhand" => h(Cmaj,Cmaj,Fmaj,Cmaj) + 
+                 h(Fmaj,Cmaj,Gmaj,Cmaj)
+    )
+  end
+
+  section "B" do
+    notes(
+      "rhand" => q(G4,G4,F4,F4,E4,E4) + h(D4),
+      "lhand" => h(Cmaj,Fmaj,Cmaj,Gmaj)
+    )
+  end
+  repeat "B"
+  repeat "A"
+end
+```
+
+The above score file is processed by the `ScoreDSL.load` method, as in:
+```ruby
+require 'musicality'
+include Musicality
+include Meters
+include Pitches
+
+dsl = ScoreDSL.load 'twinkle.score'
+score = dsl.score
+``` 
 
 ## Contributing
 

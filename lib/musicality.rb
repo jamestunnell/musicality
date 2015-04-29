@@ -69,6 +69,7 @@ require 'musicality/composition/util/adding_sequence'
 require 'musicality/composition/util/compound_sequence'
 require 'musicality/composition/util/random_sampler'
 require 'musicality/composition/util/probabilities'
+require 'musicality/composition/util/note_generation'
 
 require 'musicality/composition/model/pitch_class'
 require 'musicality/composition/model/pitch_classes'
@@ -76,14 +77,13 @@ require 'musicality/composition/model/scale'
 require 'musicality/composition/model/scale_class'
 require 'musicality/composition/model/scale_classes'
 
-require 'musicality/composition/note_generation'
-require 'musicality/composition/transposition'
-
 require 'musicality/composition/generation/counterpoint_generator'
 require 'musicality/composition/generation/random_rhythm_generator'
 
 require 'musicality/composition/dsl/score_methods'
 require 'musicality/composition/dsl/score_dsl'
+
+require 'musicality/composition/convenience_methods'
 
 #
 # Performance

@@ -103,7 +103,7 @@ class Note
   
   {
     :sixteenth => Rational(1,16),
-    :dotted_SIXTEENTH => Rational(3,32),
+    :dotted_sixteenth => Rational(3,32),
     :eighth => Rational(1,8),
     :dotted_eighth => Rational(3,16),
     :quarter => Rational(1,4),

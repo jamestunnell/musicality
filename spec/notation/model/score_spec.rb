@@ -1,6 +1,38 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Score do
+  describe '#title' do
+    context 'given no arg' do
+      it 'should return the title' do
+        Score.new(:title => "MyTitle").title.should eq("MyTitle")
+      end
+    end
+
+    context 'given an arg' do
+      it 'should assign the given value to title' do
+        score = Score.new(:title => "MyTitle")
+        score.title("A Better Title")
+        score.title.should eq("A Better Title")
+      end
+    end
+  end
+
+  describe '#composer' do
+    context 'given no arg' do
+      it 'should return the composer' do
+        Score.new(:composer => "Beethoven").composer.should eq("Beethoven")
+      end
+    end
+
+    context 'given an arg' do
+      it 'should assign the given value to composer' do
+        score = Score.new(:composer => "Beethoven")
+        score.composer("Mozart")
+        score.composer.should eq("Mozart")
+      end
+    end
+  end
+
   describe '#collated?' do
     context 'has program with more than one segment' do
       it 'should return false' do
