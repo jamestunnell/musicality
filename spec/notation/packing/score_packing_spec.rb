@@ -1,6 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
+  s.title = "The best song ever"
+  s.composer = "James T."
+
   s.meter_changes[1] = Change::Immediate.new(THREE_FOUR)
   s.meter_changes[7] = Change::Immediate.new(SIX_EIGHT)
   
@@ -28,11 +31,15 @@ end
 unmeasured_score = Score::Unmeasured.new(30) do |s|
   s.program = measured_score.program
   s.parts = measured_score.parts
+  s.title = measured_score.title
+  s.composer = measured_score.composer
 end
 
 timed_score = Score::Timed.new do |s|
   s.program = measured_score.program
   s.parts = measured_score.parts
+  s.title = measured_score.title
+  s.composer = measured_score.composer
 end
 
 [ measured_score, unmeasured_score, timed_score ].each do |score|
@@ -72,6 +79,16 @@ end
           @h['parts'][name].should eq packing
         end
       end
+
+      it 'should add title to packing' do
+        @h.should have_key "title"
+        @h["title"].should eq @score.title
+      end
+
+      it 'should add composer to packing' do
+        @h.should have_key "composer"
+        @h["composer"].should eq @score.composer
+      end
     end
     
     describe '.unpack' do
@@ -89,6 +106,14 @@ end
       
       it 'should successfuly unpack the program' do
         @score2.program.should eq @score.program
+      end
+
+      it 'should successfuly unpack the title' do
+        @score2.title.should eq @score.title
+      end
+
+      it 'should successfuly unpack the composer' do
+        @score2.composer.should eq @score.composer
       end
     end
   end

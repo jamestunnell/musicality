@@ -7,67 +7,79 @@ class Score
     end
     
     def self.unpack packing
-      score = Score.unpack_common(packing)
-      new(parts: score.parts, program: score.program)
+      new(**Score.unpack_common(packing))
     end
   end
   
   class TempoBased < Score
     def pack
-      packed_tcs = Hash[ tempo_changes.map do |offset,change|
-        [offset,change.pack]
-      end ]
-      
       pack_common.merge("start_tempo" => @start_tempo,
-        "tempo_changes" => packed_tcs)
+        "tempo_changes" => pack_tempo_changes)
     end
     
+    def pack_tempo_changes
+      Hash[ tempo_changes.map do |offset,change|
+        [offset,change.pack]
+      end ]
+    end
+
+    def self.unpack_tempo_changes packing
+      Hash[ packing["tempo_changes"].map do |k,v|
+        [k, Change.unpack(v) ]
+      end ]
+    end
+
     def self.unpack packing
-      score = Score.unpack_common(packing)
-      
       unpacked_tcs = Hash[ packing["tempo_changes"].map do |k,v|
         [k, Change.unpack(v) ]
       end ]
-      
+
+      Score.unpack_common(packing)
       new(packing["start_tempo"],
         tempo_changes: unpacked_tcs,
-        program: score.program,
-        parts: score.parts
-      )
-    end    
+        **unpacked)
+    end
   end
   
   class Unmeasured < TempoBased
-    def pack
-      super()
-    end
-    
     def self.unpack packing
-      score = superclass.unpack(packing)
-      new(score.start_tempo, program: score.program,
-        tempo_changes: score.tempo_changes, parts: score.parts)
+      new(packing["start_tempo"],
+        tempo_changes: unpack_tempo_changes(packing),
+        **Score.unpack_common(packing))
     end
   end
   
   class Measured < TempoBased
     def pack
-      return super().merge("start_meter" => start_meter.to_s,
-        "meter_changes" => Hash[ meter_changes.map do |off,change|
-          [off,change.pack(:with => :to_s)]
-        end ]
-      )
+      return super().merge("start_meter" => pack_start_meter,
+        "meter_changes" => pack_meter_changes)
+    end
+
+    def pack_meter_changes
+      Hash[ meter_changes.map do |off,change|
+        [off,change.pack(:with => :to_s)]
+      end ]
+    end
+
+    def pack_start_meter
+      start_meter.to_s
     end
     
-    def self.unpack packing
-      score = superclass.unpack(packing)
-      unpacked_start_meter = Meter.parse(packing["start_meter"])
-      unpacked_mcs = Hash[ packing["meter_changes"].map do |off,p|
+    def self.unpack_meter_changes packing
+      Hash[ packing["meter_changes"].map do |off,p|
          [off, Change.unpack(p, :with => :to_meter) ]
       end ]
-      
-      new(unpacked_start_meter, score.start_tempo,
-          parts: score.parts, program: score.program,
-          meter_changes: unpacked_mcs, tempo_changes: score.tempo_changes)
+    end
+
+    def self.unpack_start_meter packing
+      Meter.parse(packing["start_meter"])
+    end
+
+    def self.unpack packing
+      new(unpack_start_meter(packing), packing["start_tempo"],
+        tempo_changes: unpack_tempo_changes(packing),
+        meter_changes: unpack_meter_changes(packing),
+        **Score.unpack_common(packing))
     end
   end
   
@@ -89,6 +101,8 @@ class Score
     { "type" => self.class.to_s.split("::")[-1],
       "program" => packed_prog,
       "parts" => packed_parts,
+      "title" => @title,
+      "composer" => @composer
     }
   end
   
@@ -98,9 +112,11 @@ class Score
     end ]
     unpacked_prog = packing["program"].map {|str| Segment.parse(str) }
     
-    new(program: unpacked_prog,
-      parts: unpacked_parts
-    )
+    { :program => unpacked_prog,
+      :parts => unpacked_parts,
+      :title => packing["title"],
+      :composer => packing["composer"]
+    }
   end    
 end
 
