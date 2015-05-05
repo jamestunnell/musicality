@@ -5,13 +5,13 @@ require 'set'
 class Note
   include Validatable
   
-  attr_reader :pitches, :links
-  attr_accessor :articulation, :duration, :accented
+  attr_reader :pitches, :links, :duration
+  attr_accessor :articulation, :accented
 
   DEFAULT_ARTICULATION = Articulations::NORMAL
   
   def initialize duration, pitches = [], articulation: DEFAULT_ARTICULATION, accented: false, links: {}
-    @duration = duration
+    self.duration = duration
     if !pitches.is_a? Enumerable
       pitches = [ pitches ]
     end
@@ -22,13 +22,7 @@ class Note
   end
   
   def check_methods
-    [ :ensure_positive_duration, :check_pitches ]
-  end
-  
-  def ensure_positive_duration
-    unless @duration > 0
-      raise NonPositiveError, "duration #{@duration} is not positive"
-    end
+    [ :check_pitches ]
   end
   
   def check_pitches
@@ -50,6 +44,18 @@ class Note
     Marshal.load(Marshal.dump(self))
   end
 
+  def duration=  duration
+    raise NonPositiveError, "duration #{duration} is not positive" unless duration > 0
+    #@duration = duration.is_a?(Duration) ? duration : duration.to_dur
+    @duration = duration
+  end
+
+  def resize duration
+    new_note = self.clone
+    new_note.duration = duration
+    return new_note
+  end
+
   def transpose diff
     self.clone.transpose! diff
   end
@@ -61,16 +67,7 @@ class Note
     end ]
     return self
   end
-  
-  def stretch ratio
-    self.clone.stretch! ratio
-  end
-  
-  def stretch! ratio
-    @duration *= ratio
-    return self
-  end
-  
+
   def to_s
     d = @duration.to_r
     if d.denominator == 1

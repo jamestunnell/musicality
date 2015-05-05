@@ -1,10 +1,13 @@
 module Musicality
 module Parsing
-  class NoteNode < Treetop::Runtime::SyntaxNode
-    def primitives env
-      [ self.to_note ]
+  class TripletNoteNode < Treetop::Runtime::SyntaxNode
+    def to_note
+      Musicality::Triplet.new(first.to_note,
+        second.to_note, third.to_note)
     end
-    
+  end
+
+  class SingleNoteNode < Treetop::Runtime::SyntaxNode
     def to_note
       if more.empty?
         return Musicality::Note.new(duration.to_r)

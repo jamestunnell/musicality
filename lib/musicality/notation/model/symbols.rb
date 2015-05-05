@@ -19,4 +19,6 @@ LINK_SYMBOLS = {
 
 ACCENT_SYMBOL = "!"
 
+TRIPLET_CONNECTOR = ":"
+
 end

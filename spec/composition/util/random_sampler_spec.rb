@@ -28,7 +28,7 @@ describe RandomSampler do
           sampler.values.each_with_index do |val,i|
             count = counts[val]
             tgt_prob = sampler.probabilities[i]
-            (count / 1000.to_f).should be_within(0.05).of(tgt_prob)
+            (count / 1000.to_f).should be_within(0.1).of(tgt_prob)
           end
         end
       end

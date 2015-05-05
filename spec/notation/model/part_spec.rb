@@ -39,8 +39,6 @@ describe Part do
       'dynamic change values outside 0..1' => [
         0.5, :notes => [ Note::whole ],
         :dynamic_changes => { 0.2 => Change::Immediate.new(-0.01), 0.3 => Change::Gradual.linear(1.01,0.2) }],
-      'notes with 0 duration' => [ 0.5, :notes => [ Note.new(0) ]],
-      'notes with negative duration' => [ 0.5, :notes => [ Note.new(-1) ]],
     }.each do |context_str, args|
       context context_str do
         it 'should return false' do

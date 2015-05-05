@@ -95,13 +95,10 @@ describe Note do
     end
   end
   
-  describe '#stretch' do
-    it 'should multiply note duration by ratio' do
-      note = Note::quarter.stretch(2)
+  describe '#resize' do
+    it 'should return new note object with given duration' do
+      note = Note::quarter.resize("1/2".to_r)
       note.duration.should eq(Rational(1,2))
-      
-      note = Note::quarter.stretch(Rational(1,2))
-      note.duration.should eq(Rational(1,8))
     end
   end
   
@@ -168,18 +165,6 @@ describe Note do
     context 'note with positive duration' do
       it 'should return true' do
         Note.new(1,[C2]).should be_valid
-      end
-    end
-    
-    context 'note with 0 duration' do
-      it 'should return false' do
-        Note.new(0,[C2]).should be_invalid
-      end
-    end
-    
-    context 'note with negative duration' do
-      it 'should be invalid' do
-        Note.new(-1,[C2]).should be_invalid
       end
     end
   end

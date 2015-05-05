@@ -8,6 +8,17 @@ grammar Note
   include Duration
 
   rule note
+    triplet / single_note
+  end
+
+  rule triplet
+    first:single_note ":"
+    second:single_note ":"
+    third:single_note
+    <TripletNoteNode>
+  end
+
+  rule single_note
     duration
     more:(
       first_pl:pitch_link
@@ -15,7 +26,7 @@ grammar Note
       art:articulation?
       acc:accent?
     )?
-    <NoteNode>
+    <SingleNoteNode>
   end
 
   rule pitch_link

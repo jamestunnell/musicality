@@ -19,13 +19,114 @@ module Note
 
   include Duration
 
-  module Note0
+  def _nt_note
+    start_index = index
+    if node_cache[:note].has_key?(index)
+      cached = node_cache[:note][index]
+      if cached
+        node_cache[:note][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    r1 = _nt_triplet
+    if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+      r0 = r1
+    else
+      r2 = _nt_single_note
+      if r2
+        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
+        r0 = r2
+      else
+        @index = i0
+        r0 = nil
+      end
+    end
+
+    node_cache[:note][start_index] = r0
+
+    r0
+  end
+
+  module Triplet0
+    def first
+      elements[0]
+    end
+
+    def second
+      elements[2]
+    end
+
+    def third
+      elements[4]
+    end
+  end
+
+  def _nt_triplet
+    start_index = index
+    if node_cache[:triplet].has_key?(index)
+      cached = node_cache[:triplet][index]
+      if cached
+        node_cache[:triplet][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r1 = _nt_single_note
+    s0 << r1
+    if r1
+      if (match_len = has_terminal?(":", false, index))
+        r2 = true
+        @index += match_len
+      else
+        terminal_parse_failure('":"')
+        r2 = nil
+      end
+      s0 << r2
+      if r2
+        r3 = _nt_single_note
+        s0 << r3
+        if r3
+          if (match_len = has_terminal?(":", false, index))
+            r4 = true
+            @index += match_len
+          else
+            terminal_parse_failure('":"')
+            r4 = nil
+          end
+          s0 << r4
+          if r4
+            r5 = _nt_single_note
+            s0 << r5
+          end
+        end
+      end
+    end
+    if s0.last
+      r0 = instantiate_node(TripletNoteNode,input, i0...index, s0)
+      r0.extend(Triplet0)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:triplet][start_index] = r0
+
+    r0
+  end
+
+  module SingleNote0
     def pl
       elements[1]
     end
   end
 
-  module Note1
+  module SingleNote1
     def first_pl
       elements[0]
     end
@@ -43,7 +144,7 @@ module Note
     end
   end
 
-  module Note2
+  module SingleNote2
     def duration
       elements[0]
     end
@@ -53,12 +154,12 @@ module Note
     end
   end
 
-  def _nt_note
+  def _nt_single_note
     start_index = index
-    if node_cache[:note].has_key?(index)
-      cached = node_cache[:note][index]
+    if node_cache[:single_note].has_key?(index)
+      cached = node_cache[:single_note][index]
       if cached
-        node_cache[:note][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:single_note][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -79,7 +180,7 @@ module Note
             r7 = true
             @index += match_len
           else
-            terminal_parse_failure(",")
+            terminal_parse_failure('","')
             r7 = nil
           end
           s6 << r7
@@ -89,7 +190,7 @@ module Note
           end
           if s6.last
             r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
-            r6.extend(Note0)
+            r6.extend(SingleNote0)
           else
             @index = i6
             r6 = nil
@@ -123,7 +224,7 @@ module Note
       end
       if s3.last
         r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-        r3.extend(Note1)
+        r3.extend(SingleNote1)
       else
         @index = i3
         r3 = nil
@@ -136,14 +237,14 @@ module Note
       s0 << r2
     end
     if s0.last
-      r0 = instantiate_node(NoteNode,input, i0...index, s0)
-      r0.extend(Note2)
+      r0 = instantiate_node(SingleNoteNode,input, i0...index, s0)
+      r0.extend(SingleNote2)
     else
       @index = i0
       r0 = nil
     end
 
-    node_cache[:note][start_index] = r0
+    node_cache[:single_note][start_index] = r0
 
     r0
   end
@@ -209,7 +310,7 @@ module Note
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       @index += match_len
     else
-      terminal_parse_failure("!")
+      terminal_parse_failure('"!"')
       r0 = nil
     end
 

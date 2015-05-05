@@ -1,36 +1,24 @@
 module Musicality
 
 class Note
+  MAX_FRACT_PIECES = 7
+
   def to_lilypond sharpit = false
-    dur_strs = []
     d = duration
-    
-    if d > 1
-      dur_strs += ["1"]*d.to_i
-      d -= d.to_i
-    end
-
-    if d > 0
-      n = Math.log2(d)
-      if n < -7
-        raise UnsupportedDurationError, "Note duration #{d} is too short for Lilypond"
-      end
-
-      if n.to_i == n # duration is exact power of two
-        dur_strs.push (2**(-n)).to_i.to_s
-      else # duration may be dotted
-        undotted_duration = d/1.5
-        n = Math.log2(undotted_duration)
-
-        if n.to_i == n # duration (undotted) is exact power of two
-          if n < -7
-            raise UnsupportedDurationError, "Undotted note duration #{undotted_duration} is too short for Lilypond"
-          end
-
-          dur_strs.push (2**(-n)).to_i.to_s + "."
-        else
-          raise UnsupportedDurationError, "Leftover note duration #{d}is not power-of-two, and is not dotted power-of-two"
-        end
+    dur_strs = ["1"]*d.to_i
+   
+    fract_pieces = duration_fractional_pieces(MAX_FRACT_PIECES)
+    i = 0
+    while i < fract_pieces.size
+      piece = fract_pieces[i]
+      piece_str = piece.denominator.to_s
+      more_pieces = i < (fract_pieces.size - 1)
+      if more_pieces && fract_pieces[i+1] == (piece/2)
+        dur_strs.push piece_str + "."
+        i += 2
+      else
+        dur_strs.push piece_str
+        i += 1
       end
     end
     
@@ -47,6 +35,26 @@ class Note
     end
 
     return dur_strs.map {|dur_str| p_str + dur_str }.join(join_str)
+  end
+
+  private
+
+  def duration_fractional_pieces max_n_pieces
+    remaining = @duration - @duration.to_i
+    pieces = []
+    max_n_pieces.times do |i|
+      break if remaining == 0
+      current_piece = Rational(1, 2 << i)
+      if remaining >= current_piece
+        pieces.push current_piece
+        remaining -= current_piece
+      end
+    end
+    unless remaining.zero?
+      raise UnsupportedDurationError, "Duration #{@duration} could not be broken down \
+        into #{max_n_pieces} fractional pieces. #{remaining} was remaining."
+    end
+    return pieces
   end
 end
 

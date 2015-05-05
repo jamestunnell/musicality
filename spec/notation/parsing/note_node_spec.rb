@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 NOTE_PARSER = Parsing::NoteParser.new
 
-describe Parsing::NoteNode do
+describe Parsing::SingleNoteNode do
   context 'rest note' do  
     {
       '/2' => Note.new(Rational(1,2)),
@@ -12,8 +12,8 @@ describe Parsing::NoteNode do
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
       context str do
-        it 'should parse as NoteNode' do
-          res.should be_a Parsing::NoteNode
+        it 'should parse as SingleNoteNode' do
+          res.should be_a Parsing::SingleNoteNode
         end
   
         describe '#to_note' do
@@ -40,8 +40,8 @@ describe Parsing::NoteNode do
       res = NOTE_PARSER.parse(str)
       
       context str do
-        it 'should parse as MonophonicNoteNode' do
-          res.should be_a Parsing::NoteNode
+        it 'should parse as SingleNoteNode' do
+          res.should be_a Parsing::SingleNoteNode
         end
   
         describe '#to_note' do
@@ -68,8 +68,8 @@ describe Parsing::NoteNode do
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
       context str do
-        it 'should parse as PolyphonicNoteNode' do
-          res.should be_a Parsing::NoteNode
+        it 'should parse as SingleNoteNode' do
+          res.should be_a Parsing::SingleNoteNode
         end
   
         describe '#to_note' do

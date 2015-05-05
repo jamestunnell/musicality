@@ -100,10 +100,10 @@ class ScoreCollator
       cur_offset = 0
       cur_notes = []
       
-      l = 0
-      while cur_offset < seg.first && l < notes.size
-        cur_offset += notes[l].duration
-        l += 1
+      i = 0
+      while cur_offset < seg.first && i < notes.size
+        cur_offset += notes[i].duration
+        i += 1
       end
       
       pre_remainder = cur_offset - seg.first
@@ -112,17 +112,15 @@ class ScoreCollator
       end
       
       # found some notes to add...
-      if l < notes.size
-        r = l
-        while cur_offset < seg.last && r < notes.size
-          cur_offset += notes[r].duration
-          r += 1
+      if i < notes.size
+        while cur_offset < seg.last && i < notes.size
+          cur_notes << notes[i].clone
+          cur_offset += notes[i].duration
+          i += 1
         end
-        
-        cur_notes += Marshal.load(Marshal.dump(notes[l...r]))
         overshoot = cur_offset - seg.last
         if overshoot > 0
-          cur_notes[-1].duration -= overshoot
+          cur_notes.last.duration = cur_notes.last.duration - overshoot
           cur_offset = seg.last
         end
       end

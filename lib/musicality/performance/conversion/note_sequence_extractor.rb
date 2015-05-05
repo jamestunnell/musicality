@@ -42,7 +42,9 @@ class NoteSequenceExtractor
   attr_reader :notes
   def initialize notes, cents_per_step = 10
     @cents_per_step = cents_per_step
-    @notes = notes.map {|n| n.clone }
+    @notes = notes.map do |n|
+      n.is_a?(Triplet) ? n.expand : n.clone
+    end.flatten
 
     @notes.push Note.quarter
     (@notes.size-1).times do |i|

@@ -14,9 +14,7 @@ class ScoreConverter
         starttime = offset_map[offset]
         endtime = offset_map[offset + note.duration]
         offset += note.duration
-        newnote = note.clone
-        newnote.duration = endtime - starttime
-        newnote
+        note.resize(endtime - starttime)
       end
       new_dcs = convert_changes(part.dynamic_changes, offset_map)
       [name, Part.new(part.start_dynamic,
