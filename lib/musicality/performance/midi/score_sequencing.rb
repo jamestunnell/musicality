@@ -7,7 +7,7 @@ class Score
     end
   end
 
-  class TempoBased < Score
+  class Tempo < Score
     def to_midi_seq tempo_sample_rate, instr_map = {}
       to_timed(tempo_sample_rate).to_midi_seq(instr_map)
     end

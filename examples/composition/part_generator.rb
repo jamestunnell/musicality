@@ -16,7 +16,7 @@ end
 
 rhythm_seq2 = RepeatingSequence.new([3/8.to_r]*4)
 
-score = Score::Measured.new(SIX_EIGHT,90) do |s|
+score = Score::Tempo.new(SIX_EIGHT,90) do |s|
   s.parts["main"] = Part.new(Dynamics::MF) do |p|
     rhythm_seq = RepeatingSequence.new(([1/8.to_r]*3)*3 + [1/4.to_r,1/8.to_r])
     selector = RepeatingSequence.new([4,2,0])

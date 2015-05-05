@@ -21,9 +21,9 @@ describe Score::Timed do
   end  
 end
 
-describe Score::TempoBased do
+describe Score::Tempo do
   before :all do
-    @score = Score::Measured.new(TWO_FOUR, 120) do |s|
+    @score = Score::Tempo.new(TWO_FOUR, 120) do |s|
       s.parts["rhand"] = Part.new(Dynamics::MF) do |p|
         p.notes += ("/4C4 "*2 + "/4G4 "*2 +
                     "/4A4 "*2 + "/2G4").to_notes

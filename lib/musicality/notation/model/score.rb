@@ -55,72 +55,24 @@ class Score
     end
     alias duration seconds_long
   end
-  
-  class TempoBased < Score
-    attr_accessor :start_tempo, :tempo_changes
 
+  # Tempo-based score with meter, bar lines, and a fixed pulse (beat).
+  # Offsets are measure-based, and tempo values are in beats-per-minute.
+  class Tempo < Score
+    attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
+    
     # See Score#initialize for remaining kwargs
-    def initialize start_tempo, tempo_changes: {}, **kwargs
+    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, **kwargs
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
+      @start_meter = start_meter
+      @meter_changes = meter_changes
+      
       super(**kwargs)
     end
     
     def check_methods
-      super() + [:check_start_tempo, :check_tempo_changes]
-    end
-  
-    def ==(other)
-      return super(other) && @start_tempo == other.start_tempo &&
-      @tempo_changes == other.tempo_changes
-    end
-    
-    def notes_long
-      max_part_duration
-    end
-    
-    private
-    
-    def check_start_tempo
-      if @start_tempo <= 0
-        raise NonPositiveError, "Start tempo (#{@start_tempo}) is not positive"
-      end
-    end
-    
-    def check_tempo_changes
-      badtypes = @tempo_changes.select {|k,v| !v.end_value.is_a?(Numeric) }
-      if badtypes.any?
-        raise TypeError, "Found non-numeric tempo change values: #{badtypes}"
-      end
-      
-      badvalues = @tempo_changes.select {|k,v| v.end_value <= 0 }
-      if badvalues.any?
-        raise NonPositiveError, "Found non-positive tempo changes values: #{badvalues}"
-      end    
-    end
-  end
-  
-  # Tempo-based score without meter, bar lines, or fixed pulse (beat).
-  # Offsets are note-based, and tempo values are in quarter-notes-per-minute.
-  class Unmeasured < Score::TempoBased
-    alias duration notes_long
-  end
-  
-  # Tempo-based score with meter, bar lines, and a fixed pulse (beat).
-  # Offsets are measure-based, and tempo values are in beats-per-minute.
-  class Measured < Score::TempoBased
-    attr_accessor :start_meter, :meter_changes
-    
-    # See Score::TempoBased#initialize for remaining kwargs
-    def initialize start_meter, start_tempo, meter_changes: {}, **kwargs
-      @start_meter = start_meter
-      @meter_changes = meter_changes
-      
-      super(start_tempo, **kwargs)
-    end
-    
-    def check_methods
-      super() + [:check_start_meter, :check_meter_changes]
+      super() + [:check_start_tempo, :check_tempo_changes, :check_start_meter, :check_meter_changes]
     end
     
     def validatables
@@ -128,10 +80,17 @@ class Score
     end
     
     def ==(other)
-      return super(other) && @start_meter == other.start_meter &&
-        @meter_changes == other.meter_changes
+      return super(other) &&
+      @start_tempo == other.start_tempo &&
+      @tempo_changes == other.tempo_changes
+      @start_meter == other.start_meter &&
+      @meter_changes == other.meter_changes
     end
     
+    def notes_long
+      max_part_duration
+    end
+
     def measures_long note_dur = self.notes_long
       noff_end = note_dur
       noff_prev = 0.to_r
@@ -157,6 +116,24 @@ class Score
     
     private
     
+    def check_start_tempo
+      if @start_tempo <= 0
+        raise NonPositiveError, "Start tempo (#{@start_tempo}) is not positive"
+      end
+    end
+    
+    def check_tempo_changes
+      badtypes = @tempo_changes.select {|k,v| !v.end_value.is_a?(Numeric) }
+      if badtypes.any?
+        raise TypeError, "Found non-numeric tempo change values: #{badtypes}"
+      end
+      
+      badvalues = @tempo_changes.select {|k,v| v.end_value <= 0 }
+      if badvalues.any?
+        raise NonPositiveError, "Found non-positive tempo changes values: #{badvalues}"
+      end    
+    end
+
     def check_start_meter
       unless @start_meter.is_a? Meter
         raise TypeError, "Start meter #{@start_meter} is not a Meter object"

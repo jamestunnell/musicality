@@ -1,19 +1,11 @@
 module Musicality
 
 class Score
-  class Unmeasured < TempoBased
-    # Convert to timed score by converting measure-based offsets and note-based
-    # durations to time-based. This eliminates the use of tempos.
-    def to_timed tempo_sample_rate
-      ScoreConverter::Unmeasured.new(self, tempo_sample_rate).convert_score
-    end      
-  end
-  
-  class Measured < TempoBased
+  class Tempo < Score
     # Convert to timed score by converting measure-based offsets and note-based
     # durations to time-based. This eliminates the use of meters and tempos.
     def to_timed tempo_sample_rate
-      ScoreConverter::Measured.new(self, tempo_sample_rate).convert_score
+      ScoreConverter.new(self, tempo_sample_rate).convert_score
     end
     
     def measure_note_map

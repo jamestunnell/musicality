@@ -35,7 +35,7 @@ describe 'Conversion.measure_note_map' do
       @first_mc_off = 3
       @start_meter = THREE_FOUR
       @new_meter = TWO_FOUR
-      @score = Score::Measured.new(@start_meter, 120,
+      @score = Score::Tempo.new(@start_meter, 120,
         meter_changes: { @first_mc_off => Change::Immediate.new(@new_meter) },
         tempo_changes: {
           "1/2".to_r => Change::Gradual.linear(100,1),

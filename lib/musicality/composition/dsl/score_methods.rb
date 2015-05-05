@@ -51,13 +51,14 @@ class Score
 
   def dynamic_change new_dynamic, transition_dur: 0, offset: 0
     if transition_dur == 0
-      tempo_changes[self.duration + offset] = Change::Immediate.new(new_tempo)
-    else
-      tempo_changes[self.duration + offset] = Change::Gradual.linear(new_tempo, transition_dur)
+      change = (transition_dur == 0) ? Change::Immediate.new(new_tempo) : Change::Gradual.linear(new_tempo, transition_dur)
+      parts.values.each do |part|
+        part.tempo_changes[self.duration + offset] = change
+      end
     end
   end
   
-  class TempoBased < Score
+  class Tempo < Score
     def tempo_change new_tempo, transition_dur: 0, offset: 0
       if transition_dur == 0
         tempo_changes[self.duration + offset] = Change::Immediate.new(new_tempo)
@@ -65,9 +66,7 @@ class Score
         tempo_changes[self.duration + offset] = Change::Gradual.linear(new_tempo, transition_dur)
       end
     end
-  end
-  
-  class Measured < Score::TempoBased
+    
     def meter_change new_meter, offset: 0
       meter_changes[self.duration + offset] = Change::Immediate.new(new_meter)
     end

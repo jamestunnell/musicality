@@ -26,7 +26,7 @@ def scale_exercise scale_class, base_pitch, rhythm
   return notes
 end
 
-score = Score::Measured.new(FOUR_FOUR,120) do |s|
+score = Score::Tempo.new(FOUR_FOUR,120) do |s|
   s.parts["scale"] = Part.new(Dynamics::MP) do |p|
     Heptatonic::Prima::MODES.each do |mode_n,scale_class|
       [[1/4.to_r,1/4.to_r,1/2.to_r]].each  do |rhythm|

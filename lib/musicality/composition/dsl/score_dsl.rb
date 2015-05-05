@@ -12,8 +12,8 @@ class ScoreDSL
     @score = nil
   end
 
-  def measured_score start_meter, start_tempo, &block
-    @score = Score::Measured.new(start_meter,start_tempo)
+  def tempo_score start_meter, start_tempo, &block
+    @score = Score::Tempo.new(start_meter,start_tempo)
     @score.instance_eval(&block)
   end
 end

@@ -5,15 +5,7 @@ class ScoreEngraver
   MAX_LINE_LEN = 76
 
   def initialize score
-    case score
-    when Score::Measured
-      @start_meter = score.start_meter
-    when Score::Unmeasured
-      @start_meter = Meters::FOUR_FOUR
-    else
-      raise TypeError, "Only tempo-based score support Lilypond conversion"
-    end
-
+    @start_meter = score.start_meter
     @parts = score.collated? ? score.parts : ScoreCollator.new(score).collate_parts
     @title = score.title
     @composer = score.composer

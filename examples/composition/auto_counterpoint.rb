@@ -43,7 +43,7 @@ end
   end
 end
 
-score = Score::Unmeasured.new(120,
+score = Score::Tempo.new(Meters::FOUR_FOUR, 120,
   parts: { "bass" => bass, "guitar" => guitar },
   program: [ 0...([bass.duration,guitar.duration].min) ]
 )

@@ -6,7 +6,7 @@ include Pitches
 include Articulations
 include Meters
 
-score = Score::Measured.new(FOUR_FOUR,120) do |s|
+score = Score::Tempo.new(FOUR_FOUR,120) do |s|
   s.program += [0...2, 0...2, 2...4, 0...2]
   s.parts["lead"] = Part.new(Dynamics::MF) do |p|
     riff = "/6Bb3 /4 /12Db4= /6Db4= /36Db4 /36Eb4 /36Db4 /6Ab3 /12Db4 \

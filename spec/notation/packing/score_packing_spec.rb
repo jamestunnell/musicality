@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
+tempo_score = Score::Tempo.new(FOUR_FOUR,120) do |s|
   s.title "The best song ever"
   s.composer "James T."
 
@@ -28,21 +28,14 @@ measured_score = Score::Measured.new(FOUR_FOUR,120) do |s|
   end
 end
 
-unmeasured_score = Score::Unmeasured.new(30) do |s|
-  s.program = measured_score.program
-  s.parts = measured_score.parts
-  s.title measured_score.title
-  s.composer measured_score.composer
-end
-
 timed_score = Score::Timed.new do |s|
-  s.program = measured_score.program
-  s.parts = measured_score.parts
-  s.title measured_score.title
-  s.composer measured_score.composer
+  s.program = tempo_score.program
+  s.parts = tempo_score.parts
+  s.title tempo_score.title
+  s.composer tempo_score.composer
 end
 
-[ measured_score, unmeasured_score, timed_score ].each do |score|
+[ tempo_score, timed_score ].each do |score|
   describe score.class do
     before :all do
       @score = score
@@ -119,63 +112,38 @@ end
   end
 end
 
-[ measured_score, unmeasured_score ].each do |score|
-  describe score.class do
-    before :all do
-      @score = score
-      @h = @score.pack
-    end
-    
-    describe '#pack' do
-      it 'should return a hash with keys: "start_tempo" and "tempo_changes"' do
-        ["start_tempo","tempo_changes"].each {|key| @h.should have_key(key) }
-      end
-
-      it 'should pack start tempo as numeric' do
-        @h['start_tempo'].should be_a Numeric
-      end
-
-      it 'should pack tempo changes as a hash' do
-        @h['tempo_changes'].should be_a Hash
-      end
-      
-      it 'should pack tempo changes values using Change#pack' do
-        @h['tempo_changes'].each do |offset,packed_v|
-          change = @score.tempo_changes[offset]
-          packed_v.should eq(change.pack)
-        end
-      end
-    end
-    
-    describe '.unpack' do
-      before :all do
-        @score2 = score.class.unpack @h
-      end
-      
-      it 'should successfuly unpack the start tempo' do
-        @score2.start_tempo.should eq @score.start_tempo
-      end
-      
-      it 'should successfuly unpack the tempo changes' do
-        @score2.tempo_changes.should eq @score.tempo_changes
-      end
-    end
-  end
-end
-
-describe Score::Measured do
+describe Score::Tempo do
   before :all do
-    @score = measured_score
+    @score = tempo_score
     @h = @score.pack
   end
   
   describe '#pack' do    
+    it 'should return a hash with keys: "start_tempo" and "tempo_changes"' do
+      ["start_tempo","tempo_changes"].each {|key| @h.should have_key(key) }
+    end
+
+    it 'should pack start tempo as numeric' do
+      @h['start_tempo'].should be_a Numeric
+    end
+
+    it 'should pack tempo changes as a hash' do
+      @h['tempo_changes'].should be_a Hash
+    end
+    
+    it 'should pack tempo changes values using Change#pack' do
+      @h['tempo_changes'].each do |offset,packed_v|
+        change = @score.tempo_changes[offset]
+        packed_v.should eq(change.pack)
+      end
+    end
+
     it 'should return a hash with keys: "start_meter" and "meter_changes"' do
       ["start_meter","meter_changes"].each { |key| @h.should have_key(key) }
     end
     
-    it 'should set "type" key to "Measured"' do
-      @h["type"].should eq("Measured")
+    it 'should set "type" key to "Tempo"' do
+      @h["type"].should eq("Tempo")
     end
     
     it 'should pack start meter as a string' do
@@ -198,9 +166,17 @@ describe Score::Measured do
   
   describe '.unpack' do
     before :all do
-      @score2 = Score::Measured.unpack @h
+      @score2 = Score::Tempo.unpack @h
     end
     
+    it 'should successfuly unpack the start tempo' do
+      @score2.start_tempo.should eq @score.start_tempo
+    end
+    
+    it 'should successfuly unpack the tempo changes' do
+      @score2.tempo_changes.should eq @score.tempo_changes
+    end
+
     it 'should successfuly unpack the start meter' do
       @score2.start_meter.should eq @score.start_meter
     end
@@ -208,14 +184,6 @@ describe Score::Measured do
     it 'should successfuly unpack the meter changes' do
       @score2.meter_changes.should eq @score.meter_changes
     end
-  end
-end
-
-describe Score::Unmeasured do
-  describe '#pack' do
-    it 'should set "type" key to "Unmeasured"' do
-      unmeasured_score.pack["type"].should eq("Unmeasured")
-    end    
   end
 end
 
@@ -234,7 +202,7 @@ end
 
 describe Score do
   describe '.unpack' do
-    [ timed_score, unmeasured_score, measured_score ].each do |score|
+    [ timed_score, tempo_score ].each do |score|
       context "given packing from a #{score.class} object" do
         before :all do
           @packing = score.pack

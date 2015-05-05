@@ -6,7 +6,7 @@ include Pitches
 include Articulations
 include Meters
 
-score = Score::Measured.new(FOUR_FOUR, 120) do |s|
+score = Score::Tempo.new(FOUR_FOUR, 120) do |s|
   s.program += [0...4]*2
   
   s.parts[1] = Part.new(Dynamics::MF) do |p|

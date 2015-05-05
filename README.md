@@ -45,7 +45,7 @@ include Musicality
 include Meters
 include Dynamics
 
-twinkle = Score::Measured.new(TWO_FOUR, 120) do |s|
+twinkle = Score::Tempo.new(TWO_FOUR, 120) do |s|
   s.parts["rhand"] = Part.new(MF) do |p|
     p.notes += ("/4C4 "*2 + "/4G4 "*2 +
                 "/4A4 "*2 + "/2G4").to_notes
@@ -72,7 +72,7 @@ The score DSL is an internal DSL (built on Ruby) that consists of a *score* bloc
 
 Here is an example of a score file.
 ```ruby
-measured_score FOUR_FOUR, 120 do
+tempo_score FOUR_FOUR, 120 do
   title "Twinkle, Twinkle, Little Star"
 
   Cmaj = [C3,E3,G3]

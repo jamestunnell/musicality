@@ -117,17 +117,17 @@ describe Score do
   end
 end
 
-describe Score::Measured do
+describe Score::Tempo do
   describe '#initialize' do
     it 'should use empty containers for parameters not given' do
-      s = Score::Measured.new(FOUR_FOUR,120)
+      s = Score::Tempo.new(FOUR_FOUR,120)
       s.parts.should be_empty
       s.program.should be_empty
     end
     
     it 'should assign given parameters' do
       m = FOUR_FOUR
-      s = Score::Measured.new(m,120)
+      s = Score::Tempo.new(m,120)
       s.start_meter.should eq m
       s.start_tempo.should eq 120
       
@@ -136,7 +136,7 @@ describe Score::Measured do
       mcs = { 1 => Change::Immediate.new(THREE_FOUR) }
       tcs = { 1 => Change::Immediate.new(100) }
       
-      s = Score::Measured.new(m,120,
+      s = Score::Tempo.new(m,120,
         parts: parts,
         program: program,
         meter_changes: mcs,
@@ -153,13 +153,13 @@ describe Score::Measured do
     context 'with no meter changes' do
       context 'with no parts' do
         it 'should return 0' do
-          Score::Measured.new(TWO_FOUR, 120).measures_long.should eq(0)
+          Score::Tempo.new(TWO_FOUR, 120).measures_long.should eq(0)
         end
       end
 
       context 'with one part' do
         it 'should return the duration of the part, in measures' do
-          Score::Measured.new(TWO_FOUR, 120, parts: {
+          Score::Tempo.new(TWO_FOUR, 120, parts: {
             "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes)
           }).measures_long.should eq(3.5)
         end
@@ -167,7 +167,7 @@ describe Score::Measured do
       
       context 'with two parts' do
         it 'should return the duration of the longest part, in measures' do
-          Score::Measured.new(TWO_FOUR, 120, parts: {
+          Score::Tempo.new(TWO_FOUR, 120, parts: {
             "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
             "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
           }).measures_long.should eq(4)
@@ -177,7 +177,7 @@ describe Score::Measured do
     
     context 'with meter changes' do
       it 'should return the duration of the longest part, in measures' do
-        Score::Measured.new(TWO_FOUR, 120,
+        Score::Tempo.new(TWO_FOUR, 120,
           meter_changes: {
             2 => Change::Immediate.new(FOUR_FOUR),
           },
@@ -187,7 +187,7 @@ describe Score::Measured do
           }
         ).measures_long.should eq(3)
         
-        Score::Measured.new(TWO_FOUR, 120,
+        Score::Tempo.new(TWO_FOUR, 120,
           meter_changes: {
             2 => Change::Immediate.new(FOUR_FOUR),
             4 => Change::Immediate.new(SIX_EIGHT),
@@ -202,7 +202,7 @@ describe Score::Measured do
     
     context 'given specific note duration' do
       it 'should change the given note duration to measures' do
-        score = Score::Measured.new(TWO_FOUR, 120,
+        score = Score::Tempo.new(TWO_FOUR, 120,
             meter_changes: {
               2 => Change::Immediate.new(FOUR_FOUR),
               4 => Change::Immediate.new(SIX_EIGHT)
@@ -228,7 +228,7 @@ describe Score::Measured do
     }.each do |context_str,args|
       context context_str do
         it 'should return true' do
-          Score::Measured.new(*args).should be_valid
+          Score::Tempo.new(*args).should be_valid
         end
       end
     end
@@ -251,77 +251,9 @@ describe Score::Measured do
     }.each do |context_str,args|
       context context_str do
         it 'should return false' do
-          Score::Measured.new(*args).should be_invalid
+          Score::Tempo.new(*args).should be_invalid
         end
       end      
-    end
-  end
-end
-
-describe Score::Unmeasured do
-  describe '#initialize' do
-    it 'should use empty containers for parameters not given' do
-      s = Score::Unmeasured.new(30)
-      s.parts.should be_empty
-      s.program.should be_empty
-    end
-    
-    it 'should assign given parameters' do
-      s = Score::Unmeasured.new(30)
-      s.start_tempo.should eq(30)
-      
-      parts = { "piano (LH)" => Samples::SAMPLE_PART }
-      program = [0...0.75, 0...0.75]
-      tcs = { 1 => Change::Immediate.new(40) }
-      
-      s = Score::Unmeasured.new(30,
-        parts: parts,
-        program: program,
-        tempo_changes: tcs
-      )
-      s.parts.should eq parts
-      s.program.should eq program
-      s.tempo_changes.should eq tcs
-    end
-  end
-
-  describe '#notes_long' do
-    it 'should return the duration of the longest part' do
-      Score::Unmeasured.new(120, parts: {
-        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
-      }).notes_long.should eq(2)
-    end
-  end
-  
-  describe '#valid?' do
-    {
-      'valid start tempo' => [ 40 ],
-      'valid tempo changes' => [ 30,
-        :tempo_changes => { 1 => Change::Gradual.linear(40, 2), 2 => Change::Immediate.new(50) } ],
-      'valid part' => [ 30, :parts => { "piano" => Samples::SAMPLE_PART }],
-      'valid program' => [ 30, :program => [0..2,0..2] ]
-    }.each do |context_str,args|
-      context context_str do
-        it 'should return true' do
-          Score::Unmeasured.new(*args).should be_valid
-        end
-      end
-    end
-    
-    {
-      'start tempo valid is zero' => [ 0 ],
-      'start tempo valid is negative' => [ -1 ],
-      'tempo change value is not a valid value' => [ 30,
-        :tempo_changes => { 1 => Change::Gradual.linear(-1,1) } ],
-      'invalid part' => [ 30, :parts => { "piano" => Part.new(-0.1) }],
-      'invalid program' => [ 30, :program => [2..0] ],
-    }.each do |context_str,args|
-      context context_str do
-        it 'should return false' do
-          Score::Unmeasured.new(*args).should be_invalid
-        end
-      end 
     end
   end
 end

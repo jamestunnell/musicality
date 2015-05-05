@@ -4,7 +4,7 @@ class ScoreSequencer
   def initialize score
     unless score.is_a?(Score::Timed)
       raise ArgumentError, "The given score is not a Score::Timed. \
-      Convert it first using MeasureScoreConverter or UnmeasuredScoreConverter."
+      Convert it first using ScoreConverter."
     end
     
     @parts = score.collated? ? score.parts : ScoreCollator.new(score).collate_parts
