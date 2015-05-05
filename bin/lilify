@@ -3,7 +3,10 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-Loads a musicality score from YAML file, and converts it to a Lilypond file for engraving.
+Loads a musicality score from YAML file, and converts it to a Lilypond file for
+engraving. By default, all parts are selected for engraving, using their part 
+names as titles. Or, part name-title pairs can be given, in order to assign a 
+certain title to a part.
 
 Usage:
   #{exe_name} <input> [PART TITLE] ... [options]
@@ -16,7 +19,7 @@ Arguments:
   TITLE The title to give the part (e.g. "Left Hand")
   
 Options:
-  --all         Select all parts for engraving, and use part name as the title if not given
+  --selected    Only the given parts will be selected for engraving
   -h --help     Show this screen.
   --version     Show version.
   --outfile=OUTF Name of output Lilypond file
@@ -55,12 +58,11 @@ File.open(fin_name) do |fin|
   if score.valid?
     part_names = args["PART"]
     part_titles = args["TITLE"]
-    name_title_map = 
 
     make_lilypond_args = {
       :part_titles => Hash[[part_names,part_titles].transpose] 
     }
-    unless args["--all"]
+    if args["--selected"]
       make_lilypond_args[:selected_parts] = part_names
     end
 
