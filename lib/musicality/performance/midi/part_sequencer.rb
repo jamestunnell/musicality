@@ -2,9 +2,12 @@ module Musicality
 
 class PartSequencer
   def initialize part, dynamics_sample_rate: 50, cents_per_step: 10
-    replace_portamento_with_glissando(part.notes)
+    notes = part.notes.map do |note|
+      note.is_a?(Triplet) ? note.expand : note.clone
+    end.flatten
+    replace_portamento_with_glissando(notes)
     
-    extractor = NoteSequenceExtractor.new(part.notes, cents_per_step)
+    extractor = NoteSequenceExtractor.new(notes, cents_per_step)
     note_sequences = extractor.extract_sequences
     note_events = gather_note_events(note_sequences)
     
