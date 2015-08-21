@@ -3,27 +3,26 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-Loads a musicality score from YAML file, and converts it to a Lilypond file for
-engraving. By default, all parts are selected for engraving, using their part 
-names as titles. Or, part name-title pairs can be given, in order to assign a 
-certain title to a part.
+Loads a musicality score from YAML file, and converts it to one or more Lilypond 
+files for engraving. If no part names are given, all score parts are selected for
+engraving. Otherwise, only the given parts names will be selected. By default, a
+a single engraving file will be produced. If the --split flag is used, a file 
+will be produced for each part.
 
 Usage:
-  #{exe_name} <input> [PART TITLE] ... [options]
+  #{exe_name} SCORE [PART]... [options]
   #{exe_name} -h | --help
   #{exe_name} --version
 
 Arguments:
-  input A musicality score file (may be packed as a hash) in YAML format
+  SCORE A musicality score file (may be packed as a hash) in a YAML file
   PART name of a part in the score (e.g. "lhand")
-  TITLE The title to give the part (e.g. "Left Hand")
   
 Options:
-  --selected    Only the given parts will be selected for engraving
-  -h --help     Show this screen.
-  --version     Show version.
-  --outfile=OUTF Name of output Lilypond file
-
+  --split        Make separate Lilypond files for each part
+  --outdir=OUTD  Dir where files will be put (defaults to same dir as score file)
+  -h --help      Show this screen.
+  --version      Show version.
 DOCOPT
 
 require 'docopt'
@@ -37,17 +36,37 @@ end
 
 require 'musicality'
 
-if args["--version"]
+VERSION = args["--version"]
+
+if VERSION
   puts "#{exe_name} from musicality v#{Musicality::VERSION}"
   exit
 end
 
+SCORE_FILE = args["SCORE"]
+unless File.exists? SCORE_FILE
+  puts "Score file #{SCORE_FILE} does not exist. Aborting."
+  exit
+end
+
+if args["--outdir"]
+  OUTDIR = args["--outdir"]
+  unless Dir.exists? OUTDIR
+    puts "Output directory #{OUTDIR} does not exist. Aborting."
+    exit
+  end
+else
+  OUTDIR = File.dirname(SCORE_FILE)
+end
+
+PARTS = args["PART"]
+SPLIT = args["--split"]
+
 require 'yaml'
 include Musicality
 
-fin_name = args["<input>"]
-File.open(fin_name) do |fin|
-  print "Reading file '#{fin_name}'..."
+File.open(SCORE_FILE) do |fin|
+  print "Reading file '#{SCORE_FILE}'..."
   score = YAML.load(fin.read)
   
   if score.is_a? Hash
@@ -56,28 +75,36 @@ File.open(fin_name) do |fin|
   puts "done"
   
   if score.valid?
-    part_names = args["PART"]
-    part_titles = args["TITLE"]
-
-    make_lilypond_args = {
-      :part_titles => Hash[[part_names,part_titles].transpose] 
-    }
-    if args["--selected"]
-      make_lilypond_args[:selected_parts] = part_names
+    if PARTS.any?
+      selected_parts = PARTS
+    else
+      selected_parts = score.parts.keys
     end
 
     print "Making Lilypond instructions..."
     engraver = ScoreEngraver.new(score)
-    lilypond_text = engraver.make_lilypond(make_lilypond_args)
+    outfiles = {}
+
+    if SPLIT
+      selected_parts.each do |selected_part|
+        outfiles[selected_part] = engraver.make_lilypond(selected_parts: [selected_part])
+      end
+    else
+      outfiles[""] = engraver.make_lilypond(selected_parts: selected_parts)
+    end
     puts "done"
 
-    fout_name = args["--outfile"]
-    if fout_name.nil?
-      fout_name = "#{File.dirname(fin_name)}/#{File.basename(fin_name,File.extname(fin_name))}.ly"
+    base_fout_name = "#{OUTDIR}/#{File.basename(SCORE_FILE,File.extname(SCORE_FILE))}"
+    outfiles.each do |outfile, lilypond_text|
+      if outfile.empty?
+        fout_name = "#{base_fout_name}.ly"
+      else
+        fout_name = "#{base_fout_name}_#{outfile}.ly"
+      end
+      print "Writing Lilypond file '#{fout_name}'..."
+      File.write(fout_name, lilypond_text)
+      puts "done"
     end
-    print "Writing Lilypond file '#{fout_name}'..."
-    File.write(fout_name, lilypond_text)
-    puts "done"
   else
     puts "Score is not valid. See errors:"
     puts score.errors.join("\n")
