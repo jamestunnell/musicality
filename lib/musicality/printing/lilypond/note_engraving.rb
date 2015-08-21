@@ -4,37 +4,15 @@ class Note
   MAX_FRACT_PIECES = 7
 
   def to_lilypond sharpit = false
-    d = duration
-    dur_strs = ["1"]*d.to_i
-   
-    fract_pieces = duration_fractional_pieces(MAX_FRACT_PIECES)
-    i = 0
-    while i < fract_pieces.size
-      piece = fract_pieces[i]
-      piece_str = piece.denominator.to_s
-      more_pieces = i < (fract_pieces.size - 1)
-      if more_pieces && fract_pieces[i+1] == (piece/2)
-        dur_strs.push piece_str + "."
-        i += 2
-      else
-        dur_strs.push piece_str
-        i += 1
-      end
-    end
+    whole_count = @duration.to_i
+    fractional_pieces = duration_fractional_pieces(MAX_FRACT_PIECES)
     
-    if pitches.any?
-      if pitches.size == 1
-        p_str = pitches.first.to_lilypond
-      else
-        p_str = "<" + pitches.map {|p| p.to_lilypond}.join(" ") + ">"
-      end
-      join_str = "~ "
-    else
-      p_str = "r"
-      join_str = " "
-    end
+    plain_dur_strs = ["1"]*whole_count
+    plain_dur_strs += pieces_to_dur_strs(fractional_pieces)
+    p_str, join_str = figure_pitch_and_join_str
 
-    return dur_strs.map {|dur_str| p_str + dur_str }.join(join_str)
+    plain_output = plain_dur_strs.map {|dur_str| p_str + dur_str }.join(join_str)
+    return plain_output
   end
 
   private
@@ -55,6 +33,35 @@ class Note
         into #{max_n_pieces} fractional pieces. #{remaining} was remaining."
     end
     return pieces
+  end
+
+  def pieces_to_dur_strs pieces
+    dur_strs = []
+    while pieces.any?
+      piece = pieces.shift
+      piece_str = piece.denominator.to_s
+      if pieces.any? && piece == pieces.first*2
+        piece_str += "."
+        pieces.shift
+      end
+      dur_strs.push piece_str
+    end
+    return dur_strs
+  end
+
+  def figure_pitch_and_join_str
+    if pitches.any?
+      if pitches.size == 1
+        p_str = pitches.first.to_lilypond
+      else
+        p_str = "<" + pitches.map {|p| p.to_lilypond}.join(" ") + ">"
+      end
+      join_str = "~ "
+    else
+      p_str = "r"
+      join_str = " "
+    end
+    return [ p_str, join_str ]
   end
 end
 
