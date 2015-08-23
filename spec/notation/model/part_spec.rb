@@ -17,6 +17,9 @@ describe Part do
       p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs)
       p.notes.should eq notes
       p.dynamic_changes.should eq dcs
+
+      p = Part.new(Dynamics::P, instrument: Instruments::ELECTRIC_PIANO_1)
+      p.instrument.should eq Instruments::ELECTRIC_PIANO_1
     end
   end
   

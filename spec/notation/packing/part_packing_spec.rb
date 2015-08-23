@@ -19,10 +19,11 @@ describe Part do
       @h.should be_a Hash
     end
     
-    it 'should return a hash with keys: "notes", "start_dynamic", and "dynamic_changes"' do
+    it 'should return a hash with keys: "notes", "start_dynamic", "dynamic_changes", and "instrument"' do
       @h.keys.should include("notes")
       @h.keys.should include("start_dynamic")
       @h.keys.should include("dynamic_changes")
+      @h.keys.should include("instrument")
     end
     
     it 'should pack notes into a string' do
@@ -40,6 +41,10 @@ describe Part do
         packed_v.should be_a t
       end
     end
+
+    it 'should pack instrument as whatever Instrument#pack' do
+      @h['instrument'].should eq @p.instrument.pack
+    end
   end
   
   describe '.unpack' do
@@ -51,16 +56,29 @@ describe Part do
       @p2.should be_a Part
     end
     
-    it 'should successfuly unpack the notes' do
+    it 'should successfully unpack the notes' do
       @p2.notes.should eq @p.notes
     end
     
-    it 'should successfuly unpack the start dynamic' do
+    it 'should successfully unpack the start dynamic' do
       @p2.start_dynamic.should eq @p.start_dynamic
     end
     
-    it 'should successfuly unpack the dynamic changes' do
+    it 'should successfully unpack the dynamic changes' do
       @p2.dynamic_changes.should eq @p.dynamic_changes
+    end
+
+    it 'should successfully unpack the instrument' do
+      @p2.instrument.should eq @p.instrument
+    end
+
+    context 'with no "instrument" key in packing' do
+      it 'should substitute the default instrument' do
+        h2 = @h.clone
+        h2.delete 'instrument'
+        p3 = Part.unpack h2
+        p3.instrument.should eq Instruments::DEFAULT_INSTRUMENT
+      end
     end
   end
 end

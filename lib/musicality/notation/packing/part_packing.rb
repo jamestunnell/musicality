@@ -6,11 +6,13 @@ class Part
     packed_dcs = Hash[ dynamic_changes.map do |offset,change|
       [ offset, change.pack ]
     end ]
-      
+    packed_instr = instrument.pack
+
     {
       'notes' => packed_notes,
       'start_dynamic' => start_dynamic,
-      'dynamic_changes' => packed_dcs
+      'dynamic_changes' => packed_dcs,
+      'instrument' => packed_instr,
     }
   end
   
@@ -20,10 +22,15 @@ class Part
       [ offset,Change.unpack(change) ]
     end ]
     
+    # instrument may not be present in older parts
+    instr = packing.has_key?('instrument') ? 
+      Instrument.unpack(packing['instrument']) : Instruments::DEFAULT_INSTRUMENT
+
     new(
       packing["start_dynamic"],
       notes: unpacked_notes,
-      dynamic_changes: unpacked_dcs
+      dynamic_changes: unpacked_dcs,
+      instrument: instr
     )
   end
 end

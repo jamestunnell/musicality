@@ -5,13 +5,14 @@ module Musicality
 class Part
   include Validatable
   
-  attr_accessor :start_dynamic, :dynamic_changes, :notes
+  attr_accessor :start_dynamic, :dynamic_changes, :notes, :instrument
   
-  def initialize start_dynamic, notes: [], dynamic_changes: {}
+  def initialize start_dynamic, notes: [], dynamic_changes: {}, instrument: Instruments::DEFAULT_INSTRUMENT
     @notes = notes
     @start_dynamic = start_dynamic
     @dynamic_changes = dynamic_changes
-    
+    @instrument = instrument
+
     yield(self) if block_given?
   end
   
