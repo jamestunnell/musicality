@@ -21,9 +21,9 @@ describe PartSequencer do
       @track.name.should eq(@part_name)
     end
     
-    it 'should assign program number via ProgramChange event' do
+    it 'should assign program number (less one) via ProgramChange event' do
       event = @track.events.select { |x| x.is_a? MIDI::ProgramChange }.first
-      event.program.should eq(@program_num)
+      event.program.should eq(@program_num-1)
     end
     
     it 'should assign the given channel number to all channel events' do

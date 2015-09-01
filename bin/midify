@@ -3,25 +3,29 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-Loads a musicality score from YAML file, and converts it to a MIDI file.
+Loads a musicality score from YAML file, and converts it to one or more MIDI 
+files. If no part names are given, all score parts are selected for MIDI 
+sequencing. Otherwise, only the given parts names will be selected. By default,
+a single engraving file will be produced. If the --split flag is used, a file 
+will be produced for each part. If --outdir is not given, files will be put in
+the same directory as the score file.
 
 Usage:
-  #{exe_name} <input> [PART PROGRAM] ... [options]
+  #{exe_name} SCORE [PART]... [options]
   #{exe_name} -h | --help
   #{exe_name} --version
 
 Arguments:
-  input A musicality score file (may be packed as a hash) in YAML format
-  PART name of a part in the score
-  PROGRAM MIDI program (instrument) number for the given part
-  
+  SCORE A musicality score file (may be packed as a hash) in a YAML file
+  PART name of a part in the score (e.g. "lhand")
+
 Options:
+  --split        Make separate Lilypond files for each part
+  --outdir=OUTD  Dir where files will be put (defaults to same dir as score file)
   --srate=SRATE sampling rate for converting tempo-based score to time-based
                 score, and for sampling dynamic change values [default: 200]
   -h --help     Show this screen.
   --version     Show version.
-  --outfile=OUTF Name of output MIDI file
-
 DOCOPT
 
 require 'docopt'
@@ -40,12 +44,30 @@ if args["--version"]
   exit
 end
 
+SCORE_FILE = args["SCORE"]
+unless File.exists? SCORE_FILE
+  puts "Score file #{SCORE_FILE} does not exist. Aborting."
+  exit
+end
+
+if args["--outdir"]
+  OUTDIR = args["--outdir"]
+  unless Dir.exists? OUTDIR
+    puts "Output directory #{OUTDIR} does not exist. Aborting."
+    exit
+  end
+else
+  OUTDIR = File.dirname(SCORE_FILE)
+end
+
+PARTS = args["PART"]
+SPLIT = args["--split"]
+
 require 'yaml'
 include Musicality
 
-fin_name = args["<input>"]
-File.open(fin_name) do |fin|
-  print "Reading file '#{fin_name}'..."
+File.open(SCORE_FILE) do |fin|
+  print "Reading file '#{SCORE_FILE}'..."
   score = YAML.load(fin.read)
   
   if score.is_a? Hash
@@ -60,22 +82,40 @@ File.open(fin_name) do |fin|
   end
   
   if score.valid?
-    part_names = args["PART"]
-    program_nums = args["PROGRAM"].map {|str| str.to_i }
-    instr_map = Hash[[part_names,program_nums].transpose]
-    
+    if PARTS.any?
+      selected_parts = PARTS
+    else
+      selected_parts = score.parts.keys
+    end
+
     print "Making MIDI sequence..."
     sequencer = ScoreSequencer.new(score)
-    seq = sequencer.make_midi_seq(instr_map)
-    puts "done"  
-  
-    fout_name = args["--outfile"]
-    if fout_name.nil?
-      fout_name = "#{File.dirname(fin_name)}/#{File.basename(fin_name,File.extname(fin_name))}.mid"
+    outfiles = {}
+
+    if SPLIT
+      selected_parts.each do |selected_part|
+        outfiles[selected_part] = sequencer.make_midi_seq([selected_part])
+      end
+    else
+      outfiles[""] = sequencer.make_midi_seq(selected_parts)
     end
-    print "Writing MIDI file '#{fout_name}'..."
-    File.open(fout_name, 'wb'){ |fout| seq.write(fout) }
-    puts "done"    
+    puts "done"  
+
+    # part_names = args["PART"]
+    # program_nums = args["PROGRAM"].map {|str| str.to_i }
+    # instr_map = Hash[[part_names,program_nums].transpose]    
+
+    base_fout_name = "#{OUTDIR}/#{File.basename(SCORE_FILE,File.extname(SCORE_FILE))}"  
+    outfiles.each do |outfile, seq|
+      if outfile.empty?
+        fout_name = "#{base_fout_name}.mid"
+      else
+        fout_name = "#{base_fout_name}_#{outfile}.mid"
+      end
+      print "Writing MIDI file '#{fout_name}'..."
+      File.open(fout_name, 'wb'){ |fout| seq.write(fout) }
+      puts "done"
+    end
   else
     puts "Score is not valid. See errors:"
     puts score.errors.join("\n")

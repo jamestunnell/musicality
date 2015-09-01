@@ -102,19 +102,22 @@ class PartSequencer
     return dynamic_events
   end
 
-  def begin_track midi_sequence, part_name, channel, program
+  def begin_track midi_sequence, track_name, channel, program
+    raise ArgumentError, "Program number #{program} is not in range 1-128" unless program.between?(1,128)
+    program_idx = program - 1 # program numbers start at 1, array indices start at 0
+
     # Track to hold part notes
     track = MIDI::Track.new(midi_sequence)
     
     # Name the track and instrument
-    track.name = part_name
-    track.instrument = MIDI::GM_PATCH_NAMES[program]
+    track.name = track_name
+    track.instrument = MIDI::GM_PATCH_NAMES[program_idx]
     
     # Add a volume controller event (optional).
     track.events << MIDI::Controller.new(channel, MIDI::CC_VOLUME, 127)
     
     # Change to particular instrument sound
-    track.events << MIDI::ProgramChange.new(channel, program)
+    track.events << MIDI::ProgramChange.new(channel, program_idx)
     
     return track
   end

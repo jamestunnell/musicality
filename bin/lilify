@@ -7,7 +7,8 @@ Loads a musicality score from YAML file, and converts it to one or more Lilypond
 files for engraving. If no part names are given, all score parts are selected for
 engraving. Otherwise, only the given parts names will be selected. By default, a
 a single engraving file will be produced. If the --split flag is used, a file 
-will be produced for each part.
+will be produced for each part. If --outdir is not given, files will be put in
+the same directory as the score file.
 
 Usage:
   #{exe_name} SCORE [PART]... [options]
@@ -36,9 +37,7 @@ end
 
 require 'musicality'
 
-VERSION = args["--version"]
-
-if VERSION
+if args["--version"]
   puts "#{exe_name} from musicality v#{Musicality::VERSION}"
   exit
 end
@@ -87,10 +86,10 @@ File.open(SCORE_FILE) do |fin|
 
     if SPLIT
       selected_parts.each do |selected_part|
-        outfiles[selected_part] = engraver.make_lilypond(selected_parts: [selected_part])
+        outfiles[selected_part] = engraver.make_lilypond([selected_part])
       end
     else
-      outfiles[""] = engraver.make_lilypond(selected_parts: selected_parts)
+      outfiles[""] = engraver.make_lilypond(selected_parts)
     end
     puts "done"
 

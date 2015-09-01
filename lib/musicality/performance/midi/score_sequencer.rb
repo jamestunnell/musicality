@@ -17,7 +17,7 @@ class ScoreSequencer
   
   USEC_PER_QUARTER_SEC = 250000
   
-  def make_midi_seq instr_map = {}
+  def make_midi_seq selected_parts = @parts.keys
     seq = MIDI::Sequence.new()
     
     # first track for the sequence holds time sig and tempo events
@@ -27,11 +27,9 @@ class ScoreSequencer
     track0.events << MIDI::MetaEvent.new(MIDI::META_SEQ_NAME, 'Sequence Name')
     
     channel = 0
-    @parts.each do |part_name,part|
-      program = 1
-      if instr_map.has_key?(part_name)
-        program = instr_map[part_name]
-      end
+    selected_parts.each do |part_name|
+      part = @parts[part_name]
+      program = part.instrument.midi_num
       
       pseq = PartSequencer.new(part)
       seq.tracks << pseq.make_midi_track(seq, part_name, channel, seq.ppqn, program)
