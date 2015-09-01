@@ -3,6 +3,9 @@ require 'musicality/version'
 require 'musicality/validatable'
 require 'musicality/errors'
 
+require 'musicality/pitch_class'
+require 'musicality/pitch_classes'
+
 #
 # Notation
 #
@@ -22,6 +25,8 @@ require 'musicality/notation/model/instruments'
 require 'musicality/notation/model/part'
 require 'musicality/notation/model/meter'
 require 'musicality/notation/model/meters'
+require 'musicality/notation/model/key'
+require 'musicality/notation/model/keys'
 require 'musicality/notation/model/score'
 
 require 'treetop'
@@ -48,6 +53,8 @@ require 'musicality/notation/parsing/convenience_methods'
 require 'musicality/notation/packing/change_packing'
 require 'musicality/notation/packing/instrument_packing'
 require 'musicality/notation/packing/part_packing'
+require 'musicality/notation/packing/meter_packing'
+require 'musicality/notation/packing/key_packing'
 require 'musicality/notation/packing/score_packing'
 
 require 'musicality/notation/util/interpolation'
@@ -75,8 +82,6 @@ require 'musicality/composition/util/random_sampler'
 require 'musicality/composition/util/probabilities'
 require 'musicality/composition/util/note_generation'
 
-require 'musicality/composition/model/pitch_class'
-require 'musicality/composition/model/pitch_classes'
 require 'musicality/composition/model/scale'
 require 'musicality/composition/model/scale_class'
 require 'musicality/composition/model/scale_classes'
@@ -116,9 +121,12 @@ require 'musicality/performance/midi/score_sequencing'
 #
 
 require 'musicality/printing/lilypond/errors'
+require 'musicality/printing/lilypond/pitch_class_engraving'
 require 'musicality/printing/lilypond/pitch_engraving'
 require 'musicality/printing/lilypond/note_engraving'
 require 'musicality/printing/lilypond/triplet_engraving'
 require 'musicality/printing/lilypond/meter_engraving'
+require 'musicality/printing/lilypond/key_engraving'
+require 'musicality/printing/lilypond/part_engraver'
 require 'musicality/printing/lilypond/score_engraver'
 require 'musicality/printing/lilypond/score_engraving'

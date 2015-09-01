@@ -15,7 +15,7 @@ class Score
     def pack
       pack_common.merge("start_tempo" => @start_tempo,
         "tempo_changes" => pack_tempo_changes,
-        "start_meter" => pack_start_meter,
+        "start_meter" => start_meter.pack,
         "meter_changes" => pack_meter_changes)
     end
     
@@ -33,26 +33,18 @@ class Score
 
     def pack_meter_changes
       Hash[ meter_changes.map do |off,change|
-        [off,change.pack(:with => :to_s)]
+        [off, change.pack {|v| v.pack }]
       end ]
-    end
-
-    def pack_start_meter
-      start_meter.to_s
     end
 
     def self.unpack_meter_changes packing
       Hash[ packing["meter_changes"].map do |off,p|
-         [off, Change.unpack(p, :with => :to_meter) ]
+         [off, Change.unpack(p){ |v| Meter.unpack(v) }]
       end ]
     end
 
-    def self.unpack_start_meter packing
-      Meter.parse(packing["start_meter"])
-    end
-
     def self.unpack packing
-      new(unpack_start_meter(packing), packing["start_tempo"],
+      a = new(Meter.unpack(packing["start_meter"]), packing["start_tempo"],
         tempo_changes: unpack_tempo_changes(packing),
         meter_changes: unpack_meter_changes(packing),
         **Score.unpack_common(packing))
@@ -86,19 +78,37 @@ class Score
     packing["program"].map {|str| Segment.parse(str) }
   end
 
+  def pack_key_changes
+    Hash[ key_changes.map do |off,change|
+      [off, change.pack {|v| v.pack }]
+    end ]
+  end
+
+  def self.unpack_key_changes packing
+    Hash[ packing["key_changes"].map do |off,p|
+       [off, Change.unpack(p){|v| Key.unpack(v) }]
+    end ]
+  end
+
   def pack_common
     { "type" => self.class.to_s.split("::")[-1],
       "program" => pack_program,
       "parts" => pack_parts,
       "title" => @title,
-      "composer" => @composer }
+      "composer" => @composer,
+      "start_key" => @start_key.pack,
+      "key_changes" => pack_key_changes
+    }
   end
   
   def self.unpack_common packing
     { :program => unpack_program(packing),
       :parts => unpack_parts(packing),
       :title => packing["title"],
-      :composer => packing["composer"] }
+      :composer => packing["composer"],
+      :start_key => Key.unpack(packing["start_key"]),
+      :key_changes => unpack_key_changes(packing)
+    }
   end    
 end
 

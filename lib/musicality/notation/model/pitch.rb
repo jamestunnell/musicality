@@ -23,7 +23,7 @@ class Pitch
 
   #The default number of semitones per octave is 12, corresponding to
   # the twelve-tone equal temperment tuning system.
-  SEMITONES_PER_OCTAVE = 12
+  SEMITONES_PER_OCTAVE = PitchClass::MOD
   CENTS_PER_SEMITONE = 100
   CENTS_PER_OCTAVE = SEMITONES_PER_OCTAVE * CENTS_PER_SEMITONE
 
@@ -116,8 +116,12 @@ class Pitch
     Pitch.new(cent: @total_cents)
   end
 
-  def to_s(sharpit = false)
-    letter = case semitone
+  def natural?
+    [0,2,4,5,7,9,11].include?(semitone)
+  end
+
+  def self.pc_str semitone, sharpit
+    case semitone
     when 0 then "C"
     when 1 then sharpit  ? "C#" : "Db"
     when 2 then "D"
@@ -131,7 +135,10 @@ class Pitch
     when 10 then sharpit  ? "A#" : "Bb"
     when 11 then "B"
     end
-    
+  end
+
+  def to_s(sharpit = false)
+    letter = Pitch.pc_str(semitone, sharpit)
     if @cent == 0
       return letter + octave.to_s
     elsif @cent > 0

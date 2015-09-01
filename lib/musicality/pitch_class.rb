@@ -1,7 +1,7 @@
 module Musicality
 
 class PitchClass
-  MOD = Pitch::SEMITONES_PER_OCTAVE
+  MOD = 12 # semitones per octave
   
   def self.from_i i
     i % MOD

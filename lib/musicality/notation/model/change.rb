@@ -18,7 +18,7 @@ class Change
     end
     
     def clone
-      Immediate.new(@end_value)
+      Immediate.new(block_given? ? yield(@end_value) : @end_value)
     end
     
     def duration; 0; end
@@ -59,7 +59,12 @@ class Change
       @start_value == other.start_value
     end
     
-    def clone; Gradual.new(@end_value, @duration, @transition); end
+    def clone
+      ev = block_given? ? yield(@end_value) : @end_value
+      sv = (block_given? && !@start_value.nil?) ? yield(@start_value) : @start_value
+      Gradual.new(ev, @duration, @transition, start_value: sv)
+    end
+
     def relative?; @start_value.nil?; end
     def absolute?; !@start_value.nil?; end
     
@@ -102,8 +107,10 @@ class Change
       end
     
       def clone
-        Trimmed.new(@end_value, @duration, @transition, start_value: @start_value,
-                    preceding: @preceding, remaining: @remaining)
+        ev = block_given? ? yield(@end_value) : @end_value
+        sv = (block_given? && !@start_value.nil?) ? yield(@start_value) : @start_value
+        Trimmed.new(ev, @duration, @transition, start_value: sv,
+          preceding: @preceding, remaining: @remaining)
       end
     end
     

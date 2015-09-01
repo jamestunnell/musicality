@@ -1,18 +1,18 @@
 module Musicality
 
 module PitchClasses  
-  C = 0
-  Db = 1
+  C = Bs = 0
+  Cs = Db = 1
   D = 2
-  Eb = 3
-  E = 4
-  F = 5
-  Gb = 6
+  Ds = Eb = 3
+  E = Fb = 4
+  Es = F = 5
+  Fs = Gb = 6
   G = 7
-  Ab = 8
+  Gs = Ab = 8
   A = 9
-  Bb = 10
-  B = 11
+  As = Bb = 10
+  B = Cb = 11
 end
 
 PITCH_CLASSES = PitchClasses.constants.map do |sym|

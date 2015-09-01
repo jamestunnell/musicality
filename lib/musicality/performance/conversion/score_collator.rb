@@ -17,12 +17,13 @@ class ScoreCollator
     
     Hash[
       @score.parts.map do |name, part|
-	new_dcs = collate_changes(part.start_dynamic,
-	  part.dynamic_changes, segments)
-	new_notes = collate_notes(part.notes, segments)
-	new_part = Part.new(part.start_dynamic,
-	  dynamic_changes: new_dcs, notes: new_notes)
-	[ name, new_part ]
+        new_dcs = collate_changes(part.start_dynamic,
+          part.dynamic_changes, segments)
+        new_notes = collate_notes(part.notes, segments)
+        new_part = part.clone
+        new_part.notes = new_notes
+        new_part.dynamic_changes = new_dcs
+        [ name, new_part ]
       end
     ]
   end
@@ -37,6 +38,11 @@ class ScoreCollator
       @score.meter_changes, @score.program)
   end
   
+  def collate_key_changes
+    collate_changes(@score.start_key,
+      @score.key_changes, @score.program)
+  end
+
   private
   
   def collate_changes start_value, changes, program_segments

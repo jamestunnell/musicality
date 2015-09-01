@@ -14,7 +14,7 @@ module Instruments
   MUSIC_BOX = Instrument.treble_bass("Music Box", 11)
   VIBRAPHONE = Instrument.treble_bass("Virbaphone",12)
   MARIMBA = Instrument.treble_bass("Marimba",13)
-  XYLOPHONE = Instrument.treble_bass("Xyophone",14, -12)
+  XYLOPHONE = Instrument.treble_bass("Xylophone",14, -12)
   TUBULAR_BELLS = Instrument.treble_bass("Tubular Bells",15)
   DULCIMER = Instrument.treble("Dulcimer",16)
 

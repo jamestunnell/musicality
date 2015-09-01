@@ -70,6 +70,10 @@ class Score
     def meter_change new_meter, offset: 0
       meter_changes[self.duration + offset] = Change::Immediate.new(new_meter)
     end
+
+    def key_change new_key, offset: 0
+      key_changes[self.duration + offset] = Change::Immediate.new(new_key)
+    end
   end
 end
 

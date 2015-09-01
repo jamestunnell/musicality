@@ -2,7 +2,7 @@ module Musicality
 
 class Score
   include Validatable
-  attr_accessor :parts, :program
+  attr_accessor :parts, :program, :start_key, :key_changes
   attr_writer :title, :composer
   
   def title value = nil
@@ -21,17 +21,21 @@ class Score
     end
   end
   
-  def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}
+  def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}
     @parts = parts
     @program = program
     @title = title
     @composer = composer
     @sections = sections
+    @start_key = start_key
+    @key_changes = key_changes
     yield(self) if block_given?
   end
 
   def validatables; @parts.values; end
-  def check_methods; [:check_program, :check_parts ]; end
+  def check_methods
+    [:check_program, :check_parts, :check_start_key, :check_key_changes ]
+  end
   
   def clone
     Marshal.load(Marshal.dump(self))
@@ -143,14 +147,14 @@ class Score
     def check_meter_changes
       badtypes = @meter_changes.select {|k,v| !v.end_value.is_a?(Meter) }
       if badtypes.any?
-        raise TypeError, "Found meter change values that are not Meter objects: #{nonmeter_values}"
+        raise TypeError, "Found meter change values that are not Meter objects: #{badtypes}"
       end
-      
+
       badoffsets = @meter_changes.select {|k,v| k != k.to_i }
       if badoffsets.any?
         raise NonIntegerError, "Found meter changes at non-integer offsets: #{badoffsets}"
       end
-      
+
       nonzero_duration = @meter_changes.select {|k,v| !v.is_a?(Change::Immediate) }
       if nonzero_duration.any?
         raise NonZeroError, "Found meter changes that are not immediate: #{nonzero_duration}"
@@ -181,6 +185,29 @@ class Score
     non_parts = @parts.values.select {|x| !x.is_a?(Part) }
     if non_parts.any?
       raise TypeError, "Non-Part part value(s) found: #{non_parts}"
+    end
+  end
+
+  def check_start_key
+    unless @start_key.is_a? Key
+      raise TypeError, "Start key #{@start_key} is not a Key object"
+    end
+  end
+  
+  def check_key_changes
+    badtypes = @key_changes.select {|k,v| !v.end_value.is_a?(Key) }
+    if badtypes.any?
+      raise TypeError, "Found key change values that are not Key objects: #{badtypes}"
+    end
+    
+    badoffsets = @key_changes.select {|k,v| k != k.to_i }
+    if badoffsets.any?
+      raise NonIntegerError, "Found key changes at non-integer offsets: #{badoffsets}"
+    end
+
+    nonzero_duration = @key_changes.select {|k,v| !v.is_a?(Change::Immediate) }
+    if nonzero_duration.any?
+      raise NonZeroError, "Found key changes that are not immediate: #{nonzero_duration}"
     end
   end
 end

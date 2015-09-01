@@ -19,8 +19,10 @@ class ScoreConverter
         note.resize(endtime - starttime)
       end
       new_dcs = convert_changes(part.dynamic_changes, offset_map)
-      [name, Part.new(part.start_dynamic,
-        notes: new_notes, dynamic_changes: new_dcs)]
+      new_part = part.clone
+      new_part.notes = new_notes
+      new_part.dynamic_changes = new_dcs
+      [name, new_part]
     end]
   end
   
@@ -38,7 +40,10 @@ class ScoreConverter
     new_parts = Hash[ score.parts.map do |name,part|
       new_dcs = ScoreConverter.convert_changes(part.dynamic_changes, mn_map)
       new_notes = part.notes.map {|n| n.clone } # note duration is already note-based
-      [name, Part.new(part.start_dynamic, notes: new_notes, dynamic_changes: new_dcs)]
+      new_part = part.clone
+      new_part.notes = new_notes
+      new_part.dynamic_changes = new_dcs
+      [name, new_part]
     end]      
     new_program = ScoreConverter.convert_program(score.program, mn_map)
     new_tempo_changes = ScoreConverter.convert_changes(score.tempo_changes, mn_map)

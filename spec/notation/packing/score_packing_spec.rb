@@ -47,8 +47,8 @@ end
         @h.should be_a Hash
       end
       
-      it 'should return a hash with keys: "type","parts", and "program"' do
-        ["type","parts","program"].each do |key|
+      it 'should return a hash with keys: "type","parts","program","start_key", and "key_changes"' do
+        ["type","parts","program","start_key","key_changes"].each do |key|
           @h.should have_key(key)
         end
       end
@@ -82,6 +82,16 @@ end
         @h.should have_key "composer"
         @h["composer"].should eq @score.composer
       end
+
+      it 'should pack start_key as whatever Key#pack returns' do
+        @h['start_key'].should eq @score.start_key.pack
+      end
+
+      it 'should pack key_changes as whatever Key#pack returns' do
+        @score.key_changes.each do |off,key|
+          @h['key_changes'][off].should eq key.pack
+        end
+      end
     end
     
     describe '.unpack' do
@@ -107,6 +117,14 @@ end
 
       it 'should successfuly unpack the composer' do
         @score2.composer.should eq @score.composer
+      end
+
+      it 'should successfully unpack the start key' do
+        @score2.start_key.should eq @score.start_key
+      end
+
+      it 'should successfuly unpack the key changes' do
+        @score2.key_changes.should eq @score.key_changes
       end
     end
   end
@@ -146,22 +164,15 @@ describe Score::Tempo do
       @h["type"].should eq("Tempo")
     end
     
-    it 'should pack start meter as a string' do
-      @h['start_meter'].should be_a String
+    it 'should pack start meter as whatever Meter#pack returns' do
+      @h['start_meter'].should eq @score.start_meter.pack
     end
 
-    it 'should pack meter changes values using Change#pack(:with => :to_s)' do
-      @h['meter_changes'].each do |offset,packed_v|
-        change = @score.meter_changes[offset]
-        packed_v.should eq(change.pack(:with => :to_s))
+    it 'should pack meter changes as whatever Meter#pack returns' do
+      @h['meter_changes'].each do |off,packed_v|
+        packed_v.should eq @score.meter_changes[off].pack {|v| v.pack}
       end
     end
-
-    it 'should pack meter change end values as strings' do
-      @h['meter_changes'].each do |offset,packed_v|
-        packed_v["end_value"].should be_a String
-      end
-    end    
   end
   
   describe '.unpack' do

@@ -9,7 +9,7 @@ class Note
     
     plain_dur_strs = ["1"]*whole_count
     plain_dur_strs += pieces_to_dur_strs(fractional_pieces)
-    p_str, join_str = figure_pitch_and_join_str
+    p_str, join_str = figure_pitch_and_join_str(sharpit)
 
     plain_output = plain_dur_strs.map {|dur_str| p_str + dur_str }.join(join_str)
     return plain_output
@@ -49,12 +49,12 @@ class Note
     return dur_strs
   end
 
-  def figure_pitch_and_join_str
+  def figure_pitch_and_join_str sharpit
     if pitches.any?
       if pitches.size == 1
-        p_str = pitches.first.to_lilypond
+        p_str = pitches.first.to_lilypond(sharpit)
       else
-        p_str = "<" + pitches.map {|p| p.to_lilypond}.join(" ") + ">"
+        p_str = "<" + pitches.map {|p| p.to_lilypond(sharpit) }.join(" ") + ">"
       end
       join_str = "~ "
     else

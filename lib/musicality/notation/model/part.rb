@@ -50,6 +50,12 @@ class Part
       raise RangeError, "dynamic change values #{outofrange} are not between 0 and 1"
     end
   end
+
+  def transpose interval
+    p = self.clone
+    p.notes.each {|n| n.transpose!(interval) }
+    return p
+  end
 end
 
 end

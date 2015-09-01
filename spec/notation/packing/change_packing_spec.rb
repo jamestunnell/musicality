@@ -24,9 +24,9 @@ describe Change::Immediate do
       @p["end_value"].should eq(@c.end_value)
     end
     
-    context 'given :with method' do
-      it 'should send the :with method to end_value' do
-        p = @c.pack(:with => :to_s)
+    context 'given block' do
+      it 'should yield the end value and assign result in packing' do
+        p = @c.pack {|v| v.to_s }
         p["end_value"].should be_a String
         p["end_value"].to_f.should eq(@c.end_value)
       end
@@ -69,9 +69,9 @@ describe Change::Gradual do
       @p["transition"].should eq(@c.transition)
     end
     
-    context 'given :with method' do
-      it 'should send the :with method to end_value' do
-        p = @c.pack(:with => :to_s)
+    context 'given block' do
+      it 'should yield the end value and assign result in packing' do
+        p = @c.pack {|v| v.to_s }
         p["end_value"].should be_a String
         p["end_value"].to_f.should eq(@c.end_value)
       end
@@ -85,12 +85,14 @@ describe Change::Gradual do
         p["start_value"].should eq(c.start_value)
       end
       
-      context 'given :with method' do
-        it 'should send the :with method to end_value' do
+      context 'given block' do
+        it 'should yield start_value and then end_value to block' do
           c = Change::Gradual.linear(200,2.5,start_value: 20)
-          p = c.pack(:with => :to_s)
+          p = c.pack {|v| v.to_s }
           p["start_value"].should be_a String
           p["start_value"].to_f.should eq(c.start_value)
+          p["end_value"].should be_a String
+          p["end_value"].to_f.should eq(c.end_value)
         end
       end
     end
@@ -136,14 +138,14 @@ describe Change::Gradual::Trimmed do
       @p["remaining"].should eq(@c.remaining)
     end
     
-    context 'given :with method' do
-      it 'should send the :with method to end_value' do
-        p = @c.pack(:with => :to_s)
+    context 'given block' do
+      it 'should yield the end value and assign result in packing' do
+        p = @c.pack {|v| v.to_s }
         p["end_value"].should be_a String
         p["end_value"].to_f.should eq(@c.end_value)
       end
     end
-    
+
     context 'given start value' do
       it 'should assign start_value to "start_value" ' do
         c = Change::Gradual.linear(200,2.5,start_value: 20).trim(0.5,0.5)
@@ -152,12 +154,14 @@ describe Change::Gradual::Trimmed do
         p["start_value"].should eq(c.start_value)
       end
       
-      context 'given :with method' do
-      it 'should send the :with method to end_value' do
-        c = Change::Gradual.linear(200,2.5,start_value: 20).trim(0.5,0.5)
-        p = c.pack(:with => :to_s)
-        p["start_value"].should be_a String
-        p["start_value"].to_f.should eq(c.start_value)
+      context 'given block' do
+        it 'should yield start_value and then end_value to block' do
+          c = Change::Gradual.linear(200,2.5,start_value: 20).trim(0.5,0.5)
+          p = c.pack {|v| v.to_s }
+          p["start_value"].should be_a String
+          p["start_value"].to_f.should eq(c.start_value)
+          p["end_value"].should be_a String
+          p["end_value"].to_f.should eq(c.end_value)
         end
       end
     end
@@ -181,13 +185,13 @@ describe Change do
         @c2.end_value.should eq @c.end_value
       end
       
-      context 'pack/unpack using :with method' do
-        it 'should use given :with method to convert end_value' do
+      context 'pack/unpack using block' do
+        it 'should use given block to convert end_value' do
           c = Change::Immediate.new(0.5)
-          h = c.pack(:with => :to_s)
+          h = c.pack{|v| v.to_s}
           c2 = Change.unpack(h)
           c2.end_value.should be_a String
-          c3 = Change.unpack(h, :with => :to_f)
+          c3 = Change.unpack(h){|v| v.to_f}
           c3.end_value.should be_a Float
         end
       end
@@ -220,23 +224,23 @@ describe Change do
         @c2.start_value.should eq @c.start_value
       end
       
-      context 'pack/unpack using :with method' do
-        it 'should use given :with method to convert end_value' do
+      context 'pack/unpack using block' do
+        it 'should use given block to convert end_value' do
           c = Change::Gradual.linear(0.5,2)
-          h = c.pack(:with => :to_s)
+          h = c.pack{|v| v.to_s}
           c2 = Change.unpack(h)
           c2.end_value.should be_a String
-          c3 = Change.unpack(h, :with => :to_f)
+          c3 = Change.unpack(h){|v| v.to_f}
           c3.end_value.should be_a Float
         end
         
         context 'when change start_value is not nil' do
           it 'should use given :with method to convert start_value' do
             c = Change::Gradual.linear(0.5,2,start_value: 0.1)
-            h = c.pack(:with => :to_s)
+            h = c.pack{|v| v.to_s}
             c2 = Change.unpack(h)
             c2.start_value.should be_a String
-            c3 = Change.unpack(h, :with => :to_f)
+            c3 = Change.unpack(h){|v| v.to_f}
             c3.start_value.should be_a Float
           end
         end
@@ -278,23 +282,23 @@ describe Change do
         @c2.remaining.should eq @c.remaining
       end
       
-      context 'pack/unpack using :with method' do
-        it 'should use given :with method to convert end_value' do
+      context 'pack/unpack using block' do
+        it 'should use given block to convert end_value' do
           c = Change::Gradual.linear(0.5,2).trim(0.4,0.3)
-          h = c.pack(:with => :to_s)
+          h = c.pack{|v| v.to_s}
           c2 = Change.unpack(h)
           c2.end_value.should be_a String
-          c3 = Change.unpack(h, :with => :to_f)
+          c3 = Change.unpack(h){|v| v.to_f}
           c3.end_value.should be_a Float
         end
         
         context 'when change start_value is not nil' do
           it 'should use given :with method to convert start_value' do
             c = Change::Gradual.linear(0.5,2,start_value: 0.1).trim(0.4,0.3)
-            h = c.pack(:with => :to_s)
+            h = c.pack{|v| v.to_s}
             c2 = Change.unpack(h)
             c2.start_value.should be_a String
-            c3 = Change.unpack(h, :with => :to_f)
+            c3 = Change.unpack(h){|v| v.to_f}
             c3.start_value.should be_a Float
           end
         end
