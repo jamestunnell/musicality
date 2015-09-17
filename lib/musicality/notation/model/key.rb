@@ -34,9 +34,9 @@ class Key
   attr_reader :tonic_pc, :triad, :accidental_pref
   
   def initialize tonic_pc, triad: MAJOR, accidental_pref: FLAT
-    @tonic_pc = tonic_pc
-    @triad = triad
-    @accidental_pref = accidental_pref
+    self.tonic_pc = tonic_pc
+    self.triad = triad
+    self.accidental_pref = accidental_pref
   end
   
   def self.major_flat tonic_pc
