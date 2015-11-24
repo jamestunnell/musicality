@@ -7,8 +7,8 @@ class PartSequencer
     end.flatten
     replace_portamento_with_glissando(notes)
     
-    extractor = NoteSequenceExtractor.new(notes, cents_per_step)
-    note_sequences = extractor.extract_sequences
+    extractor = NoteSequenceExtractor.new(notes)
+    note_sequences = extractor.extract_sequences(cents_per_step)
     note_events = gather_note_events(note_sequences)
     
     dynamic_events = gather_dynamic_events(part.start_dynamic,
@@ -30,7 +30,7 @@ class PartSequencer
       
       track.events << case event
       when MidiEvent::NoteOn
-        vel = MidiUtil.note_velocity(event.accented)
+        vel = MidiUtil.note_velocity(event.attack)
         MIDI::NoteOn.new(channel, event.notenum, vel, delta)
       when MidiEvent::NoteOff
         MIDI::NoteOff.new(channel, event.notenum, 127, delta)
@@ -58,20 +58,17 @@ class PartSequencer
   def gather_note_events note_sequences
     note_events = []
     note_sequences.each do |note_seq|
-      pitches = note_seq.pitches.sort
-      pitches.each_index do |i|
-        offset, pitch = pitches[i]
-        
-        accented = false
-        if note_seq.attacks.has_key?(offset)
-          accented = note_seq.attacks[offset].accented?
-        end
+      offsets, elements = note_seq.offsets, note_seq.elements
+
+      elements.each_index do |i|
+        offset, element = offsets[i], elements[i]
+        pitch, attack = element.pitch, element.attack
         
         note_num = MidiUtil.pitch_to_notenum(pitch)
         on_at = offset
-        off_at = (i < (pitches.size - 1)) ? pitches[i+1][0] : note_seq.stop
+        off_at = (i < (offsets.size - 1)) ? offsets[i+1] : note_seq.stop
         
-        note_events.push [on_at, MidiEvent::NoteOn.new(note_num, accented)]
+        note_events.push [on_at, MidiEvent::NoteOn.new(note_num, attack)]
         note_events.push [off_at, MidiEvent::NoteOff.new(note_num)]
       end
     end

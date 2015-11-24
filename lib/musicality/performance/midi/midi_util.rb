@@ -30,8 +30,14 @@ class MidiUtil
     (dynamic * 127).round
   end
   
-  def self.note_velocity(accented)
-    accented ? 112 : 70
+  def self.note_velocity(attack)
+    case attack
+    when Attack::NORMAL, Attack::NONE then 70
+    when Attack::TENUTO then 90
+    when Attack::ACCENT then 112
+    else
+      raise ArgumentError
+    end
   end
 end
 

@@ -6,9 +6,9 @@ class MidiEvent
   end
   
   class NoteOn < MidiEvent
-    attr_reader :notenum, :accented
-    def initialize notenum, accented
-      @notenum, @accented = notenum, accented
+    attr_reader :notenum, :attack
+    def initialize notenum, attack
+      @notenum, @attack = notenum, attack
     end
   end
   
