@@ -10,20 +10,21 @@ describe Note do
       Note.new(2).duration.should eq(2)
     end
 
-    it "should assign :articulation to Note::DEFAULT_ARTICULATION if not given" do
-      Note.new(2).articulation.should eq(Note::DEFAULT_ARTICULATION)
+    it "should assign :articulation to NORMAL if not given" do
+      Note.new(2).articulation.should eq(NORMAL)
     end
     
     it "should assign :articulation parameter if given during construction" do
       Note.new(2, articulation: STACCATO).articulation.should eq(STACCATO)
     end
     
-    it 'should assign :accented to false if not given' do
-      Note.new(2).accented.should be false
+    it 'should assign :slur_mark to NONE if not given' do
+      Note.new(2).slur_mark.should be SlurMarks::NONE
     end
     
-    it 'should assign :accented if given' do
-      Note.new(2, accented: true).accented.should be true
+    it 'should assign :slur_mark if given' do
+      mark = SlurMarks::BEGIN_SLUR
+      Note.new(2, slur_mark: mark).slur_mark.should eq mark
     end
     
     it 'should have no pitches if not given' do
@@ -111,7 +112,7 @@ describe Note do
     it 'should produce string that when parsed produces an equal note' do
       durations = ["1/8".to_r,"1".to_r,"5/3".to_r]
       include Articulations
-      articulations = [NORMAL, SLUR, LEGATO, TENUTO, PORTATO, STACCATO, STACCATISSIMO ]
+      articulations = [NORMAL, TENUTO, MARCATO, ACCENT, PORTATO, STACCATO, STACCATISSIMO ]
       pitches_links_sets = [
         [[],{}],
         [[C2],{}],
@@ -126,8 +127,8 @@ describe Note do
           pitches,links = pitches_links_set
           if pitches.any?
             articulations.each do |art|
-              [true,false].each do |acc|
-                notes.push Note.new(d, pitches, articulation: art, links: links, accented: acc)
+              [SlurMarks::BEGIN_SLUR,SlurMarks::END_SLUR].each do |slur_mark|
+                notes.push Note.new(d, pitches, articulation: art, links: links, slur_mark: slur_mark)
               end
             end
           else

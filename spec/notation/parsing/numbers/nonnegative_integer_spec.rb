@@ -8,4 +8,8 @@ describe Parsing::NonnegativeIntegerParser do
       parser.parse(str).should_not be nil
     end
   end
+
+  it 'should not parse an empty string' do
+    parser.parse("").should be nil
+  end
 end
