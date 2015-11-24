@@ -17,54 +17,38 @@ describe NoteSequenceExtractor do
       extr.notes.size.should eq 3
     end
 
-    it 'should remove any bad ties (tying pitch does not exist in next note' do
+    it 'should remove any links where the source pitch does not exist in the note' do
       extr = NoteSequenceExtractor.new(
-        [ Note.quarter([C4,E4], links: {C4 => Link::Tie.new}),
-          Note.quarter([E4]) ]
+        [ Note.quarter([E4], links: {C4 => Link::Tie.new}),
+          Note.quarter([C4,E4]) ]
+      )
+      extr.notes[0].links.should_not have_key(C4)
+
+      extr = NoteSequenceExtractor.new(
+        [ Note.quarter([E4], links: {C4 => Link::Glissando.new(G4)}),
+          Note.quarter([C4,E4,G4]) ]
+      )
+      extr.notes[0].links.should_not have_key(C4)
+
+      extr = NoteSequenceExtractor.new(
+        [ Note.quarter([E4], links: {C4 => Link::Portamento.new(G4)}),
+          Note.quarter([C4,E4,G4]) ]
       )
       extr.notes[0].links.should_not have_key(C4)
     end
 
-    it 'should replace any good ties with slurs' do
+    it 'should keep glissando/portamento links even when the target pitch does not exist in the next note.' do
       extr = NoteSequenceExtractor.new(
-        [ Note.quarter([C4,E4], links: {C4 => Link::Tie.new, E4 => Link::Tie.new}),
-          Note.quarter([C4,E4]) ]
+        [ Note.quarter([C4], links: {C4 => Link::Glissando.new(G4)}),
+          Note.quarter([E4]) ]
       )
-      extr.notes[0].links[C4].should be_a Link::Slur
-      extr.notes[0].links[E4].should be_a Link::Slur
-    end
+      extr.notes[0].links.should have_key(C4)
 
-    it 'should remove dead slur/legato (where target pitch is non-existent)' do
       extr = NoteSequenceExtractor.new(
-        [ Note.quarter([C4,E4], links: { C4 => Link::Slur.new(D4), E4 => Link::Legato.new(F4) }),
-          Note.quarter([C4]) ]
+        [ Note.quarter([C4], links: {C4 => Link::Portamento.new(G4)}),
+          Note.quarter([E4]) ]
       )
-      extr.notes[0].links.should be_empty
-    end
-
-    it 'should remove any link where the source pitch is missing' do
-      extr = NoteSequenceExtractor.new(
-        [ Note.quarter([C4,D4,E4,F4,G4], links: {
-            Bb4 => Link::Tie.new, Db4 => Link::Slur.new(C4),
-            Eb4 => Link::Legato.new(D4), Gb4 => Link::Glissando.new(E4),
-            Ab5 => Link::Portamento.new(F4)
-          }),
-          Note.quarter([C4,D4,E4,F4,G4])
-      ])
-      extr.notes[0].links.should be_empty
-    end
-
-    it 'should not remove portamento and glissando with non-existent target pitches' do
-      extr = NoteSequenceExtractor.new(
-        [ Note.quarter([C4,D4]),
-          Note.quarter([C4,D4,E4,F4,G4], links: {
-            C4 => Link::Tie.new, D4 => Link::Slur.new(Eb4),
-            E4 => Link::Legato.new(Gb4), F4 => Link::Glissando.new(A5),
-            G4 => Link::Portamento.new(Bb5)}) ]
-      )
-      extr.notes[-1].links.size.should eq 2
-      extr.notes[-1].links.should have_key(F4)
-      extr.notes[-1].links.should have_key(G4)
+      extr.notes[0].links.should have_key(C4)
     end
   end
 
@@ -94,18 +78,19 @@ describe NoteSequenceExtractor do
         @seqs.size.should eq 1
       end
 
-      it 'should start offset 0' do
+      it 'should have start offset of 0' do
         @seqs[0].start.should eq 0
       end
 
-      it 'should stop offset <= note duration' do
+      it 'should have stop offset <= note duration' do
         @seqs[0].stop.should be <= @note.duration
       end
     end
 
     context 'array with two slurred notes, single pitch' do
       before :all do
-        @notes = [ Note.quarter([C5], articulation: SLUR), Note.quarter([D5]) ]
+        @notes = [ Note.quarter([C5], slur_mark: SlurMarks::BEGIN_SLUR),
+                   Note.quarter([D5], slur_mark: SlurMarks::END_SLUR) ]
         @seqs = NoteSequenceExtractor.new(@notes).extract_sequences
       end
 
@@ -113,11 +98,11 @@ describe NoteSequenceExtractor do
         @seqs.size.should eq 1
       end
 
-      it 'should start offset 0' do
+      it 'should have start offset of 0' do
         @seqs[0].start.should eq 0
       end
 
-      it 'should stop offset <= combined duration of the two notes' do
+      it 'should have stop offset <= combined duration of the two notes' do
         @seqs[0].stop.should be <= (@notes[0].duration + @notes[1].duration)
       end
     end
@@ -140,32 +125,42 @@ describe NoteSequenceExtractor do
         @seqs.each {|s| s.stop.should be <= @note.duration }
       end
 
-      it 'should put one pitch in each seq' do
-        @seqs.each {|s| s.pitches.size.should eq(1) }
+      it 'should put one element in each seq' do
+        @seqs.each {|s| s.elements.size.should eq(1) }
       end
 
       it 'should assign a different pitch to each' do
-        @seqs.map {|seq| seq.pitches[0] }.sort.should eq @note.pitches.sort
+        @seqs.map {|seq| seq.elements.first.pitch }.sort.should eq @note.pitches.sort
       end
     end
 
     context 'array with multiple notes and links' do
       before :all do
-        @notes = [ Note.quarter([C3,E3], links: {
-          C3 => Link::Slur.new(D3), E3 => Link::Legato.new(F3)}),
-          Note.eighth([D3,F3]) ]
+        @notes = [
+          Note.quarter([C3,E3], links: { C3 => Link::Tie.new, 
+            E3 => Link::Glissando.new(G3)}),
+          Note.eighth([C3,G3])
+        ]
         @seqs = NoteSequenceExtractor.new(@notes).extract_sequences
       end
 
-      it 'should create a sequence for linked notes' do
+      it 'should create a single sequence for linked notes' do
         @seqs.size.should eq(2)
       end
 
-      it 'should add pitch at 0 from first note' do
-        @seqs[0].pitches.should have_key(0)
-        @notes[0].pitches.should include(@seqs[0].pitches[0])
-        @seqs[1].pitches.should have_key(0)
-        @notes[0].pitches.should include(@seqs[1].pitches[0])
+      it 'should set first element pitch to match first note' do
+        @seqs[0].elements.first.pitch.should eq(@notes[0].pitches[0])
+        @seqs[1].elements.first.pitch.should eq(@notes[0].pitches[1])
+      end
+
+      it 'should collapse tie link to a single element' do
+        @seqs[0].elements.size.should eq(1)
+        @seqs[0].duration.should be <= (@notes[0].duration + @notes[1].duration)
+      end
+
+      it 'should expand the glissando into multiple elements' do
+        @seqs[1].elements.size.should be > 2
+        @seqs[1].duration.should be <= (@notes[0].duration + @notes[1].duration)
       end
     end
 
@@ -180,7 +175,7 @@ describe NoteSequenceExtractor do
       end
 
       it 'should include pitches up to (not including) target pitch' do
-        @seqs[0].pitches.values.should include(D3,Eb3,E3,F3,Gb3)
+        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Eb3,E3,F3,Gb3)
       end
 
       it 'should produce sequence with duration <= note duration' do
@@ -199,7 +194,7 @@ describe NoteSequenceExtractor do
       end
 
       it 'should include pitches down to (not including) target pitch' do
-        @seqs[0].pitches.values.should include(D3,Db3,C3,B2,Bb2)
+        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Db3,C3,B2,Bb2)
       end
 
       it 'should produce sequence with duration <= note duration' do
@@ -219,7 +214,7 @@ describe NoteSequenceExtractor do
       end
 
       it 'should includes pitches up through target pitch' do
-        @seqs[0].pitches.values.should include(D3,Eb3,E3,F3,Gb3,G3)
+        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Eb3,E3,F3,Gb3,G3)
       end
 
       it 'should produce sequence with duration <= note1dur + note2dur' do

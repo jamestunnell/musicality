@@ -12,11 +12,14 @@ class PortamentoConverter
     end
   end
 
-  def self.portamento_elements(start_pitch, target_pitch, cents_per_step, duration, accented)
+  def self.portamento_elements(start_pitch, target_pitch, cents_per_step, duration, attack)
     pitches = portamento_pitches(start_pitch, target_pitch, cents_per_step)
     subdur = Rational(duration, pitches.size)
+    first = true
     pitches.map do |pitch|
-      SlurredElement.new(subdur, pitch, accented)
+      el = NoteSequence::Element.new(subdur, pitch, first ? attack : Attack::NONE)
+      first = false
+      el
     end
   end
 end

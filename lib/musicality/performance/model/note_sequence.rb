@@ -27,6 +27,8 @@ class NoteSequence
     @separation = separation
     @elements = elements
   end
+
+  alias start offset
   
   def offsets
     off = @offset
@@ -43,6 +45,26 @@ class NoteSequence
 
   def duration
     stop - offset
+  end
+
+  def full_duration
+    offsets.last + elements.last.duration
+  end
+
+  def first_pitch
+    elements.first.pitch
+  end
+
+  def last_pitch
+    elements.last.pitch
+  end
+
+  def first_attack
+    elements.first.attack
+  end
+
+  def last_attack
+    elements.last.attack
   end
 
   # attr_reader :start, :stop, :pitches, :attack

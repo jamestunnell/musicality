@@ -121,7 +121,7 @@ describe ScoreCollator do
     end
     
     it 'should preserve links' do
-      notes = Note.split_parse("1Db4~Bb4")
+      notes = Note.split_parse("1Db4;Bb4")
       score = Score::Tempo.new(
         FOUR_FOUR,120,
         parts: { "lead" => Part.new(Dynamics::MP, notes: notes) },

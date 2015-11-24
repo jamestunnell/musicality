@@ -22,11 +22,11 @@ class GlissandoConverter
     end
   end
 
-  def self.glissando_elements(start_pitch, target_pitch, duration, accented)
+  def self.glissando_elements(start_pitch, target_pitch, duration, attack)
     pitches = glissando_pitches(start_pitch, target_pitch)
     subdur = Rational(duration, pitches.size)
     pitches.map do |pitch|
-      LegatoElement.new(subdur, pitch, accented)
+      NoteSequence::Element.new(subdur, pitch, attack)
     end
   end
 end

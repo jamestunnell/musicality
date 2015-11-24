@@ -68,12 +68,12 @@ describe PortamentoConverter do
   describe '.portamento_elements' do
     before :all do
       @dur = Rational(3,2)
-      @acc = false
-      @els = PortamentoConverter.portamento_elements(C4,F4,25,@dur,@acc)
+      @att = Attack::NONE
+      @els = PortamentoConverter.portamento_elements(C4,F4,25,@dur,@att)
     end
     
-    it 'should return an array of SlurredElement objects' do
-      @els.each {|el| el.should be_a SlurredElement }
+    it 'should return an array of NoteSequence::Element objects' do
+      @els.each {|el| el.should be_a NoteSequence::Element }
     end
     
     it 'should split up duration among elements' do
@@ -81,11 +81,13 @@ describe PortamentoConverter do
       sum.should eq(@dur)
     end
     
-    it 'should set accented as given' do
-      els = PortamentoConverter.portamento_elements(C4,D4,10,1,false)
-      els.each {|el| el.accented.should eq(false) }
-      els = PortamentoConverter.portamento_elements(C4,D4,10,1,true)
-      els.each {|el| el.accented.should eq(true) }
+    it 'should set attack as given for first element only and set others to NONE' do
+      els = PortamentoConverter.portamento_elements(C4,D4,10,1,Attack::ACCENT)
+      els.first.attack.should eq(Attack::ACCENT)
+      els[1..-1].each {|el| el.attack.should eq(Attack::NONE) }
+      els = PortamentoConverter.portamento_elements(C4,D4,10,1,Attack::TENUTO)
+      els.first.attack.should eq(Attack::TENUTO)
+      els[1..-1].each {|el| el.attack.should eq(Attack::NONE) }
     end
   end
 end

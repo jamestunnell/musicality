@@ -70,12 +70,12 @@ describe GlissandoConverter do
   describe '.glissando_elements' do
     before :all do
       @dur = Rational(3,2)
-      @acc = false
-      @els = GlissandoConverter.glissando_elements(C4,A4,@dur,@acc)
+      @att = Attack::TENUTO
+      @els = GlissandoConverter.glissando_elements(C4,A4,@dur,@att)
     end
     
-    it 'should return an array of LegatoElement objects' do
-      @els.each {|el| el.should be_a LegatoElement }
+    it 'should return an array of NoteSequence::Element objects' do
+      @els.each {|el| el.should be_a NoteSequence::Element }
     end
     
     it 'should split up duration among elements' do
@@ -83,11 +83,11 @@ describe GlissandoConverter do
       sum.should eq(@dur)
     end
     
-    it 'should set accented as given' do
-      els = GlissandoConverter.glissando_elements(C4,A4,1,false)
-      els.each {|el| el.accented.should eq(false) }
-      els = GlissandoConverter.glissando_elements(C4,A4,1,true)
-      els.each {|el| el.accented.should eq(true) }
+    it 'should set attack as given for each element' do
+      els = GlissandoConverter.glissando_elements(C4,A4,1,Attack::TENUTO)
+      els.each {|el| el.attack.should eq(Attack::TENUTO) }
+      els = GlissandoConverter.glissando_elements(C4,A4,1,Attack::ACCENT)
+      els.each {|el| el.attack.should eq(Attack::ACCENT) }
     end
   end
 end
