@@ -14,9 +14,6 @@ module PositiveInteger
   include NonnegativeInteger
 
   module PositiveInteger0
-    def nonnegative_integer
-      elements[2]
-    end
   end
 
   module PositiveInteger1
@@ -66,7 +63,12 @@ module PositiveInteger
       end
       s0 << r3
       if r3
-        r4 = _nt_nonnegative_integer
+        r5 = _nt_nonnegative_integer
+        if r5
+          r4 = r5
+        else
+          r4 = instantiate_node(SyntaxNode,input, index...index)
+        end
         s0 << r4
       end
     end

@@ -1,16 +1,11 @@
 module Musicality
 module Parsing
-  class TripletNoteNode < Treetop::Runtime::SyntaxNode
-    def to_note
-      Musicality::Triplet.new(first.to_note,
-        second.to_note, third.to_note)
-    end
-  end
-
   class SingleNoteNode < Treetop::Runtime::SyntaxNode
     def to_note
+      dur = duration.to_r
+
       if more.empty?
-        return Musicality::Note.new(duration.to_r)
+        return Musicality::Note.new(dur)
       end
 
       pitches = []
@@ -30,15 +25,10 @@ module Parsing
           links[pitches[-1]] = x.pl.the_link.to_link
         end
       end
-      
-      artic = Musicality::Articulations::NORMAL
-      unless more.art.empty?
-        artic = more.art.to_articulation
-      end
 
-      accent_flag = !more.acc.empty?
-      Musicality::Note.new(duration.to_r, pitches,
-        links: links, articulation: artic, accented: accent_flag)
+      Musicality::Note.new(dur, pitches, links: links, 
+        articulation: more.art.empty? ? Articulations::NORMAL : more.art.to_articulation,
+        slur_mark: more.sl.empty? ? SlurMarks::NONE  : more.sl.to_slur_mark)
     end
   end
 end

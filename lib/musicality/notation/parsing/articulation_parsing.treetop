@@ -3,35 +3,35 @@ module Parsing
 
 grammar Articulation
   rule articulation
-    slur / legato / tenuto / portato / staccato / staccatissimo
-  end
-  
-  rule slur
-    "(" {
-      def to_articulation
-        Musicality::Articulations::SLUR
-      end
-    }
+    tenuto / accent / marcato / portato / staccato / staccatissimo
   end
 
-  rule legato
-    "[" {
-      def to_articulation
-        Musicality::Articulations::LEGATO
-      end
-    }
-  end
-  
   rule tenuto
-    "_" {
+    "-" {
       def to_articulation
         Musicality::Articulations::TENUTO
       end
     }
   end
+
+  rule accent
+    ">" {
+      def to_articulation
+        Musicality::Articulations::ACCENT
+      end
+    }
+  end
+
+  rule marcato
+    "^" {
+      def to_articulation
+        Musicality::Articulations::MARCATO
+      end
+    }
+  end
   
   rule portato
-    "%" {
+    "_" {
       def to_articulation
         Musicality::Articulations::PORTATO
       end
@@ -47,7 +47,7 @@ grammar Articulation
   end
   
   rule staccatissimo
-    "'" {
+    "!" {
       def to_articulation
         Musicality::Articulations::STACCATISSIMO
       end

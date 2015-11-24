@@ -6,19 +6,18 @@ class Note
   include Validatable
   
   attr_reader :pitches, :links, :duration
-  attr_accessor :articulation, :accented
-
-  DEFAULT_ARTICULATION = Articulations::NORMAL
+  attr_accessor :articulation, :slur_mark, :legato
   
-  def initialize duration, pitches = [], articulation: DEFAULT_ARTICULATION, accented: false, links: {}
+  def initialize duration, pitches = [], links: {}, articulation: Articulations::NORMAL, slur_mark: SlurMarks::NONE, legato: false
     self.duration = duration
     if !pitches.is_a? Enumerable
       pitches = [ pitches ]
     end
     @pitches = Set.new(pitches).sort
-    @articulation = articulation
-    @accented = accented
     @links = links
+    @articulation = articulation
+    @slur_mark = slur_mark
+    @legato = legato
   end
   
   def check_methods
@@ -37,7 +36,8 @@ class Note
     (self.pitches == other.pitches) &&
     (@links.to_a.sort == other.links.to_a.sort) &&
     (@articulation == other.articulation) &&
-    (@accented == other.accented)
+    (@slur_mark == other.slur_mark) &&
+    (@legato == other.legato)
   end
   
   def clone
@@ -68,6 +68,10 @@ class Note
     return self
   end
 
+  def begins_slur?; @slur_mark == SlurMarks::BEGIN_SLUR; end
+  def ends_slur?; @slur_mark == SlurMarks::END_SLUR; end
+  def legato?; @legato; end
+
   def to_s
     d = @duration.to_r
     if d.denominator == 1
@@ -87,14 +91,14 @@ class Note
     end.join(",")
 
     art_str = ARTICULATION_SYMBOLS[@articulation] || ""
-    acc_str = @accented ? ACCENT_SYMBOL : ""
+    acc_str = SLUR_MARK_SYMBOLS[@slur_mark] || ""
 
     return dur_str + pitch_links_str + art_str + acc_str
   end
 
   def self.add_note_method(name, dur)
-    self.class.send(:define_method,name.to_sym) do |pitches = [], articulation: DEFAULT_ARTICULATION, links: {}, accented: false|
-      Note.new(dur, pitches, articulation: articulation, links: links, accented: accented)
+    self.class.send(:define_method,name.to_sym) do |pitches = [], links: {}, articulation: Articulations::NORMAL, slur_mark: SlurMarks::NONE, legato: false|
+      Note.new(dur, pitches, articulation: articulation, links: links, slur_mark: slur_mark, legato: false)
     end
   end
   

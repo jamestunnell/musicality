@@ -1,10 +1,11 @@
 module Musicality
 
 module Articulations
-  NORMAL = :normal
-  SLUR = :slur
   LEGATO = :legato
+  NORMAL = :normal
   TENUTO = :tenuto
+  ACCENT = :accent
+  MARCATO = :marcato
   PORTATO = :portato
   STACCATO = :staccato
   STACCATISSIMO = :staccatissimo

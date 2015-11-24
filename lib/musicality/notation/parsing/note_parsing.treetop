@@ -6,6 +6,7 @@ grammar Note
   include Articulation
   include Link
   include Duration
+  include SlurMark
 
   rule note
     triplet / single_note
@@ -24,17 +25,13 @@ grammar Note
       first_pl:pitch_link
       more_pl:("," pl:pitch_link)*
       art:articulation?
-      acc:accent?
+      sl:slur_mark?
     )?
     <SingleNoteNode>
   end
 
   rule pitch_link
     pitch the_link:link?
-  end
-  
-  rule accent
-    "!"
   end
 end
 

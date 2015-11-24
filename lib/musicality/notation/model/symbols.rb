@@ -1,24 +1,26 @@
 module Musicality
 
+# These symbols all need to match the notation parsers
+
 ARTICULATION_SYMBOLS = {
-  Articulations::SLUR => "(",
-  Articulations::LEGATO => "[",
-  Articulations::TENUTO => "_",
-  Articulations::PORTATO => "%",
+  Articulations::TENUTO => "-",
+  Articulations::ACCENT => ">",
+  Articulations::MARCATO => "^",
+  Articulations::PORTATO => "_",
   Articulations::STACCATO => ".",
-  Articulations::STACCATISSIMO => "'"
+  Articulations::STACCATISSIMO => "!",
 }
 
 LINK_SYMBOLS = {
-  Links::TIE => "=",
-  Links::GLISSANDO => "~",
-  Links::PORTAMENTO => "|",
-  Links::SLUR => ARTICULATION_SYMBOLS[Articulations::SLUR],
-  Links::LEGATO => ARTICULATION_SYMBOLS[Articulations::LEGATO],
+  Links::TIE => "~",
+  Links::GLISSANDO => ";",
+  Links::PORTAMENTO => ":",
 }
 
-ACCENT_SYMBOL = "!"
-
-TRIPLET_CONNECTOR = ":"
+SLUR_MARK_SYMBOLS = {
+  SlurMarks::NONE => "",
+  SlurMarks::BEGIN_SLUR => "(",
+  SlurMarks::END_SLUR => ")",
+}
 
 end

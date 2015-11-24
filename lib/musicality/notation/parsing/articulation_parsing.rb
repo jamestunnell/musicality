@@ -23,17 +23,17 @@ module Articulation
     end
 
     i0 = index
-    r1 = _nt_slur
+    r1 = _nt_tenuto
     if r1
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      r2 = _nt_legato
+      r2 = _nt_accent
       if r2
         r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
       else
-        r3 = _nt_tenuto
+        r3 = _nt_marcato
         if r3
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
@@ -67,68 +67,6 @@ module Articulation
     r0
   end
 
-  module Slur0
-    def to_articulation
-      Musicality::Articulations::SLUR
-    end
-  end
-
-  def _nt_slur
-    start_index = index
-    if node_cache[:slur].has_key?(index)
-      cached = node_cache[:slur][index]
-      if cached
-        node_cache[:slur][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    if (match_len = has_terminal?("(", false, index))
-      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r0.extend(Slur0)
-      @index += match_len
-    else
-      terminal_parse_failure("(")
-      r0 = nil
-    end
-
-    node_cache[:slur][start_index] = r0
-
-    r0
-  end
-
-  module Legato0
-    def to_articulation
-      Musicality::Articulations::LEGATO
-    end
-  end
-
-  def _nt_legato
-    start_index = index
-    if node_cache[:legato].has_key?(index)
-      cached = node_cache[:legato][index]
-      if cached
-        node_cache[:legato][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    if (match_len = has_terminal?("[", false, index))
-      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r0.extend(Legato0)
-      @index += match_len
-    else
-      terminal_parse_failure("[")
-      r0 = nil
-    end
-
-    node_cache[:legato][start_index] = r0
-
-    r0
-  end
-
   module Tenuto0
     def to_articulation
       Musicality::Articulations::TENUTO
@@ -146,16 +84,78 @@ module Articulation
       return cached
     end
 
-    if (match_len = has_terminal?("_", false, index))
+    if (match_len = has_terminal?("-", false, index))
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       r0.extend(Tenuto0)
       @index += match_len
     else
-      terminal_parse_failure("_")
+      terminal_parse_failure('"-"')
       r0 = nil
     end
 
     node_cache[:tenuto][start_index] = r0
+
+    r0
+  end
+
+  module Accent0
+    def to_articulation
+      Musicality::Articulations::ACCENT
+    end
+  end
+
+  def _nt_accent
+    start_index = index
+    if node_cache[:accent].has_key?(index)
+      cached = node_cache[:accent][index]
+      if cached
+        node_cache[:accent][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    if (match_len = has_terminal?(">", false, index))
+      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+      r0.extend(Accent0)
+      @index += match_len
+    else
+      terminal_parse_failure('">"')
+      r0 = nil
+    end
+
+    node_cache[:accent][start_index] = r0
+
+    r0
+  end
+
+  module Marcato0
+    def to_articulation
+      Musicality::Articulations::MARCATO
+    end
+  end
+
+  def _nt_marcato
+    start_index = index
+    if node_cache[:marcato].has_key?(index)
+      cached = node_cache[:marcato][index]
+      if cached
+        node_cache[:marcato][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    if (match_len = has_terminal?("^", false, index))
+      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+      r0.extend(Marcato0)
+      @index += match_len
+    else
+      terminal_parse_failure('"^"')
+      r0 = nil
+    end
+
+    node_cache[:marcato][start_index] = r0
 
     r0
   end
@@ -177,12 +177,12 @@ module Articulation
       return cached
     end
 
-    if (match_len = has_terminal?("%", false, index))
+    if (match_len = has_terminal?("_", false, index))
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       r0.extend(Portato0)
       @index += match_len
     else
-      terminal_parse_failure("%")
+      terminal_parse_failure('"_"')
       r0 = nil
     end
 
@@ -213,7 +213,7 @@ module Articulation
       r0.extend(Staccato0)
       @index += match_len
     else
-      terminal_parse_failure(".")
+      terminal_parse_failure('"."')
       r0 = nil
     end
 
@@ -239,12 +239,12 @@ module Articulation
       return cached
     end
 
-    if (match_len = has_terminal?("'", false, index))
+    if (match_len = has_terminal?("!", false, index))
       r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
       r0.extend(Staccatissimo0)
       @index += match_len
     else
-      terminal_parse_failure("'")
+      terminal_parse_failure('"!"')
       r0 = nil
     end
 

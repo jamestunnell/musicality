@@ -5,7 +5,7 @@ grammar PositiveInteger
   include NonnegativeInteger
   
   rule positive_integer
-    [0]* [1-9] nonnegative_integer {
+    [0]* [1-9] nonnegative_integer? {
       def to_i
         text_value.to_i
       end

@@ -62,11 +62,11 @@ module Link
       return cached
     end
 
-    if (match_len = has_terminal?("=", false, index))
+    if (match_len = has_terminal?("~", false, index))
       r0 = instantiate_node(TieNode,input, index...(index + match_len))
       @index += match_len
     else
-      terminal_parse_failure("=")
+      terminal_parse_failure('"~"')
       r0 = nil
     end
 
@@ -93,11 +93,11 @@ module Link
     end
 
     i0, s0 = index, []
-    if (match_len = has_terminal?("~", false, index))
+    if (match_len = has_terminal?(";", false, index))
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("~")
+      terminal_parse_failure('";"')
       r1 = nil
     end
     s0 << r1
@@ -136,11 +136,11 @@ module Link
     end
 
     i0, s0 = index, []
-    if (match_len = has_terminal?("|", false, index))
+    if (match_len = has_terminal?(":", false, index))
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("|")
+      terminal_parse_failure('":"')
       r1 = nil
     end
     s0 << r1

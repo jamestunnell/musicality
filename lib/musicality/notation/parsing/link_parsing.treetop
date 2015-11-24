@@ -9,15 +9,15 @@ grammar Link
   end
   
   rule tie
-    "=" <TieNode>
+    "~" <TieNode>
   end
   
   rule glissando
-    "~" pitch <GlissandoNode>
+    ";" pitch <GlissandoNode>
   end
   
   rule portamento
-    "|" pitch <PortamentoNode>
+    ":" pitch <PortamentoNode>
   end
 end
 

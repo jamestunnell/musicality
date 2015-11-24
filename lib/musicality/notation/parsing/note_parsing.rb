@@ -19,6 +19,8 @@ module Note
 
   include Duration
 
+  include SlurMark
+
   def _nt_note
     start_index = index
     if node_cache[:note].has_key?(index)
@@ -139,7 +141,7 @@ module Note
       elements[2]
     end
 
-    def acc
+    def sl
       elements[3]
     end
   end
@@ -212,7 +214,7 @@ module Note
           end
           s3 << r9
           if r9
-            r12 = _nt_accent
+            r12 = _nt_slur_mark
             if r12
               r11 = r12
             else
@@ -291,30 +293,6 @@ module Note
     end
 
     node_cache[:pitch_link][start_index] = r0
-
-    r0
-  end
-
-  def _nt_accent
-    start_index = index
-    if node_cache[:accent].has_key?(index)
-      cached = node_cache[:accent][index]
-      if cached
-        node_cache[:accent][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    if (match_len = has_terminal?("!", false, index))
-      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      @index += match_len
-    else
-      terminal_parse_failure('"!"')
-      r0 = nil
-    end
-
-    node_cache[:accent][start_index] = r0
 
     r0
   end
