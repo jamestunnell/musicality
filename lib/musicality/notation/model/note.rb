@@ -5,10 +5,10 @@ require 'set'
 class Note
   include Validatable
   
-  attr_reader :pitches, :links, :duration
-  attr_accessor :articulation, :slur_mark, :legato
+  attr_reader :pitches, :links, :duration, :marks
+  attr_accessor :articulation
   
-  def initialize duration, pitches = [], links: {}, articulation: Articulations::NORMAL, slur_mark: SlurMarks::NONE, legato: false
+  def initialize duration, pitches = [], links: {}, articulation: Articulations::NORMAL, marks: []
     self.duration = duration
     if !pitches.is_a? Enumerable
       pitches = [ pitches ]
@@ -16,8 +16,7 @@ class Note
     @pitches = Set.new(pitches).sort
     @links = links
     @articulation = articulation
-    @slur_mark = slur_mark
-    @legato = legato
+    @marks = marks
   end
   
   def check_methods
@@ -36,8 +35,7 @@ class Note
     (self.pitches == other.pitches) &&
     (@links.to_a.sort == other.links.to_a.sort) &&
     (@articulation == other.articulation) &&
-    (@slur_mark == other.slur_mark) &&
-    (@legato == other.legato)
+    (@marks == marks)
   end
   
   def clone
@@ -68,9 +66,21 @@ class Note
     return self
   end
 
-  def begins_slur?; @slur_mark == SlurMarks::BEGIN_SLUR; end
-  def ends_slur?; @slur_mark == SlurMarks::END_SLUR; end
-  def legato?; @legato; end
+  def begins_slur?
+    marks.count {|m| m.is_a?(Mark::Slur::Begin) } > 0
+  end
+
+  def ends_slur?
+    marks.count {|m| m.is_a?(Mark::Slur::End) } > 0
+  end
+
+  def begins_triplet?
+    marks.count {|m| m.is_a?(Mark::Triplet::Begin) } > 0
+  end
+
+  def ends_triplet?
+    marks.count {|m| m.is_a?(Mark::Triplet::End) } > 0
+  end
 
   def to_s
     d = @duration.to_r
@@ -91,14 +101,16 @@ class Note
     end.join(",")
 
     art_str = ARTICULATION_SYMBOLS[@articulation] || ""
-    acc_str = SLUR_MARK_SYMBOLS[@slur_mark] || ""
 
-    return dur_str + pitch_links_str + art_str + acc_str
+    begin_marks_str = marks.select {|m| m.begins? }.map {|m| m.to_s }.join
+    end_marks_str = marks.select {|m| m.ends? }.map {|m| m.to_s }.join
+
+    return begin_marks_str + dur_str + pitch_links_str + art_str + end_marks_str
   end
 
   def self.add_note_method(name, dur)
-    self.class.send(:define_method,name.to_sym) do |pitches = [], links: {}, articulation: Articulations::NORMAL, slur_mark: SlurMarks::NONE, legato: false|
-      Note.new(dur, pitches, articulation: articulation, links: links, slur_mark: slur_mark, legato: false)
+    self.class.send(:define_method,name.to_sym) do |pitches = [], links: {}, articulation: Articulations::NORMAL, marks: []|
+      Note.new(dur, pitches, articulation: articulation, links: links, marks: marks)
     end
   end
   

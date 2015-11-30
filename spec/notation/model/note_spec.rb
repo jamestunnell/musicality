@@ -18,13 +18,16 @@ describe Note do
       Note.new(2, articulation: STACCATO).articulation.should eq(STACCATO)
     end
     
-    it 'should assign :slur_mark to NONE if not given' do
-      Note.new(2).slur_mark.should be SlurMarks::NONE
+    it 'should assign :marks to [] if not given' do
+      Note.new(2).marks.should eq([])
     end
     
-    it 'should assign :slur_mark if given' do
-      mark = SlurMarks::BEGIN_SLUR
-      Note.new(2, slur_mark: mark).slur_mark.should eq mark
+    it 'should assign :marks if given' do
+      [
+        [], [BEGIN_SLUR, BEGIN_TRIPLET]
+      ].each do |marks|
+        Note.quarter(marks: marks).marks.should eq(marks)
+      end
     end
     
     it 'should have no pitches if not given' do
@@ -127,8 +130,8 @@ describe Note do
           pitches,links = pitches_links_set
           if pitches.any?
             articulations.each do |art|
-              [SlurMarks::BEGIN_SLUR,SlurMarks::END_SLUR].each do |slur_mark|
-                notes.push Note.new(d, pitches, articulation: art, links: links, slur_mark: slur_mark)
+              [[],[BEGIN_SLUR],[END_SLUR, BEGIN_TRIPLET]].each do |marks|
+                notes.push Note.new(d, pitches, articulation: art, links: links, marks: marks)
               end
             end
           else

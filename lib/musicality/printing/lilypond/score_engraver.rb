@@ -8,7 +8,9 @@ class ScoreEngraver
     @meter_changes = score.meter_changes
     @start_key = score.start_key
     @key_changes = score.key_changes
+
     @parts = score.collated? ? score.parts : ScoreCollator.new(score).collate_parts
+    
     @header = ScoreEngraver.header score.title, score.composer
     @part_titles = ScoreEngraver.figure_part_titles @parts
   end

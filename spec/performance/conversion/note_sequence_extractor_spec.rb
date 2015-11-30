@@ -89,8 +89,8 @@ describe NoteSequenceExtractor do
 
     context 'array with two slurred notes, single pitch' do
       before :all do
-        @notes = [ Note.quarter([C5], slur_mark: SlurMarks::BEGIN_SLUR),
-                   Note.quarter([D5], slur_mark: SlurMarks::END_SLUR) ]
+        @notes = [ Note.quarter([C5], marks: [BEGIN_SLUR]),
+                   Note.quarter([D5], marks: [END_SLUR]) ]
         @seqs = NoteSequenceExtractor.new(@notes).extract_sequences
       end
 

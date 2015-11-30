@@ -4,9 +4,9 @@ describe Parsing::LinkNode do
   parser = Parsing::LinkParser.new
   
   {
-    LINK_SYMBOLS[Links::TIE] => Link::Tie.new,
-    (LINK_SYMBOLS[Links::GLISSANDO] + Db2.to_s) => Link::Glissando.new(Db2),
-    (LINK_SYMBOLS[Links::PORTAMENTO] + Db2.to_s) => Link::Portamento.new(Db2),
+    LINK_SYMBOLS[Link::Tie] => Link::Tie.new,
+    (LINK_SYMBOLS[Link::Glissando] + Db2.to_s) => Link::Glissando.new(Db2),
+    (LINK_SYMBOLS[Link::Portamento] + Db2.to_s) => Link::Portamento.new(Db2),
   }.each do |str,tgt|
     res = parser.parse(str)
     context str do

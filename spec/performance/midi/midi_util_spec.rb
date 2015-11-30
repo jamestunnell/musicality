@@ -91,19 +91,33 @@ describe MidiUtil do
   end
   
   describe 'note_velocity' do
-    context 'given true' do
-      it 'should return a higher value than when given false' do
-        MidiUtil.note_velocity(true).should be > MidiUtil.note_velocity(false)
+    context 'given Attack::NORMAL' do
+      it 'should return a value at least that of when given Attack::NONE' do
+        MidiUtil.note_velocity(Attack::NORMAL).should be >= MidiUtil.note_velocity(Attack::NONE)
+      end
+
+      it 'should return a value between 0 and 127' do
+        MidiUtil.note_velocity(Attack::NORMAL).should be_between(0,127)
+      end
+    end
+
+    context 'given Attack::TENUTO' do
+      it 'should return a higher value than when given Attack::NORMAL' do
+        MidiUtil.note_velocity(Attack::TENUTO).should be > MidiUtil.note_velocity(Attack::NORMAL)
       end
       
       it 'should return a value between 0 and 127' do
-        MidiUtil.note_velocity(true).should be_between(0,127)
+        MidiUtil.note_velocity(Attack::TENUTO).should be_between(0,127)
       end
     end
     
-    context 'given false' do
+    context 'given Attack::ACCENT' do
+      it 'should return a higher value than when given Attack::TENUTO' do
+        MidiUtil.note_velocity(Attack::ACCENT).should be > MidiUtil.note_velocity(Attack::TENUTO)
+      end
+
       it 'should return a value between 0 and 127' do
-        MidiUtil.note_velocity(false).should be_between(0,127)
+        MidiUtil.note_velocity(Attack::ACCENT).should be_between(0,127)
       end
     end
   end

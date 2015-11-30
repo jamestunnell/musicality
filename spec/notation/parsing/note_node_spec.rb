@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 NOTE_PARSER = Parsing::NoteParser.new
 
-describe Parsing::SingleNoteNode do
+describe Parsing::NoteNode do
   context 'rest note' do  
     {
       '/2' => Note.new(Rational(1,2)),
@@ -12,8 +12,8 @@ describe Parsing::SingleNoteNode do
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
       context str do
-        it 'should parse as SingleNoteNode' do
-          res.should be_a Parsing::SingleNoteNode
+        it 'should parse as NoteNode' do
+          res.should be_a Parsing::NoteNode
         end
   
         describe '#to_note' do
@@ -40,8 +40,8 @@ describe Parsing::SingleNoteNode do
       res = NOTE_PARSER.parse(str)
       
       context str do
-        it 'should parse as SingleNoteNode' do
-          res.should be_a Parsing::SingleNoteNode
+        it 'should parse as `Node' do
+          res.should be_a Parsing::NoteNode
         end
   
         describe '#to_note' do
@@ -68,8 +68,8 @@ describe Parsing::SingleNoteNode do
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
       context str do
-        it 'should parse as SingleNoteNode' do
-          res.should be_a Parsing::SingleNoteNode
+        it 'should parse as NoteNode' do
+          res.should be_a Parsing::NoteNode
         end
   
         describe '#to_note' do
@@ -87,23 +87,27 @@ describe Parsing::SingleNoteNode do
     end
   end
 
-  context 'with slur mark' do
-    [ SlurMarks::BEGIN_SLUR, SlurMarks::END_SLUR ].each do |slur_mark|
-      describe '#to_note' do
-        it 'should produce a Note with slur mark set correctly' do
-          str = "/4Bb2#{SLUR_MARK_SYMBOLS[slur_mark]}"
-          n = NOTE_PARSER.parse(str).to_note
-          n.slur_mark.should eq(slur_mark)
+  context 'with marks' do
+    [[BEGIN_SLUR],[BEGIN_SLUR, BEGIN_TRIPLET],[BEGIN_TRIPLET]].each do |begin_marks|
+      begin_marks_str = begin_marks.map {|m| m.to_s}.join
+      [[END_SLUR],[END_SLUR, END_TRIPLET],[END_TRIPLET]].each do |end_marks|
+        end_marks_str = end_marks.map {|m| m.to_s}.join
+        describe '#to_note' do
+          it 'should produce a Note with marks set correctly' do
+            str = "#{begin_marks_str}/4Bb2#{end_marks_str}"
+            n = NOTE_PARSER.parse(str).to_note
+            n.marks.should eq(begin_marks+end_marks)
+          end
         end
       end
     end
   end
 
-  context 'without slur mark' do
-    it 'should produce a Note with slur mark set to NONE' do
+  context 'without marks' do
+    it 'should produce a Note with marks set to []' do
       str = "/4Bb2"
       n = NOTE_PARSER.parse(str).to_note
-      n.slur_mark.should eq(SlurMarks::NONE)      
+      n.marks.should eq([])
     end
   end
 end

@@ -3,9 +3,9 @@ module Musicality
 class NoteSequenceExtractor
   attr_reader :notes
   def initialize notes
-    @notes = notes.map {|n| n.clone }
-    remove_bad_links
+    prepare_notes(notes)
     mark_slurring
+    remove_bad_links
     calculate_offsets
     establish_maps
     # now, ready to extract sequences!
@@ -134,6 +134,44 @@ class NoteSequenceExtractor
     end
   end
 
+  def prepare_notes notes
+    in_triplet = false
+    @notes = Array.new(notes.size) do |i|
+      note = notes[i]
+
+      if note.begins_triplet?
+        in_triplet = true
+      end
+      
+      new_note = in_triplet ? note.resize(note.duration * Rational(2,3)) : note.clone
+
+      if note.ends_triplet?
+        in_triplet = false
+      end
+
+      new_note
+    end
+  end
+
+  def mark_slurring
+    @slurring_flags = []
+    under_slur = false
+    
+    @slurring_flags = Array.new(@notes.size) do |i|
+      note = @notes[i]
+
+      if note.begins_slur? && !note.ends_slur?
+        under_slur = true
+      end
+      flag = under_slur
+
+      if note.ends_slur? && !note.begins_slur?
+        under_slur = false
+      end
+      flag
+    end
+  end
+
   def remove_bad_links
     @notes.each_with_index do |n,i|
       # create a dummy note (with no pitches) for checking links from the last note
@@ -143,22 +181,7 @@ class NoteSequenceExtractor
       end
     end
   end
-  
-  def mark_slurring
-    under_slur = false
-    @slurring_flags = Array.new(@notes.size) do |i|
-      note = @notes[i]
-      if note.begins_slur?
-        under_slur = true
-      end
-      flag = under_slur
-      if note.ends_slur?
-        under_slur = false
-      end
-      flag
-    end
-  end
-  
+    
   def calculate_offsets
     offset = 0.to_r
     @offsets = Array.new(@notes.size) do |i|

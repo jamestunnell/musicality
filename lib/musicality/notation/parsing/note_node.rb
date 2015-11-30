@@ -1,6 +1,6 @@
 module Musicality
 module Parsing
-  class SingleNoteNode < Treetop::Runtime::SyntaxNode
+  class NoteNode < Treetop::Runtime::SyntaxNode
     def to_note
       dur = duration.to_r
 
@@ -26,9 +26,23 @@ module Parsing
         end
       end
 
-      Musicality::Note.new(dur, pitches, links: links, 
-        articulation: more.art.empty? ? Articulations::NORMAL : more.art.to_articulation,
-        slur_mark: more.sl.empty? ? SlurMarks::NONE  : more.sl.to_slur_mark)
+      marks = []
+      unless begin_marks.empty?
+        marks.push begin_marks.first.to_mark
+        unless begin_marks.second.empty?
+          marks.push begin_marks.second.to_mark
+        end
+      end
+
+      unless end_marks.empty?
+        marks.push end_marks.first.to_mark
+        unless end_marks.second.empty?
+          marks.push end_marks.second.to_mark
+        end
+      end
+
+      Musicality::Note.new(dur, pitches, links: links, marks: marks,
+        articulation: more.art.empty? ? Articulations::NORMAL : more.art.to_articulation)
     end
   end
 end

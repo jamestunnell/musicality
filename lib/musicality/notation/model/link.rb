@@ -23,12 +23,10 @@ class Link
   end
 
   def to_s
-    self.class::LINK_CHAR
+    LINK_SYMBOLS[self.class]
   end
 
-  class Tie < Link
-    LINK_CHAR = LINK_SYMBOLS[Links::TIE]
-  end
+  class Tie < Link; end
 
   class TargetedLink < Link
     attr_accessor :target_pitch
@@ -55,21 +53,8 @@ class Link
     end
   end
   
-  class Glissando < TargetedLink
-    LINK_CHAR = LINK_SYMBOLS[Links::GLISSANDO]
-  end
-  
-  class Portamento < TargetedLink
-    LINK_CHAR = LINK_SYMBOLS[Links::PORTAMENTO]
-  end
-
-  class Slur < TargetedLink
-    LINK_CHAR = LINK_SYMBOLS[Links::SLUR]
-  end
-
-  class Legato < TargetedLink
-    LINK_CHAR = LINK_SYMBOLS[Links::LEGATO]
-  end
+  class Glissando < TargetedLink; end
+  class Portamento < TargetedLink; end
 end
 
 end

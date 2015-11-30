@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 [
-  [Link::Glissando, Link::Portamento, LINK_SYMBOLS[Links::GLISSANDO]],
-  [Link::Portamento, Link::Glissando, LINK_SYMBOLS[Links::PORTAMENTO]],
+  [Link::Glissando, Link::Portamento, LINK_SYMBOLS[Link::Glissando]],
+  [Link::Portamento, Link::Glissando, LINK_SYMBOLS[Link::Portamento]],
 ].each do |klass,klass2,link_symbol|
   describe klass do
     before :all do
@@ -78,8 +78,8 @@ describe Link::Tie do
   end
   
   describe '#to_s' do
-    it "should return #{LINK_SYMBOLS[Links::TIE]}" do
-      @obj.to_s.should eq(LINK_SYMBOLS[Links::TIE])
+    it "should return #{LINK_SYMBOLS[Link::Tie]}" do
+      @obj.to_s.should eq(LINK_SYMBOLS[Link::Tie])
     end
   end
 end

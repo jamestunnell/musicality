@@ -6,28 +6,24 @@ grammar Note
   include Articulation
   include Link
   include Duration
-  include SlurMark
+  include Mark
 
   rule note
-    triplet / single_note
-  end
-
-  rule triplet
-    first:single_note ":"
-    second:single_note ":"
-    third:single_note
-    <TripletNoteNode>
-  end
-
-  rule single_note
+    begin_marks:(
+      (first:begin_triplet second:begin_slur?) / 
+      (first:begin_slur second:begin_triplet?)
+    )?
     duration
     more:(
       first_pl:pitch_link
       more_pl:("," pl:pitch_link)*
       art:articulation?
-      sl:slur_mark?
     )?
-    <SingleNoteNode>
+    end_marks:(
+      (first:end_triplet second:end_slur?) / 
+      (first:end_slur second:end_triplet?)
+    )?
+    <NoteNode>
   end
 
   rule pitch_link

@@ -29,12 +29,6 @@ module Musicality
     CONVERSION_METHOD = :to_range
     include Parseable
   end
-
-  class Triplet
-    PARSER = Parsing::NoteParser.new
-    CONVERSION_METHOD = :to_note
-    include Parseable
-  end
 end
 
 class String

@@ -5,6 +5,7 @@ include Musicality
 include Pitches
 include Meters
 include Articulations
+include Marks
 
 class Samples
   SAMPLE_PART = Part.new(

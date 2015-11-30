@@ -19,7 +19,85 @@ module Note
 
   include Duration
 
-  include SlurMark
+  include Mark
+
+  module Note0
+    def first
+      elements[0]
+    end
+
+    def second
+      elements[1]
+    end
+  end
+
+  module Note1
+    def first
+      elements[0]
+    end
+
+    def second
+      elements[1]
+    end
+  end
+
+  module Note2
+    def pl
+      elements[1]
+    end
+  end
+
+  module Note3
+    def first_pl
+      elements[0]
+    end
+
+    def more_pl
+      elements[1]
+    end
+
+    def art
+      elements[2]
+    end
+  end
+
+  module Note4
+    def first
+      elements[0]
+    end
+
+    def second
+      elements[1]
+    end
+  end
+
+  module Note5
+    def first
+      elements[0]
+    end
+
+    def second
+      elements[1]
+    end
+  end
+
+  module Note6
+    def begin_marks
+      elements[0]
+    end
+
+    def duration
+      elements[1]
+    end
+
+    def more
+      elements[2]
+    end
+
+    def end_marks
+      elements[3]
+    end
+  end
 
   def _nt_note
     start_index = index
@@ -32,221 +110,195 @@ module Note
       return cached
     end
 
-    i0 = index
-    r1 = _nt_triplet
-    if r1
-      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-      r0 = r1
-    else
-      r2 = _nt_single_note
-      if r2
-        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-        r0 = r2
+    i0, s0 = index, []
+    i2 = index
+    i3, s3 = index, []
+    r4 = _nt_begin_triplet
+    s3 << r4
+    if r4
+      r6 = _nt_begin_slur
+      if r6
+        r5 = r6
       else
-        @index = i0
-        r0 = nil
+        r5 = instantiate_node(SyntaxNode,input, index...index)
       end
+      s3 << r5
+    end
+    if s3.last
+      r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+      r3.extend(Note0)
+    else
+      @index = i3
+      r3 = nil
+    end
+    if r3
+      r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
+      r2 = r3
+    else
+      i7, s7 = index, []
+      r8 = _nt_begin_slur
+      s7 << r8
+      if r8
+        r10 = _nt_begin_triplet
+        if r10
+          r9 = r10
+        else
+          r9 = instantiate_node(SyntaxNode,input, index...index)
+        end
+        s7 << r9
+      end
+      if s7.last
+        r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+        r7.extend(Note1)
+      else
+        @index = i7
+        r7 = nil
+      end
+      if r7
+        r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+        r2 = r7
+      else
+        @index = i2
+        r2 = nil
+      end
+    end
+    if r2
+      r1 = r2
+    else
+      r1 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s0 << r1
+    if r1
+      r11 = _nt_duration
+      s0 << r11
+      if r11
+        i13, s13 = index, []
+        r14 = _nt_pitch_link
+        s13 << r14
+        if r14
+          s15, i15 = [], index
+          loop do
+            i16, s16 = index, []
+            if (match_len = has_terminal?(",", false, index))
+              r17 = true
+              @index += match_len
+            else
+              terminal_parse_failure('","')
+              r17 = nil
+            end
+            s16 << r17
+            if r17
+              r18 = _nt_pitch_link
+              s16 << r18
+            end
+            if s16.last
+              r16 = instantiate_node(SyntaxNode,input, i16...index, s16)
+              r16.extend(Note2)
+            else
+              @index = i16
+              r16 = nil
+            end
+            if r16
+              s15 << r16
+            else
+              break
+            end
+          end
+          r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
+          s13 << r15
+          if r15
+            r20 = _nt_articulation
+            if r20
+              r19 = r20
+            else
+              r19 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s13 << r19
+          end
+        end
+        if s13.last
+          r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+          r13.extend(Note3)
+        else
+          @index = i13
+          r13 = nil
+        end
+        if r13
+          r12 = r13
+        else
+          r12 = instantiate_node(SyntaxNode,input, index...index)
+        end
+        s0 << r12
+        if r12
+          i22 = index
+          i23, s23 = index, []
+          r24 = _nt_end_triplet
+          s23 << r24
+          if r24
+            r26 = _nt_end_slur
+            if r26
+              r25 = r26
+            else
+              r25 = instantiate_node(SyntaxNode,input, index...index)
+            end
+            s23 << r25
+          end
+          if s23.last
+            r23 = instantiate_node(SyntaxNode,input, i23...index, s23)
+            r23.extend(Note4)
+          else
+            @index = i23
+            r23 = nil
+          end
+          if r23
+            r23 = SyntaxNode.new(input, (index-1)...index) if r23 == true
+            r22 = r23
+          else
+            i27, s27 = index, []
+            r28 = _nt_end_slur
+            s27 << r28
+            if r28
+              r30 = _nt_end_triplet
+              if r30
+                r29 = r30
+              else
+                r29 = instantiate_node(SyntaxNode,input, index...index)
+              end
+              s27 << r29
+            end
+            if s27.last
+              r27 = instantiate_node(SyntaxNode,input, i27...index, s27)
+              r27.extend(Note5)
+            else
+              @index = i27
+              r27 = nil
+            end
+            if r27
+              r27 = SyntaxNode.new(input, (index-1)...index) if r27 == true
+              r22 = r27
+            else
+              @index = i22
+              r22 = nil
+            end
+          end
+          if r22
+            r21 = r22
+          else
+            r21 = instantiate_node(SyntaxNode,input, index...index)
+          end
+          s0 << r21
+        end
+      end
+    end
+    if s0.last
+      r0 = instantiate_node(NoteNode,input, i0...index, s0)
+      r0.extend(Note6)
+    else
+      @index = i0
+      r0 = nil
     end
 
     node_cache[:note][start_index] = r0
-
-    r0
-  end
-
-  module Triplet0
-    def first
-      elements[0]
-    end
-
-    def second
-      elements[2]
-    end
-
-    def third
-      elements[4]
-    end
-  end
-
-  def _nt_triplet
-    start_index = index
-    if node_cache[:triplet].has_key?(index)
-      cached = node_cache[:triplet][index]
-      if cached
-        node_cache[:triplet][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r1 = _nt_single_note
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?(":", false, index))
-        r2 = true
-        @index += match_len
-      else
-        terminal_parse_failure('":"')
-        r2 = nil
-      end
-      s0 << r2
-      if r2
-        r3 = _nt_single_note
-        s0 << r3
-        if r3
-          if (match_len = has_terminal?(":", false, index))
-            r4 = true
-            @index += match_len
-          else
-            terminal_parse_failure('":"')
-            r4 = nil
-          end
-          s0 << r4
-          if r4
-            r5 = _nt_single_note
-            s0 << r5
-          end
-        end
-      end
-    end
-    if s0.last
-      r0 = instantiate_node(TripletNoteNode,input, i0...index, s0)
-      r0.extend(Triplet0)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:triplet][start_index] = r0
-
-    r0
-  end
-
-  module SingleNote0
-    def pl
-      elements[1]
-    end
-  end
-
-  module SingleNote1
-    def first_pl
-      elements[0]
-    end
-
-    def more_pl
-      elements[1]
-    end
-
-    def art
-      elements[2]
-    end
-
-    def sl
-      elements[3]
-    end
-  end
-
-  module SingleNote2
-    def duration
-      elements[0]
-    end
-
-    def more
-      elements[1]
-    end
-  end
-
-  def _nt_single_note
-    start_index = index
-    if node_cache[:single_note].has_key?(index)
-      cached = node_cache[:single_note][index]
-      if cached
-        node_cache[:single_note][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r1 = _nt_duration
-    s0 << r1
-    if r1
-      i3, s3 = index, []
-      r4 = _nt_pitch_link
-      s3 << r4
-      if r4
-        s5, i5 = [], index
-        loop do
-          i6, s6 = index, []
-          if (match_len = has_terminal?(",", false, index))
-            r7 = true
-            @index += match_len
-          else
-            terminal_parse_failure('","')
-            r7 = nil
-          end
-          s6 << r7
-          if r7
-            r8 = _nt_pitch_link
-            s6 << r8
-          end
-          if s6.last
-            r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
-            r6.extend(SingleNote0)
-          else
-            @index = i6
-            r6 = nil
-          end
-          if r6
-            s5 << r6
-          else
-            break
-          end
-        end
-        r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-        s3 << r5
-        if r5
-          r10 = _nt_articulation
-          if r10
-            r9 = r10
-          else
-            r9 = instantiate_node(SyntaxNode,input, index...index)
-          end
-          s3 << r9
-          if r9
-            r12 = _nt_slur_mark
-            if r12
-              r11 = r12
-            else
-              r11 = instantiate_node(SyntaxNode,input, index...index)
-            end
-            s3 << r11
-          end
-        end
-      end
-      if s3.last
-        r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-        r3.extend(SingleNote1)
-      else
-        @index = i3
-        r3 = nil
-      end
-      if r3
-        r2 = r3
-      else
-        r2 = instantiate_node(SyntaxNode,input, index...index)
-      end
-      s0 << r2
-    end
-    if s0.last
-      r0 = instantiate_node(SingleNoteNode,input, i0...index, s0)
-      r0.extend(SingleNote2)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:single_note][start_index] = r0
 
     r0
   end

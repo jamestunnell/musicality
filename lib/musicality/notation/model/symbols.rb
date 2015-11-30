@@ -12,15 +12,16 @@ ARTICULATION_SYMBOLS = {
 }
 
 LINK_SYMBOLS = {
-  Links::TIE => "~",
-  Links::GLISSANDO => ";",
-  Links::PORTAMENTO => ":",
+  Link::Tie => "~",
+  Link::Glissando => ";",
+  Link::Portamento => ":",
 }
 
-SLUR_MARK_SYMBOLS = {
-  SlurMarks::NONE => "",
-  SlurMarks::BEGIN_SLUR => "(",
-  SlurMarks::END_SLUR => ")",
+MARK_SYMBOLS = {
+  Mark::Slur::Begin => "(",
+  Mark::Slur::End => ")",
+  Mark::Triplet::Begin => "[",
+  Mark::Triplet::End => "]",
 }
 
 end
