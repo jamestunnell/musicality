@@ -256,6 +256,40 @@ describe Score::Tempo do
       end      
     end
   end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      score = Score::Tempo.new(TWO_FOUR, 120,
+        meter_changes: {
+          2 => Change::Immediate.new(FOUR_FOUR),
+          4 => Change::Immediate.new(SIX_EIGHT),
+        },
+        parts: {
+          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+          "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
+        }
+      )
+      score.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      score = Score::Tempo.new(TWO_FOUR, 120,
+        meter_changes: {
+          2 => Change::Immediate.new(FOUR_FOUR),
+          4 => Change::Immediate.new(SIX_EIGHT),
+        },
+        parts: {
+          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+          "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
+        }
+      )
+      score2 = Score::Tempo.unpack score.pack
+      score2.should be_a Score
+      score2.should eq score
+    end
+  end
 end
 
 describe Score::Timed do
@@ -306,6 +340,28 @@ describe Score::Timed do
           Score::Timed.new(*args).should be_invalid
         end
       end 
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      score = Score::Timed.new(parts: {
+        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+      })
+      score.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      score = Score::Timed.new(parts: {
+        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+      })
+      score2 = Score::Timed.unpack score.pack
+      score2.should be_a score.class
+      score2.should eq score
     end
   end
 end

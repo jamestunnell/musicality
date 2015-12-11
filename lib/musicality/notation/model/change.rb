@@ -1,6 +1,8 @@
 module Musicality
 
 class Change
+  include Packable
+
   attr_reader :end_value
   
   def initialize end_value
@@ -13,8 +15,8 @@ class Change
   end
   
   class Immediate < Change
-    def initialize value
-      super(value)
+    def initialize end_value
+      super(end_value)
     end
     
     def clone

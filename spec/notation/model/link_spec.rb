@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'yaml'
 
 [
   [Link::Glissando, Link::Portamento, LINK_SYMBOLS[Link::Glissando]],
@@ -41,6 +42,20 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
         YAML.load(@obj.to_yaml).should eq @obj
       end
     end
+
+    describe '#pack' do
+      it 'should produce a Hash' do
+        @obj.pack.should be_a Hash
+      end
+    end
+
+    describe 'unpack' do
+      it 'should produce a Link object equal the original' do
+        obj2 = @obj.class.unpack @obj.pack
+        obj2.should be_a @obj.class
+        obj2.should eq @obj
+      end
+    end
     
     describe '#to_s' do
       it 'should produce string that include link char and target pitch str' do
@@ -76,7 +91,21 @@ describe Link::Tie do
       YAML.load(@obj.to_yaml).should eq @obj
     end
   end
-  
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      @obj.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce a Link object equal the original' do
+      obj2 = @obj.class.unpack @obj.pack
+      obj2.should be_a @obj.class
+      obj2.should eq @obj
+    end
+  end
+
   describe '#to_s' do
     it "should return #{LINK_SYMBOLS[Link::Tie]}" do
       @obj.to_s.should eq(LINK_SYMBOLS[Link::Tie])

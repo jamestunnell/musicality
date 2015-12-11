@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'yaml'
 
 describe Part do
   describe '#initialize' do
@@ -27,6 +28,26 @@ describe Part do
     it 'should produce YAML that can be loaded' do
       p = Samples::SAMPLE_PART
       YAML.load(p.to_yaml).should eq p
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      notes = [Note::whole([A2]), Note::half]
+      dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
+      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, instrument: Instruments::ELECTRIC_PIANO_1)
+      p.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      notes = [Note::whole([A2]), Note::half]
+      dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
+      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, instrument: Instruments::ELECTRIC_PIANO_1)
+      p2 = Part.unpack p.pack
+      p2.should be_a Part
+      p2.should eq p
     end
   end
   

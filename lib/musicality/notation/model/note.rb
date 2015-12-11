@@ -3,6 +3,7 @@ module Musicality
 require 'set'
 
 class Note
+  include Packable
   include Validatable
   
   attr_reader :pitches, :links, :duration, :marks

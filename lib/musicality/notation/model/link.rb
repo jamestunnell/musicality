@@ -6,6 +6,8 @@ module Musicality
 #   @return [Pitch] The pitch of the note which is being connected to.
 #
 class Link
+  include Packable
+  
   def clone
     Marshal.load(Marshal.dump(self))
   end

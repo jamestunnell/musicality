@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'yaml'
 
 describe Meter do
   describe '#initialize' do
@@ -45,6 +46,20 @@ describe Meter do
     it 'should produce YAML that can be loaded' do
       m = Meter.new(4,"1/4".to_r)
       YAML.load(m.to_yaml).should eq m
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      FOUR_FOUR.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      m2 = Meter.unpack FOUR_FOUR.pack
+      m2.should be_a Meter
+      m2.should eq(FOUR_FOUR)
     end
   end
   

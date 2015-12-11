@@ -1,6 +1,8 @@
 module Musicality
 
 class Mark
+  include Packable
+  
   def clone
     self.class.new
   end

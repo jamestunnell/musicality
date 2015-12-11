@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'yaml'
 
 describe Pitch do
 
@@ -156,6 +157,20 @@ describe Pitch do
     it 'should produce YAML that can be loaded' do
       p = Pitch.new(octave: 1, semitone: 2)
       YAML.load(p.to_yaml).should eq p
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      Bb3.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      p2 = Pitch.unpack Bb3.pack
+      p2.should be_a Pitch
+      p2.should eq Bb3
     end
   end
   

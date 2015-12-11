@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require 'yaml'
 
 describe Note do
   before :all do
@@ -162,6 +163,22 @@ describe Note do
       
       n = Note.new(1,[E2], links: {E2 => Link::Portamento.new(F2)})
       YAML.load(n.to_yaml).should eq n
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      n = Note.quarter([E2,F2,A2], articulation: STACCATO, marks: [BEGIN_SLUR], links: {E2 => Link::Tie.new, F2 => Link::Glissando.new(C3)})
+      n.pack.should be_a Hash
+    end
+  end
+
+  describe 'unpack' do
+    it 'should produce an object equal the original' do
+      n = Note.quarter([E2,F2,A2], articulation: STACCATO, marks: [BEGIN_SLUR], links: {E2 => Link::Tie.new, F2 => Link::Glissando.new(C3)})
+      n2 = Note.unpack n.pack
+      n2.should be_a Note
+      n2.should eq n
     end
   end
   

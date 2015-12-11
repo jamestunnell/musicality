@@ -1,6 +1,8 @@
 module Musicality
 
 class Key
+  include Packable
+  
   FLAT = :flat
   SHARP = :sharp
   ACCIDENTAL_TYPES = [FLAT, SHARP]

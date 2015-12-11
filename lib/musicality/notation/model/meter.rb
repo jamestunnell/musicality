@@ -1,6 +1,7 @@
 module Musicality
 
 class Meter
+  include Packable
   include Validatable
 
   attr_reader :measure_duration, :beat_duration, :beats_per_measure

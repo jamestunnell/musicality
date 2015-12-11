@@ -23,6 +23,22 @@ describe Change::Immediate do
       YAML.load(c.to_yaml).should eq c
     end
   end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      h = Change::Immediate.new(2).pack
+      h.should be_a Hash
+    end
+  end
+
+  describe '.unpack' do
+    it 'should return a Change::Immediate equal to the original' do
+      c1 = Change::Immediate.new(2)
+      c2 = Change::Immediate.unpack(c1.pack)
+      c2.should be_a Change::Immediate
+      c2.should eq c1
+    end
+  end
 end
 
 describe Change::Gradual do
@@ -122,6 +138,22 @@ describe Change::Gradual do
       YAML.load(c.to_yaml).should eq c
     end
   end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      h = Change::Gradual.linear(4,2).pack
+      h.should be_a Hash
+    end
+  end
+
+  describe '.unpack' do
+    it 'should return a Change::Gradual equal to the original' do
+      c1 = Change::Gradual.linear(4,2)
+      c2 = Change::Gradual.unpack(c1.pack)
+      c2.should be_a Change::Gradual
+      c2.should eq c1
+    end
+  end
 end
 
 describe Change::Gradual::Trimmed do
@@ -188,6 +220,29 @@ describe Change::Gradual::Trimmed do
   describe '#trailing' do
     it 'should return the amount of transition unused at the end' do
       Change::Gradual.linear(41,19).trim(4,9).trailing.should eq(9)
+    end
+  end
+
+  describe '#to_yaml' do
+    it 'should produce YAML that can be loaded' do
+      c = Change::Gradual::Trimmed.linear(4,2, preceding: 1, remaining: 0.5)
+      YAML.load(c.to_yaml).should eq c
+    end
+  end
+
+  describe '#pack' do
+    it 'should produce a Hash' do
+      h = Change::Gradual::Trimmed.linear(4,2, preceding: 1, remaining: 0.5).pack
+      h.should be_a Hash
+    end
+  end
+
+  describe '.unpack' do
+    it 'should return a Change::Gradual::Trimmed equal to the original' do
+      c1 = Change::Gradual::Trimmed.linear(4,2, preceding: 1, remaining: 0.5)
+      c2 = Change::Gradual::Trimmed.unpack(c1.pack)
+      c2.should be_a Change::Gradual::Trimmed
+      c2.should eq c1
     end
   end
 end

@@ -153,4 +153,19 @@ describe Key do
   
   describe '#accidentals' do
   end
+
+  describe '#pack' do
+    it 'should return a Hash' do
+      Key.major_sharp(1).pack.should be_a Hash
+    end
+  end
+
+  describe '.unpack' do
+    it 'should return a Key object equal to the original' do
+      k1 = Key.major_sharp(1)
+      k2 = Key.unpack k1.pack
+      k2.should be_a Key
+      k2.should eq(k1)
+    end
+  end
 end

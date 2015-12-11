@@ -1,8 +1,7 @@
-require 'yaml'
-
 module Musicality
 
 class Part
+  include Packable
   include Validatable
   
   attr_accessor :start_dynamic, :dynamic_changes, :notes, :instrument

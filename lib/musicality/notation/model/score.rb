@@ -1,8 +1,10 @@
 module Musicality
 
 class Score
+  include Packable
   include Validatable
-  attr_accessor :parts, :program, :start_key, :key_changes
+
+  attr_accessor :parts, :sections, :program, :start_key, :key_changes
   attr_writer :title, :composer
   
   def title value = nil
@@ -20,7 +22,7 @@ class Score
       @composer = value
     end
   end
-  
+
   def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}
     @parts = parts
     @program = program
@@ -42,7 +44,11 @@ class Score
   end
   
   def ==(other)
-    return @parts == other.parts && @program == other.program
+    return self.class == other.class &&
+      @parts == other.parts && @program == other.program &&
+      @program == other.program && @sections == other.sections &&
+      @title == other.title && @composer == other.composer &&
+      @start_key == other.start_key && @key_changes == other.key_changes
   end
   
   def max_part_duration
@@ -65,6 +71,16 @@ class Score
   class Tempo < Score
     attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
     
+    # Allows the Packable module's #pack and .unpack method to prepare keyword 
+    # arguments used in Score#initialize. Needs to match the name of the ** param 
+    # in Tempo::Score#initialize
+    def kwargs
+      score_init_symbols = Score.instance_method(:initialize).parameters.transpose[1]
+      Hash[ score_init_symbols.map do |sym|
+        [sym, self.send(sym)]
+      end ]
+    end
+
     # See Score#initialize for remaining kwargs
     def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, **kwargs
       @start_tempo = start_tempo

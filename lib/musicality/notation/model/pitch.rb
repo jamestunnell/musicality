@@ -19,6 +19,8 @@ module Musicality
 #
 class Pitch
   include Comparable
+  include Packable
+  
   attr_reader :octave, :semitone, :cent, :total_cents
 
   #The default number of semitones per octave is 12, corresponding to
