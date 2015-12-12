@@ -23,7 +23,34 @@ describe Part do
       p.settings.should eq [ "dummy" ]
     end
   end
-  
+
+  describe '#find_settings' do
+    context 'settings is empty' do
+      it 'should return nil' do
+        Part.new(Dynamics::P).find_settings(Integer).should be_nil
+      end
+    end
+
+    context 'one or more objects in settings' do
+      before :all do
+        @part = Part.new(Dynamics::MF, settings: [ 5, "boy" ])
+      end
+
+      context 'given class of object in settings' do
+        it 'should return the object' do
+          @part.find_settings(Integer).should be_a Integer
+          @part.find_settings(String).should be_a String
+        end
+      end
+
+      context 'given class not of any object in settings' do
+        it 'should return nil' do
+          @part.find_settings(Float).should be_nil
+        end
+      end
+    end
+  end
+
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
       p = Samples::SAMPLE_PART
@@ -50,7 +77,7 @@ describe Part do
       p2.should eq p
     end
   end
-  
+
   describe '#valid?' do
     { 'negative start dynamic' => [-0.01],
       'start dynamic > 1' => [1.01],

@@ -11,7 +11,7 @@ class ScoreSequencer
 
     # parts should all have MIDI settings, defaults if necessary
     @parts.each do |part_name, part|
-      unless part.has_settings? MidiSettings
+      unless part.midi_settings
         part.settings.push MidiSettings.new(1)
       end
     end
@@ -36,7 +36,7 @@ class ScoreSequencer
     channel = 0
     selected_parts.each do |part_name|
       part = @parts[part_name]
-      program = part.get_settings(MidiSettings).program      
+      program = part.midi_settings.program
       pseq = PartSequencer.new(part)
       seq.tracks << pseq.make_midi_track(seq, part_name, channel, seq.ppqn, program)
       channel += 1

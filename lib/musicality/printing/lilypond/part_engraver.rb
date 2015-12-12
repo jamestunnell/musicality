@@ -9,10 +9,8 @@ class PartEngraver
       raise ArgumentError, "given part contains errors: #{part.errors}"
     end
 
-    settings = part.get_settings LilyPondSettings
-    raise ArgumentError if settings.nil?
-    @transpose_interval = settings.transpose_interval
-    @clefs = settings.clefs
+    @transpose_interval = part.lilypond_settings.transpose_interval
+    @clefs = part.lilypond_settings.clefs
     @part = (@transpose_interval == 0) ? part : part.transpose(@transpose_interval)
     @title = title
     @indent = INDENT

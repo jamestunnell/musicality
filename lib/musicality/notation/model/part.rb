@@ -59,11 +59,7 @@ class Part
     return p
   end
 
-  def has_settings? settings_class
-    settings.count {|s| s.is_a? settings_class } > 0
-  end
-
-  def get_settings settings_class
+  def find_settings settings_class
     settings.find {|s| s.is_a? settings_class }
   end
 end

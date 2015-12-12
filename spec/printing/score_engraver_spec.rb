@@ -12,7 +12,7 @@ describe ScoreEngraver do
         titles = ScoreEngraver.figure_part_titles(parts)
 
         parts.each do |part_name, part|
-          titles[part_name].should eq(part.get_settings(LilypondSettings).instrument_name)
+          titles[part_name].should eq(part.lilypond_settings.instrument_name)
         end
       end
     end
@@ -28,7 +28,7 @@ describe ScoreEngraver do
 
         part_nums = []
         parts.each do |part_name, part|
-          r = Regexp.new("#{part.get_settings(LilypondSettings).instrument_name} (\\d)")
+          r = Regexp.new("#{part.lilypond_settings.instrument_name} (\\d)")
           titles[part_name].should match r
           m = titles[part_name].match(r)
           part_nums.push m.captures.first.to_s.to_i
