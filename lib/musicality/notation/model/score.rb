@@ -4,6 +4,12 @@ class Score
   include Packable
   include Validatable
 
+  special_packing(:program){|p| p.map {|range| range.to_s }}
+  special_unpacking(:program){|p| p.map {|str| parse_numeric_range(str) }}
+  
+  special_packing(:sections){|s| Hash[ s.map {|name,range| [name,range.to_s] } ]}
+  special_unpacking(:sections){|s| Hash[ s.map {|name,str| [name,parse_numeric_range(str)] } ]}
+
   attr_accessor :parts, :sections, :program, :start_key, :key_changes
   attr_writer :title, :composer
   
@@ -70,25 +76,15 @@ class Score
   # Offsets are measure-based, and tempo values are in beats-per-minute.
   class Tempo < Score
     attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
-    
-    # Allows the Packable module's #pack and .unpack method to prepare keyword 
-    # arguments used in Score#initialize. Needs to match the name of the ** param 
-    # in Tempo::Score#initialize
-    def kwargs
-      score_init_symbols = Score.instance_method(:initialize).parameters.transpose[1]
-      Hash[ score_init_symbols.map do |sym|
-        [sym, self.send(sym)]
-      end ]
-    end
 
     # See Score#initialize for remaining kwargs
-    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, **kwargs
+    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
       @start_meter = start_meter
       @meter_changes = meter_changes
       
-      super(**kwargs)
+      super(parts: parts, program: program, title: title, composer: composer, sections: sections, start_key: start_key, key_changes: key_changes)
     end
     
     def check_methods
@@ -225,6 +221,28 @@ class Score
     if nonzero_duration.any?
       raise NonZeroError, "Found key changes that are not immediate: #{nonzero_duration}"
     end
+  end
+
+  private
+
+  def self.parse_numeric str
+    if str.include? "."
+      str.to_f
+    elsif str.include? "/"
+      str.to_r
+    else
+      str.to_i
+    end
+  end
+
+  def self.parse_numeric_range str
+    result = str.match /(\d+([\.\/]\d+)?)([\.]{2,3})(\d+([\.\/]\d+)?)/
+    raise ArgumentError, "string #{str} is not a numeric range" if result.nil?
+    
+    dots = result.values_at(3)
+    l_num = parse_numeric(result.values_at(1)[0])
+    r_num = parse_numeric(result.values_at(4)[0])
+    Range.new l_num, r_num, dots.size == 3
   end
 end
 

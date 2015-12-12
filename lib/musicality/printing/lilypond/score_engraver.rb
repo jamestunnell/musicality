@@ -10,7 +10,12 @@ class ScoreEngraver
     @key_changes = score.key_changes
 
     @parts = score.collated? ? score.parts : ScoreCollator.new(score).collate_parts
-    
+    @parts.each do |part_name, part|
+      unless parts.has_settings? LilypondSettings
+        parts.settings.push LilypondSettings.new(part_name)
+      end
+    end
+
     @header = ScoreEngraver.header score.title, score.composer
     @part_titles = ScoreEngraver.figure_part_titles @parts
   end
@@ -20,8 +25,9 @@ class ScoreEngraver
     instr_name_used = Hash.new(0)
     part_titles = Hash[
       parts.map do |part_name, part|
-        instr_name_totals[part.instrument.name] += 1
-        [part_name, part.instrument.name]
+        instr_name = part.get_settings(LilypondSettings).instrument_name
+        instr_name_totals[instr_name] += 1
+        [part_name, instr_name]
       end
     ]
 

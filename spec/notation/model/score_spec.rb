@@ -118,6 +118,20 @@ describe Score do
 end
 
 describe Score::Tempo do
+  before :all do
+    @basic_score = Score::Tempo.new(TWO_FOUR, 120,
+      meter_changes: {
+        2 => Change::Immediate.new(FOUR_FOUR),
+        4 => Change::Immediate.new(SIX_EIGHT),
+      },
+      parts: {
+        "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+        "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
+      },
+      program: [ (0.5)..Rational(1,2), 0..1, 1..2 ]
+    )
+  end
+
   describe '#initialize' do
     it 'should use empty containers for parameters not given' do
       s = Score::Tempo.new(FOUR_FOUR,120)
@@ -259,35 +273,25 @@ describe Score::Tempo do
 
   describe '#pack' do
     it 'should produce a Hash' do
-      score = Score::Tempo.new(TWO_FOUR, 120,
-        meter_changes: {
-          2 => Change::Immediate.new(FOUR_FOUR),
-          4 => Change::Immediate.new(SIX_EIGHT),
-        },
-        parts: {
-          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-          "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
-        }
-      )
-      score.pack.should be_a Hash
+      @basic_score.pack.should be_a Hash
+    end
+
+    it 'should pack program as an array of strings' do
+      program = @basic_score.pack[:program]
+      program.each {|entry| entry.should be_a String}
+    end
+
+    it 'should pack sections as a Hash of strings' do
+      program = @basic_score.pack[:sections]
+      program.each {|name,entry| entry.should be_a String}
     end
   end
 
   describe 'unpack' do
     it 'should produce an object equal the original' do
-      score = Score::Tempo.new(TWO_FOUR, 120,
-        meter_changes: {
-          2 => Change::Immediate.new(FOUR_FOUR),
-          4 => Change::Immediate.new(SIX_EIGHT),
-        },
-        parts: {
-          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-          "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
-        }
-      )
-      score2 = Score::Tempo.unpack score.pack
+      score2 = Score::Tempo.unpack @basic_score.pack
       score2.should be_a Score
-      score2.should eq score
+      score2.should eq @basic_score
     end
   end
 end

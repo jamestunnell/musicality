@@ -19,8 +19,8 @@ describe Part do
       p.notes.should eq notes
       p.dynamic_changes.should eq dcs
 
-      p = Part.new(Dynamics::P, instrument: Instruments::ELECTRIC_PIANO_1)
-      p.instrument.should eq Instruments::ELECTRIC_PIANO_1
+      p = Part.new(Dynamics::P, settings: [ "dummy" ])
+      p.settings.should eq [ "dummy" ]
     end
   end
   
@@ -35,7 +35,7 @@ describe Part do
     it 'should produce a Hash' do
       notes = [Note::whole([A2]), Note::half]
       dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
-      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, instrument: Instruments::ELECTRIC_PIANO_1)
+      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, settings: [ "dummy" ])
       p.pack.should be_a Hash
     end
   end
@@ -44,7 +44,7 @@ describe Part do
     it 'should produce an object equal the original' do
       notes = [Note::whole([A2]), Note::half]
       dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
-      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, instrument: Instruments::ELECTRIC_PIANO_1)
+      p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, settings: [ "dummy" ])
       p2 = Part.unpack p.pack
       p2.should be_a Part
       p2.should eq p

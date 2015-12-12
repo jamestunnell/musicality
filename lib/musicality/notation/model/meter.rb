@@ -4,6 +4,9 @@ class Meter
   include Packable
   include Validatable
 
+  special_packing(:beat_duration){|r| r.to_s}
+  special_unpacking(:beat_duration){|s| s.to_r}
+
   attr_reader :measure_duration, :beat_duration, :beats_per_measure
   
   def initialize beats_per_measure, beat_duration

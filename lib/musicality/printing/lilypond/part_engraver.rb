@@ -9,7 +9,10 @@ class PartEngraver
       raise ArgumentError, "given part contains errors: #{part.errors}"
     end
 
-    @transpose_interval = part.instrument.transpose_interval
+    settings = part.get_settings LilyPondSettings
+    raise ArgumentError if settings.nil?
+    @transpose_interval = settings.transpose_interval
+    @clefs = settings.clefs
     @part = (@transpose_interval == 0) ? part : part.transpose(@transpose_interval)
     @title = title
     @indent = INDENT
@@ -35,7 +38,7 @@ class PartEngraver
   end
 
   def make_preliminary start_meter, start_key, master
-    clef = self.class.best_clef(@part.notes, @part.instrument.clefs)
+    clef = self.class.best_clef(@part.notes, @clefs)
 
     output = @indent + "\\new Staff {\n"
     increase_indent
@@ -68,10 +71,10 @@ class PartEngraver
   end 
 
   CLEF_RANGES = {
-    Instrument::TREBLE => Pitches::C4..Pitches::A5,
-    Instrument::ALTO => Pitches::D3..Pitches::B4,
-    Instrument::TENOR => Pitches::B2..Pitches::G4,
-    Instrument::BASS => Pitches::E2..Pitches::C4,
+    Clef::TREBLE => Pitches::C4..Pitches::A5,
+    Clef::ALTO => Pitches::D3..Pitches::B4,
+    Clef::TENOR => Pitches::B2..Pitches::G4,
+    Clef::BASS => Pitches::E2..Pitches::C4,
   }
 
   def self.best_clef notes, allowed_clefs

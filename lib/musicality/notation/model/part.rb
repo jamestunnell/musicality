@@ -4,13 +4,16 @@ class Part
   include Packable
   include Validatable
   
-  attr_accessor :start_dynamic, :dynamic_changes, :notes, :instrument
+  special_packing(:notes) {|notes| notes.map {|n| n.to_s }.join(" ") }
+  special_unpacking(:notes) {|notes_str| Note.split_parse(notes_str) }
+
+  attr_accessor :start_dynamic, :dynamic_changes, :notes, :settings
   
-  def initialize start_dynamic, notes: [], dynamic_changes: {}, instrument: Instruments::DEFAULT_INSTRUMENT
+  def initialize start_dynamic, notes: [], dynamic_changes: {}, settings: []
     @notes = notes
     @start_dynamic = start_dynamic
     @dynamic_changes = dynamic_changes
-    @instrument = instrument
+    @settings = settings
 
     yield(self) if block_given?
   end
@@ -54,6 +57,14 @@ class Part
     p = self.clone
     p.notes.each {|n| n.transpose!(interval) }
     return p
+  end
+
+  def has_settings? settings_class
+    settings.count {|s| s.is_a? settings_class } > 0
+  end
+
+  def get_settings settings_class
+    settings.find {|s| s.is_a? settings_class }
   end
 end
 

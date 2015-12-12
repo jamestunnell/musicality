@@ -31,35 +31,13 @@ describe Note do
           end
         end
       end
-
-      context 'combination of multiples of power-of-two fractions, some multipled by 1/3' do
-        [
-          [Rational(3,8),Rational(11,48)],
-          [Rational(1,8),Rational(5,24),Rational(5,32)],
-          [Rational(3,32),Rational(1,6),Rational(5,12)],
-        ].each do |subdurs|
-          dur = subdurs.inject(0.to_r,:+)
-          n = Note.new(dur)
-          subdurs2 = n.fractional_subdurs(Rational(1,1024))
-
-          it 'should return descending power-of-two fractions plus a last power-of-two fraction that is multiplied by 1/3' do
-            except_last = subdurs2[0...-1]
-            except_last.should eq except_last.sort.reverse
-            (subdurs2.last.denominator % 3).should eq(0)
-          end
-
-          it 'should return fractions that sum to note duration' do
-            subdurs2.inject(0.to_r,:+).should eq(dur)
-          end
-        end
-      end
     end
 
     context 'duration that has whole and fractional part' do
       [
-        [6,Rational(3,8),Rational(11,48)],
-        [3,Rational(1,8),Rational(5,24),Rational(5,32)],
-        [1,Rational(3,32),Rational(1,6),Rational(5,12)],
+        [6,Rational(3,8),Rational(11,16)],
+        [3,Rational(1,8),Rational(5,8),Rational(5,32)],
+        [1,Rational(3,32),Rational(1,2),Rational(5,4)],
       ].each do |subdurs|
         dur = subdurs.inject(0.to_r,:+)
         n = Note.new(dur)
@@ -222,5 +200,5 @@ describe Note do
     #   end
 
     # end
-  end
+  # end
 end
