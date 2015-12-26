@@ -1,0 +1,13 @@
+module Musicality
+module SuperCollider
+
+ADD_HEAD = 0
+ADD_TAIL = 1
+ADD_BEFORE = 2
+ADD_AFTER = 3
+ADD_REPLACE = 4
+
+ADD_ACTIONS = [ ADD_BEFORE, ADD_AFTER, ADD_HEAD, ADD_TAIL, ADD_REPLACE ]
+
+end
+end

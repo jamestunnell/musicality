@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+exe_name = File.basename(__FILE__)
+
+doc = <<DOCOPT
+Loads a musicality score from YAML file, and generates SuperCollider code 
+for non-realtime SuperCollider rendering.
+
+If no part names are given, all score parts are selected for performance. 
+Otherwise, only the given parts names will be selected. If --outdir is not
+given, files will be put in the same directory as the score file.
+
+Usage:
+  #{exe_name} SCORE [PART]... [options]
+  #{exe_name} -h | --help
+  #{exe_name} --version
+
+Arguments:
+  SCORE A musicality score file (may be packed as a hash) in a YAML file
+  PART name of a part in the score (e.g. "lhand")
+  
+Options:
+   -v --verbose  Display sclang output
+  --outdir=OUTD  Dir where files will be put (defaults to same dir as score file)
+  --srate=SRATE  Sampling rate for converting tempo-based score to time-based
+                 score, and for sampling dynamic change values [default: 200]
+  --leadtime=LT  Time before performance begins (must be > 0) [default: 0.1]
+  -h --help      Show this screen.
+  --version      Show version.
+DOCOPT
+
+require 'docopt'
+begin
+  args = Docopt::docopt(doc)
+  puts args
+rescue Docopt::Exit => e
+  puts e.message
+  exit
+end
+
+require 'musicality'
+
+if args["--version"]
+  puts "#{exe_name} from musicality v#{Musicality::VERSION}"
+  exit
+end
+
+SCORE_FILE = args["SCORE"]
+unless File.exists? SCORE_FILE
+  puts "Score file #{SCORE_FILE} does not exist. Aborting."
+  exit
+end
+
+if args["--outdir"]
+  OUTDIR = args["--outdir"]
+  unless Dir.exists? OUTDIR
+    puts "Output directory #{OUTDIR} does not exist. Aborting."
+    exit
+  end
+else
+  OUTDIR = File.dirname(SCORE_FILE)
+end
+
+VERBOSE = args["--verbose"]
+PARTS = args["PART"]
+LEADTIME = args["--leadtime"].to_f
+
+require 'yaml'
+include Musicality
+
+File.open(SCORE_FILE) do |fin|
+  print "Reading file '#{SCORE_FILE}'..."
+  score = YAML.load(fin.read)
+  
+  if score.is_a? Hash
+    score = score.unpack
+  end
+  puts "done"
+
+  unless score.is_a? Score::Timed
+    print "Converting to timed score..."
+    score = score.to_timed(args["--srate"].to_i)
+    puts "done"
+  end
+  
+  if score.valid?
+    conductor = SuperCollider::Conductor.new(score)
+
+    perform_kwargs = { :verbose => VERBOSE, :lead_time => LEADTIME }
+    if PARTS.any?
+      perform_kwargs[:selected_parts] = PARTS
+    end
+    base_fpath = "#{OUTDIR}/#{File.basename(SCORE_FILE,File.extname(SCORE_FILE))}"
+
+    print "Making audio files..."
+    conductor.perform(base_fpath, **perform_kwargs)
+    puts "done"
+  else
+    puts "Score is not valid. See errors:"
+    puts score.errors.join("\n")
+  end
+end

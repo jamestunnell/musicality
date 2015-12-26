@@ -110,6 +110,17 @@ require 'musicality/performance/midi/part_sequencer'
 require 'musicality/performance/midi/score_sequencer'
 require 'musicality/performance/midi/score_sequencing'
 
+require 'musicality/performance/supercollider/message'
+require 'musicality/performance/supercollider/bundle'
+require 'musicality/performance/supercollider/server'
+require 'musicality/performance/supercollider/add_actions'
+require 'musicality/performance/supercollider/node'
+require 'musicality/performance/supercollider/synth'
+require 'musicality/performance/supercollider/group'
+require 'musicality/performance/supercollider/synthdef_settings'
+require 'musicality/performance/supercollider/performer'
+require 'musicality/performance/supercollider/conductor'
+
 #
 # Printing
 #
