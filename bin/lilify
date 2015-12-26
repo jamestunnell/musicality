@@ -69,7 +69,7 @@ File.open(SCORE_FILE) do |fin|
   score = YAML.load(fin.read)
   
   if score.is_a? Hash
-    score = score.unpack(score)
+    score = score.unpack
   end
   puts "done"
   
