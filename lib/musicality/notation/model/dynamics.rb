@@ -1,12 +1,15 @@
 module Musicality
 module Dynamics
-  PPP = 0.125
-  PP = 0.25
-  P = 0.375
-  MP = 0.5
-  MF = 0.625
-  F = 0.75
-  FF = 0.875
-  FFF = 1.0
+  PPP = 0.05
+  FFF = 0.5
+  DYNAMIC_RATIO = (FFF/PPP)**(1.0/7.0) # 7 ratios between the 8 dynamic levels
+
+  PP = PPP*DYNAMIC_RATIO
+  P = PP*DYNAMIC_RATIO
+  MP = P*DYNAMIC_RATIO
+  MF = MP*DYNAMIC_RATIO
+  F = MF*DYNAMIC_RATIO
+  FF = F*DYNAMIC_RATIO
+  
 end
 end
