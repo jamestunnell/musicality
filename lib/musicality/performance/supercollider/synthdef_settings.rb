@@ -10,7 +10,7 @@ class SynthdefSettings
   end
 end
 
-DEFAULT_SYNTHDEF_SETTINGS = SynthdefSettings.new("default")
+DEFAULT_SYNTHDEF_SETTINGS = DEFAULT_SYNTHDEF.settings
 
 end
 

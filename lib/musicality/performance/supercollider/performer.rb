@@ -3,13 +3,11 @@ module SuperCollider
 
 class Performer
   RETRIGGER_HOLDOFF = 0.025
-  VOLUME_CONTROL_SYNTHDEF = "volume_control"
-  VOLUME_CHANGE_SYNTHDEF = "volume_change"
   MASTER_AUDIO_BUS = 0
 
-  attr_reader :part
+  attr_reader :part, :settings
   def initialize part
-    @synthdef_settings = part.synthdef_settings || DEFAULT_SYNTHDEF_SETTINGS
+    @settings = part.synthdef_settings || DEFAULT_SYNTHDEF_SETTINGS
     @part = part
   end
 
@@ -25,7 +23,7 @@ class Performer
     bundles.push Bundle.new(0.0, start_volume_msg)
 
     # limit overall part output volume from local to master audio bus 
-    vol_control = Synth.tail(group, VOLUME_CONTROL_SYNTHDEF,
+    vol_control = Synth.tail(group, SynthDefs::VOLUME_CONTROL.name,
       :in => aux_audio_bus,
       :out => MASTER_AUDIO_BUS,
       :control => volume_control_bus)
@@ -40,7 +38,7 @@ class Performer
       when Change::Gradual
         raise ArgumentError, "absolute gradual changes are not supported yet" if change.absolute?
 
-        vc = Synth.head(group, VOLUME_CHANGE_SYNTHDEF, 
+        vc = Synth.head(group, SynthDefs::VOLUME_CHANGE.name, 
           :vol_bus => volume_control_bus,
           :vol => change.end_value,
           :dur => change.duration)
@@ -60,8 +58,8 @@ class Performer
       freqs = note_seq.elements.map {|el| el.pitch.freq }
       attacks = note_seq.elements.map {|el| el.attack }
 
-      args = @synthdef_settings.args.merge(:freq => freqs[0], :gate => 1, :out => aux_audio_bus)
-      s = Synth.head(group, @synthdef_settings.name, args)
+      args = @settings.values.merge(:freq => freqs[0], :gate => 1, :out => aux_audio_bus)
+      s = Synth.head(group, @settings.synthdef.name, args)
       bundles.push s.bundle_queue(offsets[0]+lead_time)
 
       # change voice synth pitch
