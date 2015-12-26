@@ -50,50 +50,53 @@ class ScoreCollator
     comp = ValueComputer.new(start_value,changes)
     segment_start_offset = 0.to_r
     
-    program_segments.each do |seg|
+    program_segments.each_with_index do |seg, i|
       seg = seg.first...seg.last
       
-      # add segment start value
+      # add segment start value, but only if it's different than the value at 
+      # the end of the prev segment
       value = comp.at seg.first
-      new_changes[segment_start_offset] = Change::Immediate.new(value)
+      if i != 0 && comp.at(program_segments[i-1].last - 1e-5) != value
+        new_changes[segment_start_offset] = Change::Immediate.new(value)
+      end
       
       changes.each do |off,change|
-	adj_start_off = (off - seg.first) + segment_start_offset
-	
-	new_change = case change
-	when Change::Immediate
-	  change.clone if seg.include?(off)
-	when Change::Gradual::Trimmed
-	  end_off = off + change.remaining
-	  if off < seg.last && end_off > seg.first
-	    add_preceding = seg.first > off ? seg.first - off : 0
-	    add_trailing = end_off > seg.last ? end_off - seg.last : 0
+	       adj_start_off = (off - seg.first) + segment_start_offset
 
-	    if add_preceding == 0 && add_trailing == 0
-	      change.clone
-	    else
-	      adj_start_off += add_preceding
-	      change.untrim.trim(change.preceding + add_preceding,
-				 change.trailing + add_trailing)
-	    end
-	  end
-	when Change::Gradual
-	  end_off = off + change.duration
-	  if off < seg.last && end_off > seg.first
-	    preceding = seg.first > off ? seg.first - off : 0
-	    trailing = end_off > seg.last ? end_off - seg.last : 0
-	    if preceding == 0 && trailing == 0
-	      change.clone
-	    else
-	      adj_start_off += preceding
-	      change.trim(preceding, trailing)
-	    end
-	  end
-	end
-	
-	unless new_change.nil?
-	  new_changes[adj_start_off] = new_change
-	end
+      	new_change = case change
+      	when Change::Immediate
+      	  change.clone if seg.include?(off)
+      	when Change::Gradual::Trimmed
+      	  end_off = off + change.remaining
+      	  if off < seg.last && end_off > seg.first
+      	    add_preceding = seg.first > off ? seg.first - off : 0
+      	    add_trailing = end_off > seg.last ? end_off - seg.last : 0
+
+      	    if add_preceding == 0 && add_trailing == 0
+      	      change.clone
+      	    else
+      	      adj_start_off += add_preceding
+      	      change.untrim.trim(change.preceding + add_preceding,
+      				 change.trailing + add_trailing)
+      	    end
+      	  end
+      	when Change::Gradual
+      	  end_off = off + change.duration
+      	  if off < seg.last && end_off > seg.first
+      	    preceding = seg.first > off ? seg.first - off : 0
+      	    trailing = end_off > seg.last ? end_off - seg.last : 0
+      	    if preceding == 0 && trailing == 0
+      	      change.clone
+      	    else
+      	      adj_start_off += preceding
+      	      change.trim(preceding, trailing)
+      	    end
+      	  end
+      	end
+      	
+      	unless new_change.nil?
+      	  new_changes[adj_start_off] = new_change
+      	end
       end
     end
     
