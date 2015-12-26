@@ -20,7 +20,7 @@ Arguments:
   PART name of a part in the score (e.g. "lhand")
 
 Options:
-  --split        Make separate Lilypond files for each part
+  --split        Make separate files for each part
   --outdir=OUTD  Dir where files will be put (defaults to same dir as score file)
   --srate=SRATE sampling rate for converting tempo-based score to time-based
                 score, and for sampling dynamic change values [default: 200]
