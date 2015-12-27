@@ -15,14 +15,14 @@ class SynthDef
 
   def to_sclang
     args_str = "|" + @args.map {|k,v| v.nil? ? k.to_s : "#{k} = #{v}" }.join(", ") + "|"
-    output = "SynthDef(\"#{@name}\", {" + args_str + "\n" + @body + "\n}"
+    output = "SynthDef(\"#{@name}\", {" + args_str + "\n" + @body + "#{"\n" unless @body[-1] == "\n"}\}"
     
-    if @credit || @source
+    unless (@credit.empty? && @source.empty?)
       metadata_str = ", metadata: (\n"
-      if @credit
+      unless @credit.empty?
         metadata_str += "  credit: \"#{@credit}\",\n"
       end
-      if @source
+      unless @source.empty?
         metadata_str += "  source: \"#{@source}\"\n"
       end
       metadata_str += ")\n"
