@@ -58,7 +58,7 @@ class Performer
       freqs = note_seq.elements.map {|el| el.pitch.freq }
       attacks = note_seq.elements.map {|el| el.attack }
 
-      args = @settings.values.merge(:freq => freqs[0], :gate => 1, :out => aux_audio_bus)
+      args = @settings.args.merge(:freq => freqs[0], :gate => 1, :out => aux_audio_bus)
       s = Synth.head(group, @settings.synthdef.name, args)
       bundles.push s.bundle_queue(offsets[0]+lead_time)
 

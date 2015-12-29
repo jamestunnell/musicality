@@ -2,17 +2,17 @@ module Musicality
 module SuperCollider
 module SynthDefs
 
-VOLUME_CONTROL = SynthDef.new(name: "volume_control", args: { :in => nil, :out => nil, :control => nil },
+VOLUME_CONTROL = SynthDef.new(name: "volume_control", params: { :in => nil, :out => nil, :control => nil },
   body: "  Out.ar(out, In.ar(in) * In.kr(control));",
   credit: "James Tunnell",
 )
  
-VOLUME_CHANGE = SynthDef.new(name: "volume_change", args: { :vol_bus => nil, :vol => nil, :dur => nil },
+VOLUME_CHANGE = SynthDef.new(name: "volume_change", params: { :vol_bus => nil, :vol => nil, :dur => nil },
   body: "  Out.kr(vol_bus, Line.kr(In.kr(vol_bus), vol, dur));",
   credit: "James Tunnell",
 )
 
-KICK808 = SynthDef.new(name: "kick808", args: { :out => 0 },
+KICK808 = SynthDef.new(name: "kick808", params: { :out => 0 },
   body: <<-SCLANG,
   var sig = LPF.ar(Ringz.ar(Impulse.ar(0), 60, 1), 500);
   var cmp = CompanderD.ar(sig, -20.dbamp, 1, 0.3, 0.003, 0.08);
@@ -23,7 +23,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014"
 )
 
-KICK2 = SynthDef.new(name: "kick2", args: { :out => 0 },
+KICK2 = SynthDef.new(name: "kick2", params: { :out => 0 },
   body: <<-SCLANG,
   var env0, env1, env1m, sig;
 
@@ -47,7 +47,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SNARE1 = SynthDef.new(name: "snare1", args: { :out => 0, :amp => 0.8 },
+SNARE1 = SynthDef.new(name: "snare1", params: { :out => 0, :amp => 0.8 },
   body: <<-SCLANG,
   var env0, env1, env2, env1m, oscs, noise, sig;
 
@@ -74,7 +74,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-CLAP1 = SynthDef.new(name: "clap1", args: { :out => 0, :amp => 0.5 },
+CLAP1 = SynthDef.new(name: "clap1", params: { :out => 0, :amp => 0.5 },
   body: <<-SCLANG,
   var env1, env2, sig, noise1, noise2;
 
@@ -102,7 +102,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-AXEL = DEFAULT_SYNTHDEF = SynthDef.new(name: "axel", args: { :freq => 440, :lpfreq => 12000, :rq => 0.2, :gate => 1, :out => 0 },
+AXEL = DEFAULT_SYNTHDEF = SynthDef.new(name: "axel", params: { :freq => 440, :lpfreq => 12000, :rq => 0.2, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var chorus = LFNoise2.ar(1).range(0.99, 1.01);
   var saw1 = LFSaw.ar(freq * chorus, 0, 0.1);
@@ -117,7 +117,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BRASS = SynthDef.new(name: "brass", args: { :freq => 220, :detune1 => 1, :detune2 => 0.5, :ffreq => 12000, :rq => 0.4,
+BRASS = SynthDef.new(name: "brass", params: { :freq => 220, :detune1 => 1, :detune2 => 0.5, :ffreq => 12000, :rq => 0.4,
     :pan => 0, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var sig, env, fenv;
@@ -135,7 +135,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-RES = SynthDef.new(name: "res", args: { :out => 0, :gate => 1, :freq => 440, :ffreq => 1500 },
+RES = SynthDef.new(name: "res", params: { :out => 0, :gate => 1, :freq => 440, :ffreq => 1500 },
   body: <<-SCLANG,
   var aEnv, osc, flt;
   aEnv = EnvGen.kr(Env.perc(0, 0.7), gate, doneAction: 2);
@@ -147,7 +147,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-POLY2 = SynthDef.new(name: "poly2", args: { :out => 0, :gate => 1, :freq => 440 },
+POLY2 = SynthDef.new(name: "poly2", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv, fEnv, osc1, osc2, flt;
   aEnv = EnvGen.kr(Env.asr(0.2, 1, 0.1), gate, doneAction: 2);
@@ -161,7 +161,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SOLO = SynthDef.new(name: "solo", args: { :out => 0, :gate => 1, :freq => 440 },
+SOLO = SynthDef.new(name: "solo", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv, fEnv, osc, flt;
   aEnv = EnvGen.kr(Env.asr(0.2, 1, 2), gate);
@@ -174,7 +174,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-STRING = SynthDef.new(name: "string", args: { :out => 0, :gate => 1, :freq => 1000 },
+STRING = SynthDef.new(name: "string", params: { :out => 0, :gate => 1, :freq => 1000 },
   body: <<-SCLANG,
   var aEnv, osc, flt;
   aEnv = EnvGen.kr(Env.asr(0.2, 1, 0.5), gate, doneAction: 2);
@@ -190,7 +190,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS4 = SynthDef.new(name: "bass4", args: { :out => 0, :gate => 1, :freq => 440 },
+BASS4 = SynthDef.new(name: "bass4", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv, fEnv, osc, flt;
   aEnv = EnvGen.kr(Env.asr(0, 1, 1), gate, doneAction: 2);
@@ -205,7 +205,7 @@ SCLANG
 
 // 
 
-ESM = SynthDef.new(name: "esm", args: { :freq => 440, :mix => 0.5, :glide => 0, :cutoff => 20000, :rq => 1, :fdec => 0, :fint => 1,
+ESM = SynthDef.new(name: "esm", params: { :freq => 440, :mix => 0.5, :glide => 0, :cutoff => 20000, :rq => 1, :fdec => 0, :fint => 1,
   :vel => 1, :fvel => 1, :t_gate => 1, :vdec => 1, :vvel => 0, :od => 0, :mul => 0.1, :pan => 0, :out => 0 },
   body: <<-SCLANG,
   var sig, saw, rect, fstart, fenv, vstart, venv;
@@ -236,7 +236,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-ROCKIT = SynthDef.new(name: "rockit", args: { :freq => 440, :detune => 2, :gate => 1, :out => 0 },
+ROCKIT = SynthDef.new(name: "rockit", params: { :freq => 440, :detune => 2, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var osc1, osc2, pwm, mix, env;
 
@@ -260,7 +260,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SNARE2 = SynthDef.new(name: "snare2", args: { :sfreq => 1500, :out => 0 },
+SNARE2 = SynthDef.new(name: "snare2", params: { :sfreq => 1500, :out => 0 },
   body: <<-SCLANG,
   var tri = Mix([LFTri.ar([111, 175, 224])]) * 0.5;
   var sine = Mix([SinOsc.ar([330, 180])]) * 0.5;
@@ -277,7 +277,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-PROPHET5_STRINGS = SynthDef.new(name: "prophet5pwmstrings", args: { :out => 0, :freq => 440, :amp => 0.8, 
+PROPHET5_STRINGS = SynthDef.new(name: "prophet5pwmstrings", params: { :out => 0, :freq => 440, :amp => 0.8, 
     :gate => 1, :lforate => 3, :lfowidth => 0.1, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, pulse, filter, env;
@@ -298,7 +298,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-OSC_WOBBLE = SynthDef.new(name: "singleoscillatorwobble", args: { :out => 0, :freq => 440, :amp => 0.8, 
+OSC_WOBBLE = SynthDef.new(name: "singleoscillatorwobble", params: { :out => 0, :freq => 440, :amp => 0.8, 
     :gate => 1, :lforate => 10, :lfowidth => 0.5, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, pulse, filter, env;
@@ -319,7 +319,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-TRI_BELLS = SynthDef.new(name:"trianglewavebells", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+TRI_BELLS = SynthDef.new(name:"trianglewavebells", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :lforate => 10, :lfowidth => 0.0, :cutoff => 100, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var osc1, osc2, vibrato, filter, env;
@@ -344,7 +344,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-LASER_BEAM = SynthDef.new(name: "laserbeam", args: { :out => 0, :freq => 440, :amp => 0.8, :attackTime => 0.04, :gate => 1, :pan => 0.0 },
+LASER_BEAM = SynthDef.new(name: "laserbeam", params: { :out => 0, :freq => 440, :amp => 0.8, :attackTime => 0.04, :gate => 1, :pan => 0.0 },
   body: <<-SCLANG,
   var osc1, freqenv, env;
 
@@ -367,7 +367,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-MOOG_BASS = SynthDef.new(name: "moogbass", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+MOOG_BASS = SynthDef.new(name: "moogbass", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :cutoff => 1000, :gain => 2.0, :lagamount => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -388,7 +388,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-MOOG_BASS2 = SynthDef.new(name: "moogbass2", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+MOOG_BASS2 = SynthDef.new(name: "moogbass2", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :attackTime => 0.2, :fenvamount => 0.5, :cutoff => 1000, :gain => 2.0, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -410,7 +410,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :lforate => 5900, :lfowidth => 0.01, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, saw, filter, env;
@@ -432,7 +432,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS_FOUNDATION = SynthDef.new(name: "bassfoundation", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+BASS_FOUNDATION = SynthDef.new(name: "bassfoundation", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :cutoff => 1000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -453,7 +453,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS_HIGHEND = SynthDef.new(name: "basshighend", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+BASS_HIGHEND = SynthDef.new(name: "basshighend", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :cutoff => 3000, :rq => 0.1, :drive => 2.0, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -489,7 +489,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-WINWOOD_LEAD = SynthDef.new(name: "winwoodlead", args: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+WINWOOD_LEAD = SynthDef.new(name: "winwoodlead", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
     :cutoff => 8000, :rq => 0.8, :lfowidth => 0.01, :lforate => 8, :lagamount => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var pulse, filter, env, lfo;
@@ -512,7 +512,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SITUATION_SYNTH = SynthDef.new(name: "situationsynth", args: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+SITUATION_SYNTH = SynthDef.new(name: "situationsynth", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
     :cutoff => 8000, :rq => 0.8, :lfowidth => 0.001, :lforate => 3.3, :pan => -0.1 },
   body: <<-SCLANG,
   var pulse, filter, env, filterenv, lfo;
@@ -527,7 +527,7 @@ SITUATION_SYNTH = SynthDef.new(name: "situationsynth", args: { :out => 0, :freq 
 SCLANG
 )
 
-RES_SQUARES = SynthDef.new(name: "ressquares", args: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+RES_SQUARES = SynthDef.new(name: "ressquares", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
     :cutoff => 8000, :rq => 0.8, :pan => -0.1 },
   body: <<-SCLANG,
   var pulse, filter, env;
@@ -548,7 +548,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-EIGHTTOEIGHT_KICK = SynthDef.new(name: "eightoeightkick", args: { :out => 0, :freq => 440, :amp => 0.1, 
+EIGHTTOEIGHT_KICK = SynthDef.new(name: "eightoeightkick", params: { :out => 0, :freq => 440, :amp => 0.1, 
     :ringTime => 10.0, :releaseTime => 1.0, :distortion => 0.1, :pan => -0.1 },
   body: <<-SCLANG,
   var impulse, filter, env;
@@ -569,7 +569,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", args: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
     :lforate => 4.85, :lfowidth => 0.1, :cutoff => 5000, :rq => 0.25, :pan => 0.0 },
   body: <<-SCLANG,
   //tone wheel organ emulation via two oscillators pp. 50-51
@@ -593,7 +593,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-EVERYTHING_RHODES = SynthDef.new(name: "everythingrhodes", args: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+EVERYTHING_RHODES = SynthDef.new(name: "everythingrhodes", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
     :lforate => 1.85, :lfowidth => 0.5, :cutoff => 2000, :rq => 0.2, :pan => 0.0 },
   body: <<-SCLANG,
   var pulse, filter, env;
@@ -614,7 +614,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SPACE_THEREMIN = SynthDef.new(name: "spacetheremin", args: { :out => 0, :freq => 440, :amp => 0.1, 
+SPACE_THEREMIN = SynthDef.new(name: "spacetheremin", params: { :out => 0, :freq => 440, :amp => 0.1, 
     :gate => 1, :lforate => 6, :lfowidth => 0.5, :cutoff => 4000, :rq => 0.25, :lagTime => 0.1, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, osc, filter, env;
@@ -635,7 +635,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-FAT_VELOCITY_BASS = SynthDef.new(name: "fatvelocitybass", args: { :out => 0, :freq => 440, :amp => 0.5, 
+FAT_VELOCITY_BASS = SynthDef.new(name: "fatvelocitybass", params: { :out => 0, :freq => 440, :amp => 0.5, 
     :gate => 1, :cutoff => 2000, :rq => 0.15, :lagTime => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, osc, filter, env;
@@ -657,7 +657,7 @@ EOS
 )
 
 
-PMC_ROTALE = SynthDef.new(name: "PMCrotale", args: { :out => 0, :freq => 261, :tone => 3, :art => 1, :amp => 0.8, :pan => 0 },
+PMC_ROTALE = SynthDef.new(name: "PMCrotale", params: { :out => 0, :freq => 261, :tone => 3, :art => 1, :amp => 0.8, :pan => 0 },
   body: <<-SCLANG,
   var env, mod, sig;
 
@@ -677,7 +677,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-KICK3 = SynthDef.new(name: "kick3", args: { :out => 0, :punch => 1, :amp => 1 },
+KICK3 = SynthDef.new(name: "kick3", params: { :out => 0, :punch => 1, :amp => 1 },
   body: <<-SCLANG,
   var freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
   sig = Normalizer.ar(SinOsc.ar(freq, 0.5pi, punch).distort, 1) * amp
@@ -687,7 +687,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-RING_KICK = SynthDef.new(name: "ringkick", args: { :out => 0, :freq => 40, :decay => 0.25, :amp => 1 },
+RING_KICK = SynthDef.new(name: "ringkick", params: { :out => 0, :freq => 40, :decay => 0.25, :amp => 1 },
   body: <<-SCLANG,
   var snd;
   snd = Ringz.ar(
@@ -702,7 +702,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-BASS1 = SynthDef.new(name: "bass1", args: { :out => 0, :freq => 440, :gate => 1, :amp => 0.5, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4 },
+BASS1 = SynthDef.new(name: "bass1", params: { :out => 0, :freq => 440, :gate => 1, :amp => 0.5, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4 },
   body: <<-SCLANG,
     var sig, env;
   env = Env.adsr(0.01, 0.3, 0.4, 0.1);
@@ -715,7 +715,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-KIK = SynthDef.new(name: "kik", args: { :out => 0, :basefreq => 50, :ratio => 7, :sweeptime => 0.05, :preamp => 1, :amp => 1, :decay1 => 0.3, :decay1L => 0.8, :decay2 => 0.15 },
+KIK = SynthDef.new(name: "kik", params: { :out => 0, :basefreq => 50, :ratio => 7, :sweeptime => 0.05, :preamp => 1, :amp => 1, :decay1 => 0.3, :decay1L => 0.8, :decay2 => 0.15 },
   body: <<-SCLANG,
     var fcurve = EnvGen.kr(Env([basefreq * ratio, basefreq], [sweeptime], \exp)),
         env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: 2),
@@ -725,7 +725,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-KRAFTY_SNR = SynthDef.new(name: "kraftySnr", args: { :out => 0, :amp => 1, :freq => 2000, :rq => 3, :decay => 0.3, :pan => 0 },
+KRAFTY_SNR = SynthDef.new(name: "kraftySnr", params: { :out => 0, :amp => 1, :freq => 2000, :rq => 3, :decay => 0.3, :pan => 0 },
   body: <<-SCLANG,
   var sig = PinkNoise.ar(amp),
   env = EnvGen.kr(Env.perc(0.01, decay), doneAction: 2);
@@ -735,7 +735,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-SILLY_VOICE = SynthDef.new(name: "sillyVoice", args: { :out => 0, :freq => 220, :amp => 0.5, :vibratoSpeed => 6, :vibratoDepth => 4, :vowel => 0, :att => 0.01, :rel => 0.1, :lag => 1, :gate => 1 },
+SILLY_VOICE = SynthDef.new(name: "sillyVoice", params: { :out => 0, :freq => 220, :amp => 0.5, :vibratoSpeed => 6, :vibratoDepth => 4, :vowel => 0, :att => 0.01, :rel => 0.1, :lag => 1, :gate => 1 },
   body: <<-SCLANG,
   var in, vibrato, env, va, ve, vi, vo, vu, snd;
 
@@ -780,7 +780,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-PLUCKING = SynthDef.new(name: "plucking", args: { :out => 0, :amp => 0.1, :freq => 440, :decay => 5, :coef => 0.1 },
+PLUCKING = SynthDef.new(name: "plucking", params: { :out => 0, :amp => 0.1, :freq => 440, :decay => 5, :coef => 0.1 },
   body: <<-SCLANG,
 var env, snd;
 env = EnvGen.kr(Env.linen(0, decay, 0), doneAction: 2);
@@ -797,7 +797,7 @@ SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
 
-TRIG_DEMO = SynthDef.new(name: "trig_demo", args: { :out => 0, :freq => 440, :gate => 1, :t_trig => 1 },
+TRIG_DEMO = SynthDef.new(name: "trig_demo", params: { :out => 0, :freq => 440, :gate => 1, :t_trig => 1 },
   body: <<-SCLANG,
     var env, sig;
   env = Decay2.kr(t_trig, 0.01, 0.1);
@@ -809,7 +809,7 @@ SCLANG
 )
 
 
-SINE_WLFO = SynthDef.new(name: "sineWlfo", args: { :out => 0, :rate => 0.5, :freqlo => 150, :freqhi => 300, :amp => 0.1 },
+SINE_WLFO = SynthDef.new(name: "sineWlfo", params: { :out => 0, :rate => 0.5, :freqlo => 150, :freqhi => 300, :amp => 0.1 },
   body: <<-SCLANG,
   var sig, lfo, rms;
   lfo = SinOsc.kr(rate).range(freqlo, freqhi);
@@ -820,7 +820,7 @@ SCLANG
   source: "From https://github.com/elosine/synthdefs",
 )
 
-NOISE_BURST = SynthDef.new(name: "noiseBurst", args: { :out => 0, :rate => 1.0, :atk => 0.03, :decay => 0.75, :amp => 0 },
+NOISE_BURST = SynthDef.new(name: "noiseBurst", params: { :out => 0, :rate => 1.0, :atk => 0.03, :decay => 0.75, :amp => 0 },
   body: <<-SCLANG,
     var sig;
     sig = PinkNoise.ar(0.5) * Decay2.ar( Impulse.ar(rate), atk, decay );
@@ -831,7 +831,7 @@ SCLANG
 )
 
 
-DRUM_KICK = SynthDef.new(name: "drum_kick", args: { :out => 0, :freq => 440, :gate => 1, :amp => 0.8, :source => nil,:pan => 0.0 },
+DRUM_KICK = SynthDef.new(name: "drum_kick", params: { :out => 0, :freq => 440, :gate => 1, :amp => 0.8, :source => nil,:pan => 0.0 },
   body: <<-SCLANG,
   var x1, x2, x3;
 
@@ -844,7 +844,7 @@ SCLANG
   source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
 )
 
-CHORD_BASS = SynthDef.new(name: "chord_bass", args: { :out => 0, :amp => 0.5, :sustain => 0.1, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.1,:rq => 0.99 },
+CHORD_BASS = SynthDef.new(name: "chord_bass", params: { :out => 0, :amp => 0.5, :sustain => 0.1, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.1,:rq => 0.99 },
   body: <<-SCLANG,
   var env, sound;
   env=EnvGen.ar(Env.perc(releaseTime:releaseTime),doneAction:2);
@@ -854,7 +854,7 @@ SCLANG
   source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
 )
 
-MY_BASS = SynthDef.new(name: "my_bass", args: { :out => 0, :amp => 1, :sustain => 0.3, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.3, :rq => 0.99 },
+MY_BASS = SynthDef.new(name: "my_bass", params: { :out => 0, :amp => 1, :sustain => 0.3, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.3, :rq => 0.99 },
   body: <<-SCLANG,
   var env, sound;
   env=EnvGen.ar(Env.perc(releaseTime:releaseTime),doneAction:2);
@@ -864,7 +864,7 @@ SCLANG
   source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
 )
 
-SOS_SNARE = SynthDef.new(name: "SOSsnare", args: { :out => 0, :decay => 0.12, :drum_mode_level => 0.25, :snare_level => 40, :snare_tightness => 3000, :freq => 405, :amp => 0.8 },
+SOS_SNARE = SynthDef.new(name: "SOSsnare", params: { :out => 0, :decay => 0.12, :drum_mode_level => 0.25, :snare_level => 40, :snare_tightness => 3000, :freq => 405, :amp => 0.8 },
   body: <<-SCLANG,
   var drum_mode_sin_1, drum_mode_sin_2, drum_mode_pmosc, drum_mode_mix,
 drum_mode_env;
@@ -897,7 +897,7 @@ programmed by Renick Bell, renick_at_gmail.com",
   source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
 )
 
-CLOSED_HAT = SynthDef.new(name: "closedhat", args: { :out => 0 },
+CLOSED_HAT = SynthDef.new(name: "closedhat", params: { :out => 0 },
   body: <<-SCLANG,
   var hatosc, hatenv, hatnoise, hatoutput;
 
@@ -914,7 +914,7 @@ SCLANG
 )
 
 
-ACID_OTO_309 = SynthDef.new(name: "acid_oto309", args: { :out => 0, :gate => 1, :freq => 440, :amp => 0.1, :pan => 0 },
+ACID_OTO_309 = SynthDef.new(name: "acid_oto309", params: { :out => 0, :gate => 1, :freq => 440, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var env1, env2, son, pitch;
   pitch = freq.cpsmidi;
@@ -932,7 +932,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-APAD_MH = SynthDef.new(name: "apad_mh", args: { :freq => 880, :amp => 0.5, :attack => 0.4, :decay => 0.5, :sustain => 0.8, :release => 1.0, :gate => 1, :out => 0 },
+APAD_MH = SynthDef.new(name: "apad_mh", params: { :freq => 880, :amp => 0.5, :attack => 0.4, :decay => 0.5, :sustain => 0.8, :release => 1.0, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var env,sig,mod1,mod2,mod3;
   env=EnvGen.kr(Env.adsr(attack,decay,sustain,release),gate,levelScale:amp,doneAction:2);
@@ -947,7 +947,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CHEAP_PIANO = SynthDef.new(name: "cheappiano", args: { :out => 0, :freq => 440, :amp => 1, :dur => 1, :gate => 1, :pan => 0 },
+CHEAP_PIANO = SynthDef.new(name: "cheappiano", params: { :out => 0, :freq => 440, :amp => 1, :dur => 1, :gate => 1, :pan => 0 },
   body: <<-SCLANG,
   var sig, in, n = 6, max = 0.04, min = 0.01, delay, pitch, detune, hammer;
   freq = freq.cpsmidi;
@@ -965,7 +965,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CLAP_OTO_309 = SynthDef.new(name: "clap_oto309", args: { :out => 0, :amp => 0.6, :pan => 0 },
+CLAP_OTO_309 = SynthDef.new(name: "clap_oto309", params: { :out => 0, :amp => 0.6, :pan => 0 },
   body: <<-SCLANG,
   var env1, env2, son, noise1, noise2;
 
@@ -990,7 +990,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CS80_LEAD_MH = SynthDef.new(name: "cs80lead_mh", args: { :freq => 880, :amp => 0.5, :att => 0.75, :decay => 0.5, 
+CS80_LEAD_MH = SynthDef.new(name: "cs80lead_mh", params: { :freq => 880, :amp => 0.5, :att => 0.75, :decay => 0.5, 
     :sus => 0.8, :rel => 1.0, :fatt => 0.75, :fdecay => 0.5, :fsus => 0.8, :frel => 1.0, :cutoff => 200, :pan => 0,
     :dtune => 0.002, :vibrate => 4, :vibdepth => 0.015, :gate => 1, :ratio => 1,:out => 0 },
   body: <<-SCLANG,
@@ -1011,7 +1011,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CYMBAL_808 = SynthDef.new(name: "cymbal808", args: { :out => 0, :baseFreq => 300, :time => 250, :amp => 0.1 },
+CYMBAL_808 = SynthDef.new(name: "cymbal808", params: { :out => 0, :baseFreq => 300, :time => 250, :amp => 0.1 },
   body: <<-SCLANG,
   //var freqs = [baseFreq, baseFreq*1.3420, baseFreq*1.2312, baseFreq*1.6532, baseFreq*1.9523, baseFreq*2.1523];
   //var freqs = [78.6, 140.44, 123.87, 219.4, 787.5, 531.3];
@@ -1036,7 +1036,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CYMBALIC_MCLD = SynthDef.new(name: "cymbalic_mcld", args: { :out => 0, :pan => 0, :amp => 0.1 },
+CYMBALIC_MCLD = SynthDef.new(name: "cymbalic_mcld", params: { :out => 0, :pan => 0, :amp => 0.1 },
   body: <<-SCLANG,
   var lodriver, locutoffenv, hidriver, hicutoffenv, freqs, res, thwack;
 
@@ -1060,7 +1060,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-KICK_CHIRP = SynthDef.new(name: "kick_chrp", args: { :out => 0, :amp => 1, :pan => 0 },
+KICK_CHIRP = SynthDef.new(name: "kick_chrp", params: { :out => 0, :amp => 1, :pan => 0 },
   body: <<-SCLANG,
   // a kick made using what radio folks would call a "chirp"
   var ampenv, pitchenv;
@@ -1074,7 +1074,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-KICK_OTO_309 = SynthDef.new(name: "kick_oto309", args: { :out => 0, :amp => 0.1, :pan => 0 },
+KICK_OTO_309 = SynthDef.new(name: "kick_oto309", params: { :out => 0, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var env0, env1, env1m, son;
 
@@ -1096,7 +1096,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-ONECLAP = SynthDef.new(name: "oneclap", args: { :out => 0, :amp => 0.1, :filterfreq => 100, :rq => 0.1, :pan => 0 },
+ONECLAP = SynthDef.new(name: "oneclap", params: { :out => 0, :amp => 0.1, :filterfreq => 100, :rq => 0.1, :pan => 0 },
   body: <<-SCLANG,
 var env, signal, attack, noise, hpf1, hpf2;
   noise = WhiteNoise.ar(1)+SinOsc.ar([filterfreq/2,filterfreq/2+4 ], pi*0.5, XLine.kr(1,0.01,4));
@@ -1116,7 +1116,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-PING_MH = SynthDef.new(name: "ping_mh", args: { :freq => 440,:amp => 0.2,:dur => 1,:attack => 0.001,:pan => 0,:out => 0 },
+PING_MH = SynthDef.new(name: "ping_mh", params: { :freq => 440,:amp => 0.2,:dur => 1,:attack => 0.001,:pan => 0,:out => 0 },
   body: <<-SCLANG,
     var sig,freq2;
     freq=freq*rrand(1,1.01);
@@ -1130,7 +1130,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-SNARE_OTO_309 = SynthDef.new(name: "snare_oto309", args: { :out => 0, :amp => 0.1, :pan => 0 },
+SNARE_OTO_309 = SynthDef.new(name: "snare_oto309", params: { :out => 0, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var env0, env1, env2, env1m, oscs, noise, son;
 
@@ -1157,7 +1157,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-SNARE_STEIN = SynthDef.new(name: "snare_stein", args: { :out => 0, :amp => 0.1, :pan => 0 },
+SNARE_STEIN = SynthDef.new(name: "snare_stein", params: { :out => 0, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var snare, filtWhite;
 
@@ -1170,7 +1170,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-SOS_BELL = SynthDef.new(name: "sos_bell", args: { :freq => 440, :out => 0, :amp => 0.1, :pan => 0 },
+SOS_BELL = SynthDef.new(name: "sos_bell", params: { :freq => 440, :out => 0, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var son, strike, hum;
 
@@ -1198,7 +1198,7 @@ SCLANG
 )
 
 
-KRGN_GEN_FMDEVIL = SynthDef.new(name: "krgn_gen_fmdevil", args: { :out => 0, :freq => 440, :amp => 1.0, :index => 3, :detune => 1.02, :gate => 1 },
+KRGN_GEN_FMDEVIL = SynthDef.new(name: "krgn_gen_fmdevil", params: { :out => 0, :freq => 440, :amp => 1.0, :index => 3, :detune => 1.02, :gate => 1 },
   body: <<-SCLANG,
   var mod1, mod2, mod3, car, idx, env;
   env = EnvGen.ar(Env.adsr(0,0.4,0.3,0.2),gate: gate, levelScale: amp, doneAction: 2);
@@ -1213,7 +1213,7 @@ SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
 
-BOOP = SynthDef.new(name: "boop", args: { :out => 0, :dur => 1.0, :amp => 1.0, :freq => 440 },
+BOOP = SynthDef.new(name: "boop", params: { :out => 0, :dur => 1.0, :amp => 1.0, :freq => 440 },
   body: <<-SCLANG,
   var env, sig;
   env = EnvGen.ar(Env.new([1, 0.1, 0], [0.06, dur - 0.06]), doneAction: 2);
@@ -1223,7 +1223,7 @@ SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
 
-MARIO = SynthDef.new(name: "mario", args: { :out => 0, :freq => 440, :length => 0.1, :dur => 0.2 },
+MARIO = SynthDef.new(name: "mario", params: { :out => 0, :freq => 440, :length => 0.1, :dur => 0.2 },
   body: <<-SCLANG,
   var snd, amp;
   snd = LFPulse.ar(freq)!2;
@@ -1234,7 +1234,7 @@ SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
 
-MARIO_BASS = SynthDef.new(name: "mariobass", args: { :out => 0, :amp => 1.0, :freq => 440, :length => 0.1, :dur => 0.2 },
+MARIO_BASS = SynthDef.new(name: "mariobass", params: { :out => 0, :amp => 1.0, :freq => 440, :length => 0.1, :dur => 0.2 },
   body: <<-SCLANG,
   var snd;
   snd = LFTri.ar(freq)!2;
@@ -1244,7 +1244,7 @@ SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
 
-BEAT = SynthDef.new(name: "beat", args: { :out => 0, :amp => 1.0, :sustain => 0.1, :dur => 0.1 },
+BEAT = SynthDef.new(name: "beat", params: { :out => 0, :amp => 1.0, :sustain => 0.1, :dur => 0.1 },
   body: <<-SCLANG,
   var snd;
   snd = BrownNoise.ar()!2;
@@ -1255,7 +1255,7 @@ SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
 
-BASS2 = SynthDef.new(name: "bass2", args: { :out => 0, :freq => 440, :gate => 1, :amp => 1.0, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4, :dur => 0.2, :length => 0.2 },
+BASS2 = SynthDef.new(name: "bass2", params: { :out => 0, :freq => 440, :gate => 1, :amp => 1.0, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4, :dur => 0.2, :length => 0.2 },
   body: <<-SCLANG,
   var sig,
     env = Env.adsr(0.01, 0.3, 0.4, 0.1);
@@ -1269,7 +1269,7 @@ SCLANG
 )
 
 
-DROPLET = SynthDef.new(name: "droplet", args: { :amp => 0.2, :out => 0, :freq => 3000, :dur => 1, :rate => 1 },
+DROPLET = SynthDef.new(name: "droplet", params: { :amp => 0.2, :out => 0, :freq => 3000, :dur => 1, :rate => 1 },
   body: <<-SCLANG,
   /**
   * No.2 - Droplet
@@ -1287,7 +1287,7 @@ SCLANG
   source: "https://github.com/johncburnett/Matrix",
 )
 
-PHASE_MOD = SynthDef.new(name: "phaseMod", args: { :amp => 0.2, :out => 0, :freq => 30, :gate => 1 },
+PHASE_MOD = SynthDef.new(name: "phaseMod", params: { :amp => 0.2, :out => 0, :freq => 30, :gate => 1 },
   body: <<-SCLANG,
   /**
   * No.4 - phaseMod
@@ -1307,7 +1307,7 @@ SCLANG
   source: "https://github.com/johncburnett/Matrix",
 )
 
-NOISE = SynthDef.new(name: "noise", args: { :amp => 0.2, :out => 0 },
+NOISE = SynthDef.new(name: "noise", params: { :amp => 0.2, :out => 0 },
   body: <<-SCLANG,
   /**
   * No.5 - noise
@@ -1320,7 +1320,7 @@ SCLANG
   source: "https://github.com/johncburnett/Matrix",
 )
 
-NS_STATIC = SynthDef.new(name: "nsStatic", args: { :amp => 0.2, :out => 0,:mix => 0.9 },
+NS_STATIC = SynthDef.new(name: "nsStatic", params: { :amp => 0.2, :out => 0,:mix => 0.9 },
   body: <<-SCLANG,
   /**
   * No.6 - nsSTatic
@@ -1342,7 +1342,7 @@ SCLANG
 
 
 
-POOM = SynthDef.new(name: "poom", args: { :out => 0, :freq => 400, :level => 0.1 },
+POOM = SynthDef.new(name: "poom", params: { :out => 0, :freq => 400, :level => 0.1 },
   body: <<-SCLANG,
   var env       = Env.perc(level: level);
   var envgen      = EnvGen.kr(env, doneAction: 2);
@@ -1353,7 +1353,7 @@ SCLANG
   source: "https://github.com/philthomson/imp",
 )
 
-SINTH = SynthDef.new(name: "sinth", args: { :out => 0, :curve => 0, :dur => 1, :freq => 400, :level => 0.1 },
+SINTH = SynthDef.new(name: "sinth", params: { :out => 0, :curve => 0, :dur => 1, :freq => 400, :level => 0.1 },
   body: <<-SCLANG,
   var env         = Env.perc(releaseTime: dur, level: level, curve: curve);
   var envgen        = EnvGen.kr(env, doneAction: 2);
@@ -1366,7 +1366,7 @@ SCLANG
 )
 
 
-AEOLIAN_STRINGS = SynthDef.new(name: "aeolian_strings", args: { :out => 0 },
+AEOLIAN_STRINGS = SynthDef.new(name: "aeolian_strings", params: { :out => 0 },
   body: <<-SCLANG,
   // aeolian strings
   var sig = Mix.fill(9,{i=Dust.ar(0.4)!2;CombC.ar(i,1,Select.ar(TIRand.kr(0,7,i),(55+Scale.aeolian.degrees).collect{|x|DC.ar(1/x.midicps)}),3)});
@@ -1375,7 +1375,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-BONFIRE_NIGHT = SynthDef.new(name: "bonfire_night", args: { :out => 0 },
+BONFIRE_NIGHT = SynthDef.new(name: "bonfire_night", params: { :out => 0 },
   body: <<-SCLANG,
   // the sound of new years eve in frosty Reykjavik
   var x=Decay;
@@ -1386,7 +1386,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-THAT_CLUB = SynthDef.new(name: "thatclub", args: { :out => 0 },
+THAT_CLUB = SynthDef.new(name: "thatclub", params: { :out => 0 },
   body: <<-SCLANG,
   // the nightclub downstairs
   var x =SinOsc;
@@ -1398,7 +1398,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-DRUNK_DRUMMER = SynthDef.new(name: "drunk_drummer", args: { :out => 0 },
+DRUNK_DRUMMER = SynthDef.new(name: "drunk_drummer", params: { :out => 0 },
   body: <<-SCLANG,
   var i=Dust.ar(4), a=0.5, b=5e-3, q=Decay2, p=PulseDivider, n=WhiteNoise.ar;
   var sig = (SinOsc.ar(80)*q.ar(p.ar(i,2),a,b)+(n*q.ar(p.ar(i,4),b,a)));
@@ -1407,7 +1407,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-EIGHTBIT_FUNK = SynthDef.new(name: "eightbit_funk", args: { :out => 0 },
+EIGHTBIT_FUNK = SynthDef.new(name: "eightbit_funk", params: { :out => 0 },
   body: <<-SCLANG,
   // 8-bit funk
   var o=LFSaw.ar(LFSaw.kr(0.0005,-1).range(0.5,1)).abs*40;
@@ -1417,7 +1417,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-TWO_TIMPANIS = SynthDef.new(name: "two_timpanis", args: { :out => 0 },
+TWO_TIMPANIS = SynthDef.new(name: "two_timpanis", params: { :out => 0 },
   body: <<-SCLANG,
   var x=LFNoise0.ar(1)>0;
   var sig = SinOsc.ar(Spring.ar(x,4,3e-05)*(70.rand+190)+(30.rand+90))*EnvGen.kr(Env.perc(0.001,5),x);
@@ -1426,7 +1426,7 @@ SCLANG
   source: "https://github.com/thormagnusson/sctweets",
 )
 
-TWO_TIMPANIS2 = SynthDef.new(name: "two_timpanis2", args: { :out => 0 },
+TWO_TIMPANIS2 = SynthDef.new(name: "two_timpanis2", params: { :out => 0 },
   body: <<-SCLANG,
   var x=LFNoise0.ar(1)>0;
   var sig = SinOsc.ar(Spring.ar(x,4,3e-05)*(70.rand+190)+LFNoise2.ar(1).range(90,120))*EnvGen.kr(Env.perc(0.001,5),x);
@@ -1436,7 +1436,7 @@ SCLANG
 )
 
 
-FM_TOM = SynthDef.new(name: "fmtom", args: { :out => 0, :freq => 200, :gate => 1, :vol => 0.5 },
+FM_TOM = SynthDef.new(name: "fmtom", params: { :out => 0, :freq => 200, :gate => 1, :vol => 0.5 },
   body: <<-SCLANG,
   var tom = PMOsc.ar(freq, 280, Line.kr(0.0, 12, 1), mul: EnvGen.ar(Env.adsr(0.003,0.2,0,0), gate, levelScale: 0.3, doneAction: 2));
   Out.ar(out, tom * vol ! 2);
@@ -1444,7 +1444,7 @@ SCLANG
   source: "https://github.com/mattvears/supercollider-stuff",
 )
 
-BASS_303 = SynthDef.new(name: "bass303", args: { :out => 0, :freq => 440, :gate => 1, :lpf => 1000, :res => 0.8, :width => 0.05, :amp => 1, :vol => 0.5 },
+BASS_303 = SynthDef.new(name: "bass303", params: { :out => 0, :freq => 440, :gate => 1, :lpf => 1000, :res => 0.8, :width => 0.05, :amp => 1, :vol => 0.5 },
   body: <<-SCLANG,
   var sig, env;
   var sig2, env2;
@@ -1476,7 +1476,7 @@ SCLANG
 
 # b.sendCollection(x.asWavetableNoWrap);
 
-# SynthDef.new(name: "kick909", args: { :out => 0, :startPitch => 100, :lpf1 => 100, :lpf2 => 200, :lpf3 => 200, :gate => 1 },
+# SynthDef.new(name: "kick909", params: { :out => 0, :startPitch => 100, :lpf1 => 100, :lpf2 => 200, :lpf3 => 200, :gate => 1 },
 #   body: <<-SCLANG,
 #   var sig1, adsr1;
 #   var sig2, sig3, adsr2, adsr3, mixed;
@@ -1501,7 +1501,7 @@ SCLANG
 #   source: "https://github.com/mattvears/supercollider-stuff",
 # )
 
-SNARE_909 = SynthDef.new(name: "snare909", args: { :out => 0, :lpFreq => 1000, :vol => 1, :gate => 1 },
+SNARE_909 = SynthDef.new(name: "snare909", params: { :out => 0, :lpFreq => 1000, :vol => 1, :gate => 1 },
   body: <<-SCLANG,
   var sig1, sig2;
   var triEnv;
@@ -1539,7 +1539,7 @@ SCLANG
 )
 
 
-HOOVER = SynthDef.new(name: "hoover", args: { :freq => 220, :amp => 0.1, :lgu => 0.1, :lgd => 1, :gate => 1 },
+HOOVER = SynthDef.new(name: "hoover", params: { :freq => 220, :amp => 0.1, :lgu => 0.1, :lgd => 1, :gate => 1 },
   body: <<-SCLANG,
 var pwm, mix, env;
 
@@ -1571,7 +1571,7 @@ SCLANG
 )
 
 
-SynthDef.new(name: "sawpulse", args: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
+SynthDef.new(name: "sawpulse", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
   body: <<-SCLANG,
     var sig, plfo, fcurve;
     plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
@@ -1588,7 +1588,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "sawpulse2", args: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
+SynthDef.new(name: "sawpulse2", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
   body: <<-SCLANG,
     var sig, plfo, fcurve;
     plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
@@ -1603,7 +1603,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "sinepluck", args: { :out => 0, :freq => 440, :amp => 1, :dur => nil },
+SynthDef.new(name: "sinepluck", params: { :out => 0, :freq => 440, :amp => 1, :dur => nil },
   body: <<-SCLANG,
   var mod,tone;
   amp = amp * 0.8;
@@ -1617,7 +1617,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "snare", args: { :amp => 1, :dur => 0.05, :out => 0 },
+SynthDef.new(name: "snare", params: { :amp => 1, :dur => 0.05, :out => 0 },
   body: <<-SCLANG,
 dur = dur * 16;
 Out.ar(out, amp * XLine.ar(2,1/1000,dur) * BPF.ar(PinkNoise.ar(0.8), XLine.ar(20000,1000,dur, doneAction:2), 0.8).dup);
@@ -1625,7 +1625,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "kick", args: { :out => 0, :amp => 1, :dur => 0.05 },
+SynthDef.new(name: "kick", params: { :out => 0, :amp => 1, :dur => 0.05 },
   body: <<-SCLANG,
 var tone;
 tone = SinOsc.ar(XLine.ar(800,2,dur*4, mul: 0.2, doneAction:2));
@@ -1635,7 +1635,7 @@ SCLANG
 )
 
 
-SynthDef.new(name: "poly1", args: { :out => 0, :gate => 1, :freq => 440 },
+SynthDef.new(name: "poly1", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv,fEnv,osc1, osc2,flt;
   aEnv=EnvGen.kr(Env.asr(0.2,1,0.1), gate, doneAction:2);

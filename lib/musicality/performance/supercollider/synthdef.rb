@@ -4,18 +4,18 @@ module SuperCollider
 class SynthDef
   include Packable
 
-  attr_reader :name, :args, :body, :credit, :source
-  def initialize name: "", args: {}, body: "", credit: "", source: ""
+  attr_reader :name, :params, :body, :credit, :source
+  def initialize name: "", params: {}, body: "", credit: "", source: ""
     raise ArgumentError if name.empty?
     raise ArgumentError if body.empty?
 
-    @name, @args, @body = name, args, body
+    @name, @params, @body = name, params, body
     @credit, @source = credit, source
   end
 
   def to_sclang
-    args_str = "|" + @args.map {|k,v| v.nil? ? k.to_s : "#{k} = #{v}" }.join(", ") + "|"
-    output = "SynthDef(\"#{@name}\", {" + args_str + "\n" + @body + "#{"\n" unless @body[-1] == "\n"}\}"
+    params_str = "|" + @params.map {|k,v| v.nil? ? k.to_s : "#{k} = #{v}" }.join(", ") + "|"
+    output = "SynthDef(\"#{@name}\", {" + params_str + "\n" + @body + "#{"\n" unless @body[-1] == "\n"}\}"
     
     unless (@credit.empty? && @source.empty?)
       metadata_str = ", metadata: (\n"
@@ -35,14 +35,14 @@ class SynthDef
   class Settings
     include Packable
 
-    attr_reader :synthdef, :values
-    def initialize synthdef, values = {}
-      @synthdef, @values = synthdef, values
+    attr_reader :synthdef, :args
+    def initialize synthdef, args = {}
+      @synthdef, @args = synthdef, args
     end
   end
 
-  def settings values = {}
-    Settings.new(self, values)
+  def settings args = {}
+    Settings.new(self, args)
   end
 end
 
