@@ -93,6 +93,7 @@ require 'musicality/composition/convenience_methods'
 
 require 'musicality/performance/model/attack'
 require 'musicality/performance/model/separation'
+require 'musicality/performance/model/duration_functions'
 require 'musicality/performance/model/note_sequence'
 
 require 'musicality/performance/util/optimization'

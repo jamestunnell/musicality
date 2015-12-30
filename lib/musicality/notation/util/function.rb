@@ -13,15 +13,41 @@ class Function
     return perc * (end_domain.last - end_domain.first) + end_domain.first
   end
 
+  attr_reader :domain
+  def initialize domain = (DOMAIN_MIN...DOMAIN_MAX), memoize: true, &at_block
+    raise ArgumentError unless domain.last > domain.first
+    @domain = domain
+    raise ArgumentError unless block_given?
+    raise ArgumentError unless at_block.arity == 1
+    @at_block = at_block
+
+    @memoize = memoize
+    @memoized = {}
+  end
+
+  def at(x)
+    raise DomainError unless @domain.include?(x)
+    if @memoize
+      if @memoized.has_key? x
+        @memoized[x]
+      else
+        @memoized[x] = @at_block.call(x)
+      end
+    else
+      @at_block.call(x)
+    end
+  end
+
+  def ==(other)
+    @domain == other.domain
+  end
+
   class Constant < Function
     attr_reader :value
     
     def initialize value
       @value = value
-    end
-    
-    def at(x)
-      @value
+      super() {|x| @value }
     end
     
     def ==(other)
@@ -35,10 +61,8 @@ class Function
     def initialize p1,p2
       @slope = (p2[1] - p1[1])/(p2[0] - p1[0]).to_f
       @intercept = p1[1] - @slope * p1[0]
-    end
-    
-    def at(x)
-      x * @slope + @intercept
+
+      super() {|x| x * @slope + @intercept }
     end
     
     def ==(other)
@@ -59,24 +83,23 @@ class Function
     SIGM_RANGE = Sigmoid.sigm(SIGM_DOMAIN.first)..Sigmoid.sigm(SIGM_DOMAIN.last)
     SIGM_SPAN = SIGM_RANGE.last - SIGM_RANGE.first
     
-    attr_reader :y0, :dy, :domain
+    attr_reader :y0, :dy
     def initialize p0, p1
       @y0, y1 = p0[1], p1[1]
       @dy = y1 - @y0
-      @domain = p0[0]..p1[0]
-    end
-    
-    def at(x)
-      x_ = Function.transform_domains(@domain, SIGM_DOMAIN, x)
-      y_ = (Sigmoid.sigm(x_) - SIGM_RANGE.first) / SIGM_SPAN
-      y = @y0 + y_ * @dy
-      return y
+      @external_domain = p0[0]..p1[0]
+
+      super() do |x|
+        x_ = Function.transform_domains(@external_domain, SIGM_DOMAIN, x)
+        y_ = (Sigmoid.sigm(x_) - SIGM_RANGE.first) / SIGM_SPAN
+        @y0 + y_ * @dy
+      end
     end
     
     #def from(y)
     #  y2 = (y - @y0) / @dy
     #  x2 = Sigmoid.inv_sigm(y2 * SIGM_SPAN + SIGM_RANGE.first)
-    #  x = Function.transform_domains(SIGM_DOMAIN, @domain, x2)
+    #  x = Function.transform_domains(SIGM_DOMAIN, @external_domain, x2)
     #  return x
     #end
     

@@ -4,21 +4,20 @@ class NoteSequence
   Element = Struct.new(:duration, :pitch, :attack)
 
   def self.adjust_duration duration, separation
-    x = duration
-    y = Math.log2(x)
-
-    case separation
+    function = case separation
     when Separation::TENUTO
-      x
+      DurationFunctions::TENUTO_DURATION
     when Separation::PORTATO
-      x / (1 + 2**(y-1))
+      DurationFunctions::PORTATO_DURATION
     when Separation::STACCATO
-      x / (1 + 2**(y))
+      DurationFunctions::STACCATO_DURATION
     when Separation::STACCATISSIMO
-      x / (1 + 2**(y+1))
+      DurationFunctions::STACCATISSIMO_DURATION
     else
-      x - (1/16.0)*(1/(1+2**(-y)))
+      DurationFunctions::NORMAL_DURATION
     end
+
+    function.at(duration)
   end
 
   attr_accessor :offset, :separation, :elements
