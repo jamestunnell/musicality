@@ -143,7 +143,7 @@ RES = SynthDef.new(name: "res", params: { :out => 0, :gate => 1, :freq => 440, :
   flt = RLPF.ar(osc, ffreq, 0.1, aEnv);
   Out.ar(out, Pan2.ar(flt, 0));
 SCLANG
-  credit: "From the Kraftwerk \"Spacelab\" example in SuperCollider/examples by jy",
+  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -157,7 +157,7 @@ POLY2 = SynthDef.new(name: "poly2", params: { :out => 0, :gate => 1, :freq => 44
   flt = RLPF.ar(osc1 + osc2, fEnv, 0.9, aEnv);
   Out.ar(out, flt);
 SCLANG
-  credit: "From the Kraftwerk \"Spacelab\" example in SuperCollider/examples by jy",
+  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -170,7 +170,7 @@ SOLO = SynthDef.new(name: "solo", params: { :out => 0, :gate => 1, :freq => 440 
   flt = LPF.ar(osc, fEnv + 600, aEnv);
   Out.ar(out, flt);
 SCLANG
-  credit: "From the Kraftwerk \"Spacelab\" example in SuperCollider/examples by jy",
+  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -186,7 +186,7 @@ STRING = SynthDef.new(name: "string", params: { :out => 0, :gate => 1, :freq => 
   flt = LPF.ar(osc, 1500, aEnv);
   Out.ar(out, flt);
 SCLANG
-  credit: "From the Kraftwerk \"Spacelab\" example in SuperCollider/examples by jy",
+  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -199,7 +199,7 @@ BASS4 = SynthDef.new(name: "bass4", params: { :out => 0, :gate => 1, :freq => 44
   flt = LPF.ar(osc, fEnv + 100, aEnv);
   Out.ar(out, flt);
 SCLANG
-  credit: "From the Kraftwerk \"Spacelab\" example in SuperCollider/examples by jy",
+  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -256,7 +256,7 @@ ROCKIT = SynthDef.new(name: "rockit", params: { :freq => 440, :detune => 2, :gat
 
   Out.ar(out, Pan2.ar(mix, 0));
 SCLANG
-  credit: "From the \"Emulating Video Game Sounds\" recipe, page 78 of \"Steal This Sound\" by Mitchell Sigman, Adapted by Arthur Carabott",
+  credit: "From the 'Emulating Video Game Sounds' recipe, page 78 of 'Steal This Sound' by Mitchell Sigman, Adapted by Arthur Carabott",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
