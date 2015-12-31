@@ -38,8 +38,8 @@ describe MidiUtil do
     
     context 'given pitch outside C-1 to G9 range' do
       it 'should raise error' do
-        expect { MidiUtil.pitch_to_notenum(Pitch.new(octave:-2)) }.to raise_error
-        expect { MidiUtil.pitch_to_notenum(Ab9) }.to raise_error
+        expect { MidiUtil.pitch_to_notenum(Pitch.new(octave:-2)) }.to raise_error(KeyError)
+        expect { MidiUtil.pitch_to_notenum(Ab9) }.to raise_error(KeyError)
       end
     end
   end
