@@ -11,7 +11,7 @@ class Change
     end
     
     def to_transition offset, value
-      Transition::new(Function::Constant.new(@end_value), offset..offset)
+      Transition.new(Function::Constant.new(@end_value), offset..offset)
     end
   end
   
