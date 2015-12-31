@@ -138,3 +138,15 @@ require 'musicality/printing/lilypond/lilypond_settings'
 require 'musicality/printing/lilypond/part_engraver'
 require 'musicality/printing/lilypond/score_engraver'
 require 'musicality/printing/lilypond/score_engraving'
+
+# 
+# Project
+#
+
+require 'rake'
+require 'yaml'
+require 'rake/tasklib'
+require 'musicality/project/load_config'
+require 'musicality/project/file_raker'
+require 'musicality/project/file_cleaner'
+require 'musicality/project/create_tasks'

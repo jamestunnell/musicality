@@ -1,0 +1,56 @@
+#!/usr/bin/env ruby
+
+exe_name = File.basename(__FILE__)
+
+doc = <<DOCOPT
+Create a new musicality project.
+
+Usage:
+  #{exe_name} DIR [options]
+  #{exe_name} -h | --help
+  #{exe_name} --version
+
+Arguments:
+  DIR Path of an empty directory or directory to be created
+
+Options:
+  -h --help     Show this screen.
+  --version     Show version.
+DOCOPT
+
+require 'docopt'
+begin
+  args = Docopt::docopt(doc)
+  puts args
+rescue Docopt::Exit => e
+  puts e.message
+  exit
+end
+
+require 'musicality'
+
+if args["--version"]
+  puts "#{exe_name} in musicality v#{Musicality::VERSION}"
+  exit
+end
+
+DIR = args["DIR"]
+
+if Dir.exists? DIR
+  unless Dir.entries(DIR).empty?
+    raise ArgumentError, "existing directory #{DIR} is not empty."
+  end
+else
+  Dir.mkdir(DIR)
+  unless Dir.exists?(DIR)
+    raise "directory #{DIR} could not be created"
+  end
+end
+
+PROJECT_FILES_DIR = File.join(File.dirname(__FILE__),"../lib/musicality/project/files"
+FileUtils.copy(PROJECT_FILES_DIR,DIR)
+
+GEMFILE_PATH = File.join(DIR,"Gemfile")
+File.open(GEMFILE_PATH,"w") do |f|
+  f.write("source :rubygems\ngem 'musicality', '~> #{Musicality::VERSION}'")
+end
