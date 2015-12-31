@@ -92,7 +92,7 @@ File.open(SCORE_FILE) do |fin|
     end
     base_fpath = "#{OUTDIR}/#{File.basename(SCORE_FILE,File.extname(SCORE_FILE))}"
 
-    print "Making audio files..."
+    print "Making SuperCollider binary OSC file..."
     conductor.perform(base_fpath, **perform_kwargs)
     puts "done"
   else
