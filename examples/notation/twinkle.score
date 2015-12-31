@@ -1,0 +1,33 @@
+# run me with the following ruby code:
+#   require 'musicality'
+#   include Musicality
+#   include Pitches
+#   ScoreDSL.load('twinkle.score')
+
+tempo_score Meters::FOUR_FOUR, 120 do
+  title "Twinkle, Twinkle, Little Star"
+
+  Cmaj = [C3,E3,G3]
+  Fmaj = [F2,A2,C3]
+  Gmaj = [G2,B2,D3]
+  section "A" do
+    notes(
+      "rhand" => q(C4,C4,G4,G4,A4,A4) + h(G4) +
+                 q(F4,F4,E4,E4,D4,D4) + h(C4),
+      "lhand" => h(Cmaj,Cmaj,Fmaj,Cmaj) + 
+                 h(Fmaj,Cmaj,Gmaj,Cmaj)
+    )
+  end
+
+  section "B" do
+    notes(
+      "rhand" => q(G4,G4,F4,F4,E4,E4) + h(D4),
+      "lhand" => h(Cmaj,Fmaj,Cmaj,Gmaj)
+    )
+  end
+  repeat "B"
+  repeat "A"
+end
+
+File.open('twinkle.ly','w'){|f| f.write(score.to_lilypond) }
+File.open('twinkle.mid','wb'){|f| score.to_midi_seq(200).write(f) }
