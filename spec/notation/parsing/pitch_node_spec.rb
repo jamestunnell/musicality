@@ -7,7 +7,6 @@ describe Parsing::PitchNode do
     'C4' => C4,
     'Db2' => Db2,
     'C#2' => Db2,
-    'Db2' => Db2,
     'F7' => F7,
     'B1' => B1,
     "Bb22" => Pitch.new(octave: 22, semitone: 10),
