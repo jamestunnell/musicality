@@ -1,5 +1,5 @@
 module Musicality
-module Project
+module Tasks
 
 class FileRaker < Rake::TaskLib
   attr_reader :files, :task_name, :file_ext

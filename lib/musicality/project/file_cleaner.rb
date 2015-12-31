@@ -1,5 +1,5 @@
 module Musicality
-module Project
+module Tasks
 
 class FileCleaner < Rake::TaskLib
   def initialize outfiles
