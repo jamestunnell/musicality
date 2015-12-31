@@ -11,8 +11,8 @@ class ScoreEngraver
 
     @parts = score.collated? ? score.parts : ScoreCollator.new(score).collate_parts
     @parts.each do |part_name, part|
-      unless parts.lilypond_settings
-        parts.settings.push LilypondSettings.new(part_name)
+      unless part.lilypond_settings
+        part.settings.push LilypondSettings.new(part_name)
       end
     end
 
