@@ -76,6 +76,9 @@ class PartEngraver
   }
 
   def self.best_clef notes, allowed_clefs
+    raise ArgumentError unless notes.any?
+    raise ArgumentError unless allowed_clefs.any?
+
     ranges = CLEF_RANGES.select {|clef,range| allowed_clefs.include?(clef) }
     range_scores = Hash.new(0)
 
@@ -99,7 +102,7 @@ class PartEngraver
       end
     end
     range_score = range_scores.max_by {|range,score| score}
-    return range_score[0]
+    range_score.nil? ? allowed_clefs.first : range_score[0]
   end
 
   private
