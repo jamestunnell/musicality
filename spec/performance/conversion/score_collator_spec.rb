@@ -19,9 +19,9 @@ describe ScoreCollator do
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
-          notes.size.should eq(@part.notes.size - 1)
-          notes[0].pitches[0].should eq D2
-          notes[1].pitches[0].should eq E2
+          expect(notes.size).to eq(@part.notes.size - 1)
+          expect(notes[0].pitches[0]).to eq D2
+          expect(notes[1].pitches[0]).to eq E2
         end
       end
       
@@ -33,11 +33,11 @@ describe ScoreCollator do
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
-          notes.size.should eq(@part.notes.size)
-          notes[0].pitches.should be_empty
-          notes[0].duration.should eq "1/8".to_r
-          notes[1].pitches[0].should eq D2
-          notes[2].pitches[0].should eq E2
+          expect(notes.size).to eq(@part.notes.size)
+          expect(notes[0].pitches).to be_empty
+          expect(notes[0].duration).to eq "1/8".to_r
+          expect(notes[1].pitches[0]).to eq D2
+          expect(notes[2].pitches[0]).to eq E2
         end
       end
     end
@@ -51,7 +51,7 @@ describe ScoreCollator do
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
-          notes.size.should eq(@part.notes.size - 1)
+          expect(notes.size).to eq(@part.notes.size - 1)
         end
       end
       
@@ -63,8 +63,8 @@ describe ScoreCollator do
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
-          notes.size.should eq(@part.notes.size)
-          notes[-1].duration.should eq("1/4".to_r)
+          expect(notes.size).to eq(@part.notes.size)
+          expect(notes[-1].duration).to eq("1/4".to_r)
         end
       end
       
@@ -76,9 +76,9 @@ describe ScoreCollator do
           collator = ScoreCollator.new(score)
           parts = collator.collate_parts
           notes = parts[1].notes
-          notes.size.should eq(@part.notes.size + 1)
-          notes[-1].pitches.should be_empty
-          notes[-1].duration.should eq("1/4".to_r)
+          expect(notes.size).to eq(@part.notes.size + 1)
+          expect(notes[-1].pitches).to be_empty
+          expect(notes[-1].duration).to eq("1/4".to_r)
         end
       end
     end
@@ -94,15 +94,15 @@ describe ScoreCollator do
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
         dcs = parts[1].dynamic_changes
-        dcs.size.should eq(1)
-        dcs[0.to_r].should eq(Change::Immediate.new(Dynamics::PP))
+        expect(dcs.size).to eq(0)
+        expect(parts[1].start_dynamic).to be_within(1e-5).of(Dynamics::PP)
         
         score.program = [0...1]
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
         dcs = parts[1].dynamic_changes
-        dcs.size.should eq(1)
-        dcs[0.to_r].should eq(Change::Immediate.new(Dynamics::FF))
+        expect(dcs.size).to eq(0)
+        expect(parts[1].start_dynamic).to be_within(1e-5).of(Dynamics::FF)
       end
       
       it 'should trim the change further if needed' do
@@ -115,8 +115,8 @@ describe ScoreCollator do
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
         dcs = parts[1].dynamic_changes
-        dcs.size.should eq(1)
-        dcs[0.to_r].should eq(Change::Gradual.linear(Dynamics::PP,5).trim(2,2))
+        expect(dcs.size).to eq(1)
+        expect(dcs[0.to_r]).to eq(Change::Gradual.linear(Dynamics::PP,5).trim(2,2))
       end
     end
     
@@ -131,10 +131,10 @@ describe ScoreCollator do
       parts = collator.collate_parts
       
       notes = parts["lead"].notes
-      notes.size.should eq 2
+      expect(notes.size).to eq 2
       notes.each do |note|
-        note.links.should have_key(Db4)
-        note.links[Db4].should be_a Link::Glissando
+        expect(note.links).to have_key(Db4)
+        expect(note.links[Db4]).to be_a Link::Glissando
       end
     end
   end
@@ -149,12 +149,11 @@ describe ScoreCollator do
     context 'tempo change starts at end of program segment' do
       it 'should not be included in the tempo changes' do
         score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
-          1 => @change1, 2 => @change2 }, program: [0..2])
+          1 => @change1, 2 => @change2 }, program: [0...2])
         collator = ScoreCollator.new(score)
-        tcs = collator.collate_tempo_changes
-        tcs.size.should eq 2
-        tcs[0.to_r].should eq @change0
-        tcs[1.to_r].should eq @change1
+        st, tcs = collator.collate_tempo_changes
+        expect(tcs.size).to eq 1
+        expect(tcs[1.to_r]).to eq @change1
       end
     end
 
@@ -163,16 +162,15 @@ describe ScoreCollator do
         score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
           2 => @change2 }, program: [4..5])
         collator = ScoreCollator.new(score)
-        @tcs = collator.collate_tempo_changes
+        @st, @tcs = collator.collate_tempo_changes
       end
       
       it 'should not be included in the tempo changes' do
-        @tcs.size.should eq 1
-        @tcs[0.to_r].should be_a Change::Immediate
+        expect(@tcs.size).to eq 0
       end
       
-      it 'should be used as starting tempo change end_value' do
-        @tcs[0.to_r].end_value.should eq @change2.end_value
+      it 'should be used as start tempo' do
+        expect(@st).to be_within(1e-5).of @change2.end_value
       end
     end
     
@@ -181,11 +179,11 @@ describe ScoreCollator do
         score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
           1.5.to_r => @change2 }, program: [2..4])
         collator = ScoreCollator.new(score)
-        tcs = collator.collate_tempo_changes
-        tcs.size.should eq 1
-        tcs[0.to_r].should be_a Change::Gradual::Trimmed
-        tcs[0.to_r].end_value.should eq @change2.end_value
-        tcs[0.to_r].remaining.should eq(0.5)
+        st, tcs = collator.collate_tempo_changes
+        expect(tcs.size).to eq 1
+        expect(tcs[0.to_r]).to be_a Change::Gradual::Trimmed
+        expect(tcs[0.to_r].end_value).to eq @change2.end_value
+        expect(tcs[0.to_r].remaining).to eq(0.5)
       end
     end
     
@@ -194,13 +192,12 @@ describe ScoreCollator do
         score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
           1 => @change1, 2 => @change2 }, program: [0..2.5])
         collator = ScoreCollator.new(score)
-        tcs = collator.collate_tempo_changes
-        tcs.size.should eq 3
-        tcs[0.to_r].should eq @change0
-        tcs[1.to_r].should eq @change1
-        tcs[2.to_r].should be_a Change::Gradual::Trimmed
-        tcs[2.to_r].end_value.should eq @change2.end_value
-        tcs[2.to_r].remaining.should eq(0.5)
+        st, tcs = collator.collate_tempo_changes
+        expect(tcs.size).to eq 2
+        expect(tcs[1.to_r]).to eq @change1
+        expect(tcs[2.to_r]).to be_a Change::Gradual::Trimmed
+        expect(tcs[2.to_r].end_value).to eq @change2.end_value
+        expect(tcs[2.to_r].remaining).to eq(0.5)
       end
     end
   end
@@ -213,10 +210,9 @@ describe ScoreCollator do
       score = Score::Tempo.new(FOUR_FOUR, 120, meter_changes: {
         1 => change1, 2 => change2 }, program: [0...2])
       collator = ScoreCollator.new(score)
-      tcs = collator.collate_meter_changes
-      tcs.size.should eq 2
-      tcs[0.to_r].should eq change0
-      tcs[1.to_r].should eq change1
+      sm, mcs = collator.collate_meter_changes
+      expect(mcs.size).to eq 1
+      expect(mcs[1.to_r]).to eq change1
     end
   end
 end

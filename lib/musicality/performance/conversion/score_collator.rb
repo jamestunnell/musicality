@@ -17,38 +17,38 @@ class ScoreCollator
     
     Hash[
       @score.parts.map do |name, part|
-        new_dcs = collate_changes(part.start_dynamic,
-          part.dynamic_changes, segments)
-        new_notes = collate_notes(part.notes, segments)
+        dyn_comp = ValueComputer.new(part.start_dynamic,part.dynamic_changes)
+
         new_part = part.clone
-        new_part.notes = new_notes
-        new_part.dynamic_changes = new_dcs
+        new_part.notes = collate_notes(part.notes, segments)
+        new_part.start_dynamic, new_part.dynamic_changes = collate_changes(
+          part.start_dynamic, part.dynamic_changes, segments
+        )
         [ name, new_part ]
       end
     ]
   end
   
   def collate_tempo_changes
-    collate_changes(@score.start_tempo,
-      @score.tempo_changes, @score.program)
+    collate_changes(@score.start_tempo, @score.tempo_changes, @score.program)
   end
   
   def collate_meter_changes
-    collate_changes(@score.start_meter,
-      @score.meter_changes, @score.program)
+    collate_changes(@score.start_meter, @score.meter_changes, @score.program)
   end
   
   def collate_key_changes
-    collate_changes(@score.start_key,
-      @score.key_changes, @score.program)
+    collate_changes(@score.start_key, @score.key_changes, @score.program)
   end
 
   private
   
   def collate_changes start_value, changes, program_segments
     new_changes = {}
-    comp = ValueComputer.new(start_value,changes)
+    comp = ValueComputer.new(start_value, changes)
     segment_start_offset = 0.to_r
+    
+    new_start_val = comp.at(program_segments.first.first)
     
     program_segments.each_with_index do |seg, i|
       seg = seg.first...seg.last
@@ -100,7 +100,7 @@ class ScoreCollator
       end
     end
     
-    return new_changes
+    return new_start_val, new_changes
   end
   
   def collate_notes notes, program_segments
