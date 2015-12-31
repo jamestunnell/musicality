@@ -32,10 +32,10 @@ describe ScoreSequencer do
     
     it 'should assign program number (starts at 0) from part midi program number (starts at 1)' do
       prog_event = @midi_seq.tracks[1].events.select {|x| x.is_a? MIDI::ProgramChange }.first
-      prog_event.program.should eq(@part1.get_settings(MidiSettings).program - 1)
+      prog_event.program.should eq(@part1.midi_settings.program - 1)
 
       prog_event = @midi_seq.tracks[2].events.select {|x| x.is_a? MIDI::ProgramChange }.first
-      prog_event.program.should eq(@part2.get_settings(MidiSettings).program - 1)
+      prog_event.program.should eq(@part2.midi_settings.program - 1)
     end
     
     it 'should assign different channel to each part track' do
