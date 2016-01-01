@@ -5,8 +5,8 @@ include Pitches
 bass_pitch_palette = [ C2, D2, E2, F2, G2, A2, B2, C3 ]
 guitar_pitch_palette = [ C3, D3, E3, F3, G3, A3, B3, C4 ]
 
-bass = Part.new(Dynamics::MF)
-guitar = Part.new(Dynamics::MF)
+bass = Part.new(Dynamics::MF, settings: [MidiSettings::ELECTRIC_BASS_FINGER])
+guitar = Part.new(Dynamics::MF, settings: [MidiSettings::ELECTRIC_GUITAR_JAZZ])
 
 def random_melody rhythm, pitch_palette
   pitches = pitch_palette.sample(rand(2..pitch_palette.size))
@@ -48,6 +48,5 @@ score = Score::Tempo.new(Meters::FOUR_FOUR, 120,
   program: [ 0...([bass.duration,guitar.duration].min) ]
 )
 
-instr_map = { "bass" => 32, "guitar" => 25 }
-seq = ScoreSequencer.new(score.to_timed(200)).make_midi_seq(instr_map)
+seq = ScoreSequencer.new(score.to_timed(200)).make_midi_seq
 File.open("./auto_counterpoint.mid", 'wb'){ |fout| seq.write(fout) }
