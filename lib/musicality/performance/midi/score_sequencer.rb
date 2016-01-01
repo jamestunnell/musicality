@@ -35,7 +35,7 @@ class ScoreSequencer
     
     channel = 0
     selected_parts.each do |part_name|
-      part = @parts[part_name]
+      part = @parts.fetch(part_name)
       program = part.midi_settings.program
       pseq = PartSequencer.new(part)
       seq.tracks << pseq.make_midi_track(seq, part_name, channel, seq.ppqn, program)
