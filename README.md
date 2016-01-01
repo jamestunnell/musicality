@@ -192,22 +192,61 @@ This will generate a .pdf file for each score file. In addition, this would caus
 
 The supported final target formats are listed in the table below.
 
-| Target format | Rake command |
-|---------------|--------------|
-| MIDI | midi |
-| LilyPond PDF | pdf |
-| LilyPond PNG | png |
-| LilyPond PostScript | ps |
-| SuperCollider AIFF | aiff |
-| SuperCollider WAV | wav |
-| SuperCollider FLAC | flac |
+<table>
+  <tr>
+    <th>Target format</th>
+    <th>Rake command</th>
+  </tr>
+  <tr>
+    <td>MIDI</td>
+    <td>midi</td>
+  </tr>
+  <tr>
+    <td>LilyPond PDF</td>
+    <td>pdf</td>
+  </tr>
+  <tr>
+    <td>LilyPond PNG</td>
+    <td>png</td>
+  </tr>
+  <tr>
+    <td>LilyPond PostScript</td>
+    <td>ps</td>
+  </tr>
+  <tr>
+    <td>SuperCollider AIFF</td>
+    <td>aiff</td>
+  </tr>
+  <tr>
+    <td>SuperCollider WAV</td>
+    <td>wav</td>
+  </tr>
+  <tr>
+    <td>SuperCollider FLAC</td>
+    <td>flac</td>
+  </tr>
+</table>
 
 In addition, there are also commands for all the intermediate formats
-| Target format | Rake command |
-|---------------|--------------|
-| YAML | yaml |
-| LilyPond (text) | ly |
-| Raw OSC (binary) | osc |
+
+<table>
+  <tr>
+    <th>Target format</th>
+    <th>Rake command</th>
+  </tr>
+  <tr>
+    <td>YAML</td>
+    <td>yaml</td>
+  </tr>
+  <tr>
+    <td>LilyPond (text)</td>
+    <td>ly</td>
+  </tr>
+  <tr>
+    <td>Raw OSC (binary)</td>
+    <td>osc</td>
+  </tr>
+</table>
 
 ## Contributing
 
