@@ -122,6 +122,7 @@ require 'musicality/performance/supercollider/synthdef'
 require 'musicality/performance/supercollider/synthdefs'
 require 'musicality/performance/supercollider/performer'
 require 'musicality/performance/supercollider/conductor'
+require 'musicality/performance/supercollider/score_conducting'
 
 #
 # Printing
