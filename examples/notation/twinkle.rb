@@ -24,10 +24,11 @@ score = Score::Tempo.new(FOUR_FOUR, 120, title: "Twinkle, Twinkle, Little Star")
   end
   
   s.program.push 0...4
-  s.program.push 0...2
-  s.program.push 0...2
+  s.program.push 4...6
+  s.program.push 4...6
   s.program.push 0...4
 end
 
 File.open('twinkle.ly','w'){|f| f.write(score.to_lilypond) }
 File.open('twinkle.mid','wb'){|f| score.to_midi_seq(200).write(f) }
+score.to_osc(200,'twinkle')
