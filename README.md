@@ -182,6 +182,10 @@ This will create a directory (or fill an existing one) with three files:
 
 Also, a *scores* subdirectory is created as the default location to keep score files.
 
+Before processing any scores, run
+
+    $ bundle install
+
 To process score files, run rake with the desired target format. The scores will be converted into any intermediate formats as necessary. For example, to generate a PDF by LilyPond engraving, run
 
     $ rake pdf
