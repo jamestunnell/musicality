@@ -149,6 +149,47 @@ dsl = ScoreDSL.load 'twinkle.score'
 score = dsl.score
 ``` 
 
+
+## Musicality Projects
+
+To create a new project for working on Muscality scores, use the `musicality` command-line executable that is installed along with the gem.
+
+    $ musicality new my_scores
+
+This will create a directory (or fill an existing one) with three files:
+* *Gemfile* - a Bundler gem dependency file that lists the `musicality` gem
+* *Rakefile* - creates rake tasks for processing score files (files with a .score extension)
+* *config.yml* - customize project configuration options
+
+Also, a *scores* subdirectory is created as the default location to keep score files.
+
+To process score files, run rake with the desired target format. The scores will be converted into any intermediate formats as necessary. For example, to generate a PDF by LilyPond engraving, run
+
+    $ rake pdf
+
+This will generate a .pdf file for each score file. In addition, this would cause a chain of intermediate files to be created as well, as follows:
+
+    fname.score -> fname.yml -> fname.ly -> fname.pdf
+
+The supported final target formats are listed in the table below.
+
+| Target format | Rake command |
+|---------------|--------------|
+| MIDI | midi |
+| LilyPond PDF | pdf |
+| LilyPond PNG | png |
+| LilyPond PostScript | ps |
+| SuperCollider AIFF | aiff |
+| SuperCollider WAV | wav |
+| SuperCollider FLAC | flac |
+
+In addition, there are also commands for all the intermediate formats
+| Target format | Rake command |
+|---------------|--------------|
+| YAML | yaml |
+| LilyPond (text) | ly |
+| Raw OSC (binary) | osc |
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/musicality/fork )
