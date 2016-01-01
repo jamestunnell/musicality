@@ -1,3 +1,29 @@
+### 0.8.0 / 2016-01-01
+* Require ruby v2.0 or greater.
+* Remove Score::Unmeasured and change Score::Measured to Score::Tempo
+* Add more convenience methods for note creation, and alter their interface to take a variable number of args, each being interpreted as a pitch group (which may also be a single pitch)
+* Add back Score#title= and Score#composer= methods
+* Change score creation method ScoreDSL#score to ScoreDSL#tempo_score, and add ScoreDSL#score reader method to get the created score.
+* Add bin/lilify to convert score (in YAML format) to Lilypond format using the ScoreEngraver class.
+* Add Score::Tempo#to_lilypond
+* Make default behaviour in lilify to engrave all parts, unless --split option is used. Replaced partname/title pair args with plain part names.
+* Add Key class. Add start_key and key_changes to Score class.
+* Integrate start_key into Lilypond engraving. Add sharp pitch classes.
+* Revise note model (for notation) and note sequence model (for performance), including parsing, to use slur marks and articulation only. And there are no legato/slur links or articulations anymore.
+* Modify note model (again) to include marks for slur and triplet. Modify parsing, performance, and printing code accordingly.
+* MIDI performance changes to support the new note sequence model
+* Add Packable module to take care of packing and unpacking. Remove custom pack/unpack code.
+* Add Part#settings. Create settings classes for LilyPond and MIDI
+* Add Part#lilypond_settings in lilypond_settings.rb and Part#midi_settings in midi_settings.rb
+* Add support for non-realtime SUperCollider performance
+* Make dynamic levels increase exponentially, like 
+* In ScoreCollator#collate_changes, return new start value as well as dynamic changes, instead of always creating an initial immediate change
+* Add SynthDef class to be able to include SynthDefs in SuperCollider code
+* Add musicality project infrastructure
+* Make examples less vague
+* Add #to_osc for Score::Tempo and Score::Timed
+* In ScoreCollator, use entire score if score has no program segments
+
 ### 0.7.0 / 2015-04-28
 * Replace Score's title and composer accessors with dual-methods Score#title and Score#composer that can be used to get/set. This makes them useful in the DSL context.
 
@@ -12,7 +38,7 @@
  * disallow articulation and accent when pitches aren't present
  * do not provide syntax for targeted slur and legato links
 * Add *basic* support for Lilypond engraving (sheet music printing)
-* Add `#to_midi_seq` convenience method to `Timed` and `TempoBased` scores.
+* Add `#to_midi_seq` convenience method to timed and tempo-based scores.
 * Add some rudimentary composition features
  * `ScaleClass` class: contains a series of increasing pitch intervals. Can be realized as a scale given a starting pitch class.
  * `Scale` class: contains a starting pitch class, and a series of pitch intervals. Can be realized as a series of pitches given a starting octave.
