@@ -20,7 +20,26 @@ Or install it yourself as:
 
 ## Basic Usage
 
-Raw notation objects can be created like this:
+To begin with, Musicality has a class to represent pitch:
+```ruby
+require 'musicality'
+middle_c = Musicality::Pitch.new(octave: 4, semitone: 0)
+puts middle_c.freq # => 261.625...
+
+not_quite_middle_c = Musicality::Pitch.new(octave: 4, semitone: 0, cent: 12)
+puts not_quite_middle_c.freq # => 263.445...
+```
+
+For convenience, there are Pitch objects for commonly used octave-semitone combinations:
+```ruby
+require 'musicality'
+include Musicality::Pitches
+
+c_scale = [C4,D4,E4,F4,G4,A4,B4,C4]
+freqs = c_scale.map {|p| p.freq }
+```
+
+Notes can be created like this:
 ```ruby
 require 'musicality'
 include Musicality
