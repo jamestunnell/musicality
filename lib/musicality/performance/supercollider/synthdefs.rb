@@ -102,7 +102,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-AXEL = DEFAULT_SYNTHDEF = SynthDef.new(name: "axel", params: { :freq => 440, :lpfreq => 12000, :rq => 0.2, :gate => 1, :out => 0 },
+AXEL = DEFAULT = SynthDef.new(name: "axel", params: { :freq => 440, :lpfreq => 12000, :rq => 0.2, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var chorus = LFNoise2.ar(1).range(0.99, 1.01);
   var saw1 = LFSaw.ar(freq * chorus, 0, 0.1);

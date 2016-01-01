@@ -6,7 +6,7 @@ class Performer
 
   attr_reader :part, :settings
   def initialize part
-    @settings = part.synthdef_settings || DEFAULT_SYNTHDEF_SETTINGS
+    @settings = part.synthdef_settings || SynthDefs::DEFAULT.settings
     @part = part
     unless @settings.synthdef.params.has_key?(:out)
       raise ArgumentError "SynthDef #{@settings.synthdef} does not have :out param" 
