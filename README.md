@@ -25,11 +25,20 @@ Raw notation objects can be created like this:
 require 'musicality'
 include Musicality
 include Pitches
-include Dynamics
 
+# convenience methods for common durations
 single = Note.quarter(Ab4)
 rest = Note.quarter
 chord = Note.whole([C3,E3,G3])
+
+# specific duration + articulation
+note = Note.new(Rational(7,8), Bb3, articulation: Articulations::STACCATO)
+puts note.to_s  # => "7/8Bb3."
+
+# magic!
+puts note.transpose(2).to_s  # => "7/8C4."
+
+# combine notes into a part
 part = Part.new(MP, notes:[single,rest,chord])
 ```
 
@@ -44,35 +53,66 @@ require 'musicality'
 include Musicality
 include Meters
 include Dynamics
+include Pitches
 
-twinkle = Score::Tempo.new(TWO_FOUR, 120) do |s|
+score = Score::Tempo.new(FOUR_FOUR, 120, title: "Twinkle, Twinkle, Little Star") do |s|
   s.parts["rhand"] = Part.new(MF) do |p|
-    p.notes += ("/4C4 "*2 + "/4G4 "*2 +
-                "/4A4 "*2 + "/2G4").to_notes
+    a_notes = q(C4,C4,G4,G4,A4,A4) + h(G4) +
+              q(F4,F4,E4,E4,D4,D4) + h(C4)
+    b_notes = q(G4,G4,F4,F4,E4,E4) + h(D4)
+    p.notes += a_notes + b_notes
   end
+  
   s.parts["lhand"] = Part.new(MF) do |p|
-    p.notes += ("/2C3,E3,G3 "*2 + 
-                "/2F2,A2,C3 /2C3,E3,G3").to_notes
+    Cmaj = [C3,E3,G3]
+    Fmaj = [F2,A2,C3]
+    Gmaj = [G2,B2,D3]
+    
+    a_chords = h(Cmaj,Cmaj,Fmaj,Cmaj) + 
+               h(Fmaj,Cmaj,Gmaj,Cmaj)
+    b_chords = h(Cmaj,Fmaj,Cmaj,Gmaj)
+    p.notes += a_chords + b_chords
   end
+  
+  s.program.push 0...4
+  s.program.push 4...6
+  s.program.push 4...6
   s.program.push 0...4
 end
 ```
 
 ## MIDI Sequencing
 
-A score can be prepared for MIDI playback using the `ScoreSequencer` class or `#to_midi_seq` method. To continue the previous example,
+A score can be prepared for MIDI playback by converting it to a MIDI::Sequence object (see [midilib]( https://github.com/jimm/midilib )). This can be accomplished with the `ScoreSequencer` class or `Score#to_midi_seq` method. To continue the previous example,
 ```ruby
 TEMPO_SAMPLE_RATE = 500
 seq = twinkle.to_midi_seq TEMPO_SAMPLE_RATE
-File.open('twinkle.mid', 'wb'){ |fout| seq.write(fout) }
+File.open('twinkle.mid', 'wb'){ |f| seq.write(f) }
 ```
+
+## LilyPond Engraving
+
+A score can be prepared for engraving (fancy printing) by converting it to a string in LilyPond text format (see [lilypond.org](http://lilypond.org/)). This can be accomplished using the `ScoreEngraver` class or `Score#to_lilypond` method. Using the score from the above example,
+```ruby
+File.open('twinkle.ly','w'){|f| f.write(twinkle.to_lilypond) }
+```
+
+
+## SuperCollider Rendering
+
+A score can be prepared for rendering (as audio) by converting it to a raw OSC binary file, used for SuperCollider non-realtime rendering (see [SuperCollider homepage](https://supercollider.github.io/)). This can be accomplished using the `SuperCollider::Conductor` class or `Score#to_osc` method. Using the score from the above example,
+```ruby
+twinkle.to_osc('twinkle')
+```
+
+
 ## Score DSL
 
 The score DSL is an internal DSL (built on Ruby) that consists of a *score* block with additional blocks inside this to add sections, notes, and tempo/meter/dynamic changes.
 
 Here is an example of a score file.
 ```ruby
-tempo_score FOUR_FOUR, 120 do
+tempo_score Meters::FOUR_FOUR, 120 do
   title "Twinkle, Twinkle, Little Star"
 
   Cmaj = [C3,E3,G3]
