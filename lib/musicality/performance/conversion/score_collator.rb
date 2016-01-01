@@ -10,19 +10,18 @@ class ScoreCollator
       raise ScoreNotValidError, "errors found in score: #{score.errors}"
     end
     @score = score
+    @program = score.program.any? ? score.program : [0...score.duration]
   end
   
   def collate_parts
-    segments = @score.program
-    
     Hash[
       @score.parts.map do |name, part|
         dyn_comp = ValueComputer.new(part.start_dynamic,part.dynamic_changes)
 
         new_part = part.clone
-        new_part.notes = collate_notes(part.notes, segments)
+        new_part.notes = collate_notes(part.notes, @program)
         new_part.start_dynamic, new_part.dynamic_changes = collate_changes(
-          part.start_dynamic, part.dynamic_changes, segments
+          part.start_dynamic, part.dynamic_changes, @program
         )
         [ name, new_part ]
       end
@@ -30,15 +29,15 @@ class ScoreCollator
   end
   
   def collate_tempo_changes
-    collate_changes(@score.start_tempo, @score.tempo_changes, @score.program)
+    collate_changes(@score.start_tempo, @score.tempo_changes, @program)
   end
   
   def collate_meter_changes
-    collate_changes(@score.start_meter, @score.meter_changes, @score.program)
+    collate_changes(@score.start_meter, @score.meter_changes, @program)
   end
   
   def collate_key_changes
-    collate_changes(@score.start_key, @score.key_changes, @score.program)
+    collate_changes(@score.start_key, @score.key_changes, @program)
   end
 
   private
