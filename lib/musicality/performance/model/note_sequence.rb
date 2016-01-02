@@ -49,7 +49,7 @@ class NoteSequence
   end
 
   def full_duration
-    offsets.last + elements.last.duration
+    @elements.map {|el| el.duration }.inject(0,:+)
   end
 
   def first_pitch

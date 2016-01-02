@@ -221,5 +221,28 @@ describe NoteSequenceExtractor do
         @seqs[0].duration.should be <= (@notes[0].duration + @notes[1].duration)
       end
     end
+
+    context 'three notes with single pitch, tie between first two, portamento between last two' do
+      before :all do
+        @notes = "/8Eb4~ /8Eb4:C5 3/4C5".to_notes
+        @seqs = NoteSequenceExtractor.new(@notes).extract_sequences
+      end
+
+      it 'should produce a single sequence' do
+        expect(@seqs.size).to eq(1)
+      end
+
+      it 'should have same full duration as the notes together' do
+        expected_dur = @notes.map {|n| n.duration }.inject(0,:+)
+        seq = @seqs.first
+        expect(seq.full_duration).to eq(expected_dur)
+      end
+
+      it 'should have duration less than the notes together' do
+        max_dur = @notes.map {|n| n.duration }.inject(0,:+)
+        seq = @seqs.first
+        expect(seq.duration).to be < max_dur
+      end
+    end
   end
 end
