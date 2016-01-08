@@ -56,7 +56,7 @@ class PartEngraver
   def make_body sharpit
     i = 0
     pieces = @part.notes.map do |n|
-      if @triplet_flags[i]
+      str = if @triplet_flags[i]
         n.resize(n.duration * Rational(3,2)).to_lilypond(sharpit,
           begins_triplet: i == 0 || !@triplet_flags[i-1],
           ends_triplet: i == (@triplet_flags.size-1) || !@triplet_flags[i+1])
@@ -64,6 +64,7 @@ class PartEngraver
         n.to_lilypond(sharpit)
       end
       i += 1
+      str
     end
 
     output = ""
