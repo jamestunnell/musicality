@@ -1,4 +1,10 @@
-### 0.8.0 / 2016-01-01
+### 0.10.0 / 2016-01-08
+* Remove uneeded gem dependency
+* Treat all offsets and durations in Score::Tempo as note offsets. Don't check if meter change offsets are integer anymore.
+* Remove triplet marks. Determine if note is triplet based on duration.
+* Make project 'scores' selector glob configurable in config.yml and as an ENV
+
+### 0.9.0 / 2016-01-01
 * Require ruby v2.0 or greater.
 * Remove Score::Unmeasured and change Score::Measured to Score::Tempo
 * Add more convenience methods for note creation, and alter their interface to take a variable number of args, each being interpreted as a pitch group (which may also be a single pitch)
