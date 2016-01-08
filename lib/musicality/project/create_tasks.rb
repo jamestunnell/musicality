@@ -2,7 +2,7 @@ module Musicality
 
 class Project
   def self.create_tasks config
-    score_files = Rake::FileList[File.join(config[:scores_dir],"**/*.score")]
+    score_files = Rake::FileList[config[:scores]]
     
     yaml_task = Tasks::FileRaker::YAML.new(score_files)
     

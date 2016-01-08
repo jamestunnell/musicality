@@ -2,9 +2,10 @@ module Musicality
 
 class Project
   CONFIG_FILE_NAME = "config.yml"
+  BASE_SCORES_DIR = "scores"
 
   DEFAULT_CONFIG = {
-    :scores_dir => "scores",
+    :scores => File.join(BASE_SCORES_DIR, "**", "*.score"),
     :tempo_sample_rate => 200,
     :audio_sample_rate => 44100, 
     :audio_sample_format => "int16"
@@ -35,6 +36,20 @@ class Project
     else
       DEFAULT_CONFIG
     end
+
+    # overrides from ENV
+    config.keys.each do |k|
+      k_str = k.to_s
+      if ENV.has_key? k_str
+        case k
+        when :tempo_sample_rate, :audio_sample_rate
+          config[k] = ENV[k_str].to_i
+        else
+          config[k] = ENV[k_str]
+        end
+      end
+    end
+
     check_config config
     return config
   end

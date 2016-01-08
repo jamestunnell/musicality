@@ -24,7 +24,7 @@ class Project
       unless Dir.exists?(dest_dir)
         raise "directory #{dest_dir} could not be created"
       end
-    end    
+    end
   end
 
   def create_gemfile
@@ -56,7 +56,7 @@ class Project
   end
 
   def create_scores_dir
-    scores_dir = File.join(dest_dir, Project::DEFAULT_CONFIG[:scores_dir])
+    scores_dir = File.join(dest_dir, Project::BASE_SCORES_DIR)
     Dir.mkdir(scores_dir)
   end
 end
