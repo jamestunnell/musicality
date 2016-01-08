@@ -88,9 +88,9 @@ describe Parsing::NoteNode do
   end
 
   context 'with marks' do
-    [[BEGIN_SLUR],[BEGIN_SLUR, BEGIN_TRIPLET],[BEGIN_TRIPLET]].each do |begin_marks|
+    [[BEGIN_SLUR],[]].each do |begin_marks|
       begin_marks_str = begin_marks.map {|m| m.to_s}.join
-      [[END_SLUR],[END_SLUR, END_TRIPLET],[END_TRIPLET]].each do |end_marks|
+      [[END_SLUR],[]].each do |end_marks|
         end_marks_str = end_marks.map {|m| m.to_s}.join
         describe '#to_note' do
           it 'should produce a Note with marks set correctly' do

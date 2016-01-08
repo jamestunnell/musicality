@@ -69,64 +69,6 @@ module Mark
     r0
   end
 
-  module BeginTriplet0
-    def to_mark; return Musicality::Mark::Triplet::Begin.new; end
-  end
-
-  def _nt_begin_triplet
-    start_index = index
-    if node_cache[:begin_triplet].has_key?(index)
-      cached = node_cache[:begin_triplet][index]
-      if cached
-        node_cache[:begin_triplet][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    if (match_len = has_terminal?("[", false, index))
-      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r0.extend(BeginTriplet0)
-      @index += match_len
-    else
-      terminal_parse_failure('"["')
-      r0 = nil
-    end
-
-    node_cache[:begin_triplet][start_index] = r0
-
-    r0
-  end
-
-  module EndTriplet0
-    def to_mark; return Musicality::Mark::Triplet::End.new; end
-  end
-
-  def _nt_end_triplet
-    start_index = index
-    if node_cache[:end_triplet].has_key?(index)
-      cached = node_cache[:end_triplet][index]
-      if cached
-        node_cache[:end_triplet][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    if (match_len = has_terminal?("]", false, index))
-      r0 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r0.extend(EndTriplet0)
-      @index += match_len
-    else
-      terminal_parse_failure('"]"')
-      r0 = nil
-    end
-
-    node_cache[:end_triplet][start_index] = r0
-
-    r0
-  end
-
 end
 
 class MarkParser < Treetop::Runtime::CompiledParser

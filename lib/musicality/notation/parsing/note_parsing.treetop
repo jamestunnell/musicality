@@ -6,23 +6,16 @@ grammar Note
   include Articulation
   include Link
   include Duration
-  include Mark
 
   rule note
-    begin_marks:(
-      (first:begin_triplet second:begin_slur?) / 
-      (first:begin_slur second:begin_triplet?)
-    )?
+    begin_slur:"("?
     duration
     more:(
       first_pl:pitch_link
       more_pl:("," pl:pitch_link)*
       art:articulation?
     )?
-    end_marks:(
-      (first:end_triplet second:end_slur?) / 
-      (first:end_slur second:end_triplet?)
-    )?
+    end_slur:")"?
     <NoteNode>
   end
 

@@ -3,7 +3,7 @@ module Musicality
 class Note
   SMALLEST_PIECE = Rational(1,256)
 
-  def to_lilypond sharpit = false
+  def to_lilypond sharpit = false, begins_triplet: false, ends_triplet: false
     subdurs = [1]*@duration.to_i + fractional_subdurs(SMALLEST_PIECE)
 
     piece_strs = []
@@ -63,11 +63,11 @@ class Note
       end
     end
 
-    if begins_triplet?
+    if begins_triplet
       piece_strs[0].prepend("\\tuplet 3/2 {")
     end
 
-    if ends_triplet?
+    if ends_triplet
       piece_strs[-1].concat("}")
     end
 

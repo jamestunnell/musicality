@@ -20,8 +20,6 @@ LINK_SYMBOLS = {
 MARK_SYMBOLS = {
   Mark::Slur::Begin => "(",
   Mark::Slur::End => ")",
-  Mark::Triplet::Begin => "[",
-  Mark::Triplet::End => "]",
 }
 
 end

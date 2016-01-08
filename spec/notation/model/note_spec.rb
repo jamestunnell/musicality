@@ -25,7 +25,7 @@ describe Note do
     
     it 'should assign :marks if given' do
       [
-        [], [BEGIN_SLUR, BEGIN_TRIPLET]
+        [], [BEGIN_SLUR], [END_SLUR]
       ].each do |marks|
         Note.quarter(marks: marks).marks.should eq(marks)
       end
@@ -131,7 +131,7 @@ describe Note do
           pitches,links = pitches_links_set
           if pitches.any?
             articulations.each do |art|
-              [[],[BEGIN_SLUR],[END_SLUR, BEGIN_TRIPLET]].each do |marks|
+              [[],[BEGIN_SLUR],[END_SLUR]].each do |marks|
                 notes.push Note.new(d, pitches, articulation: art, links: links, marks: marks)
               end
             end

@@ -13,18 +13,6 @@ grammar Mark
       def to_mark; return Musicality::Mark::Slur::End.new; end
     }
   end
-  
-  rule begin_triplet
-    "[" {
-      def to_mark; return Musicality::Mark::Triplet::Begin.new; end
-    }
-  end
-
-  rule end_triplet
-    "]" {
-      def to_mark; return Musicality::Mark::Triplet::End.new; end
-    }
-  end
 end
 
 end

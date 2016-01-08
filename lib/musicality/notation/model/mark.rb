@@ -26,18 +26,6 @@ class Mark
       def ends?; true; end
     end
   end
-
-  class Triplet < Mark
-    class Begin < Triplet
-      def begins?; true; end
-      def ends?; false; end
-    end
-
-    class End < Triplet
-      def begins?; false; end
-      def ends?; true; end
-    end
-  end
 end
 
 end

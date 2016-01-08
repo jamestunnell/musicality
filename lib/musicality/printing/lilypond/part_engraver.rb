@@ -14,6 +14,10 @@ class PartEngraver
     @part = (@transpose_interval == 0) ? part : part.transpose(@transpose_interval)
     @title = title
     @indent = INDENT
+
+    @triplet_flags = @part.notes.map do |note|
+      note.duration.to_r.denominator % 3 == 0
+    end
   end
 
   def increase_indent
@@ -50,7 +54,17 @@ class PartEngraver
   end
 
   def make_body sharpit
-    pieces = @part.notes.map {|n| n.to_lilypond(sharpit)}
+    i = 0
+    pieces = @part.notes.map do |n|
+      if @triplet_flags[i]
+        n.resize(n.duration * Rational(3,2)).to_lilypond(sharpit,
+          begins_triplet: i == 0 || !@triplet_flags[i-1],
+          ends_triplet: i == (@triplet_flags.size-1) || !@triplet_flags[i+1])
+      else
+        n.to_lilypond(sharpit)
+      end
+      i += 1
+    end
 
     output = ""
     while pieces.any?
@@ -82,23 +96,13 @@ class PartEngraver
     ranges = CLEF_RANGES.select {|clef,range| allowed_clefs.include?(clef) }
     range_scores = Hash.new(0)
 
-    in_triplet = false
     notes.each do |note|
-      if note.begins_triplet?
-        in_triplet = true
-      end
-
-      dur = note.duration * (in_triplet ? Rational(2,3) : 1)
       note.pitches.each do |p|
         ranges.each do |name,range|
           if p >= range.min && p <= range.max
-            range_scores[name] += dur
+            range_scores[name] += note.duration
           end
         end
-      end
-
-      if note.ends_triplet?
-        in_triplet = false
       end
     end
     range_score = range_scores.max_by {|range,score| score}

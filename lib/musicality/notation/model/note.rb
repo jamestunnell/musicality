@@ -75,14 +75,6 @@ class Note
     marks.count {|m| m.is_a?(Mark::Slur::End) } > 0
   end
 
-  def begins_triplet?
-    marks.count {|m| m.is_a?(Mark::Triplet::Begin) } > 0
-  end
-
-  def ends_triplet?
-    marks.count {|m| m.is_a?(Mark::Triplet::End) } > 0
-  end
-
   def to_s
     d = @duration.to_r
     if d.denominator == 1

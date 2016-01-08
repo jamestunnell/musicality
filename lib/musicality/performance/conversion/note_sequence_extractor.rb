@@ -3,7 +3,7 @@ module Musicality
 class NoteSequenceExtractor
   attr_reader :notes
   def initialize notes
-    prepare_notes(notes)
+    @notes = notes.map {|n| n.clone }
     mark_slurring
     remove_bad_links
     calculate_offsets
@@ -131,25 +131,6 @@ class NoteSequenceExtractor
       when Articulations::STACCATO then Separation::STACCATO
       when Articulations::STACCATISSIMO then Separation::STACCATISSIMO
       end
-    end
-  end
-
-  def prepare_notes notes
-    in_triplet = false
-    @notes = Array.new(notes.size) do |i|
-      note = notes[i]
-
-      if note.begins_triplet?
-        in_triplet = true
-      end
-      
-      new_note = in_triplet ? note.resize(note.duration * Rational(2,3)) : note.clone
-
-      if note.ends_triplet?
-        in_triplet = false
-      end
-
-      new_note
     end
   end
 

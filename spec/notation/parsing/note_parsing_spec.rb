@@ -12,7 +12,7 @@ describe Parsing::NoteParser do
     'with articulation' => ['/4C2.',"5/3Db3,Bb2,E5.",'/2D3,F4_'],
     'with accent' => ['/4C2','3/2Db3,Bb4'],
     'with links' => ['/2C2~','/2C2:D2','/4D4:E4,G4;A5.'],
-    'with marks' => ['(3/4Bb3]', '[/2F3,G3)', '[(2/4C3', '([1B2', '/3B2,C2)]', '2/3D4])'],
+    'with marks' => ['(3/4Bb3', '/2F3,G3)', '(2/4C3', '(1B2', '/3B2,C2)', '(2/3D4)'],
     'with single pitch + articulation + link + accent' => [
       '(3/4D2~','5/8F2;G2.','/8Db4:Db5','/3G4;B4_'],
     'with multiple pitches + articulation + links + accent' => [
@@ -23,8 +23,8 @@ describe Parsing::NoteParser do
     'duration + accent + link' => ['1/4;','/2:','2/3~'],
     'single pith with bad letter' => ['5/3Hb3'],
     'single pitch without octave' => ['/33E)'],
-    'begins marks at the end' => ['1Bb3(', '2Bb3['],
-    'end marks at the beginning ' => [']1B5', ')3C3']
+    'begins marks at the end' => ['1Bb3('],
+    'end marks at the beginning ' => [')3C3']
   }
   
   valid_cases.each do |descr, strs|
