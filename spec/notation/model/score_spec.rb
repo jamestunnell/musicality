@@ -64,32 +64,7 @@ describe Score do
       end
     end
   end
-  
-  describe '#max_part_duration' do
-    context 'no parts' do
-      it 'should return 0' do
-        Score.new.max_part_duration.should eq(0)
-      end
-    end
     
-    context 'one part' do
-      it 'should return the part duration' do
-        Score.new(parts: {"part1" => Part.new(Dynamics::PP,
-          notes: "/4 /4 /2 1".to_notes)
-        }).max_part_duration.should eq(2)
-      end
-    end
-
-    context 'two parts' do
-      it 'should return the part duration of the longer part' do
-        Score.new(parts: {"part1" => Part.new(Dynamics::PP,
-          notes: "/4 /4 /2 1".to_notes), "part2" => Part.new(Dynamics::MP,
-          notes: "4".to_notes)
-        }).max_part_duration.should eq(4)
-      end
-    end
-  end
-  
   describe '#valid?' do
     context 'non-Range objects' do
       it 'should return false' do
@@ -163,69 +138,26 @@ describe Score::Tempo do
     end
   end
   
-  describe '#measures_long' do
-    context 'with no meter changes' do
-      context 'with no parts' do
-        it 'should return 0' do
-          Score::Tempo.new(TWO_FOUR, 120).measures_long.should eq(0)
-        end
+  describe '#duration' do
+    context 'with no parts' do
+      it 'should return 0' do
+        Score::Tempo.new(TWO_FOUR, 120).duration.should eq(0)
       end
-
-      context 'with one part' do
-        it 'should return the duration of the part, in measures' do
-          Score::Tempo.new(TWO_FOUR, 120, parts: {
-            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes)
-          }).measures_long.should eq(3.5)
-        end
-      end
-      
-      context 'with two parts' do
-        it 'should return the duration of the longest part, in measures' do
-          Score::Tempo.new(TWO_FOUR, 120, parts: {
-            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
-          }).measures_long.should eq(4)
-        end
+    end
+    context 'with one part' do
+      it 'should return the duration of the part, in notes' do
+        Score::Tempo.new(TWO_FOUR, 120, parts: {
+          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes)
+        }).duration.should eq(1.75)
       end
     end
     
-    context 'with meter changes' do
-      it 'should return the duration of the longest part, in measures' do
-        Score::Tempo.new(TWO_FOUR, 120,
-          meter_changes: {
-            2 => Change::Immediate.new(FOUR_FOUR),
-          },
-          parts: {
-            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
-          }
-        ).measures_long.should eq(3)
-        
-        Score::Tempo.new(TWO_FOUR, 120,
-          meter_changes: {
-            2 => Change::Immediate.new(FOUR_FOUR),
-            4 => Change::Immediate.new(SIX_EIGHT),
-          },
-          parts: {
-            "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
-            "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1 /2".to_notes)
-          }
-        ).measures_long.should eq(3.5)
-      end
-    end
-    
-    context 'given specific note duration' do
-      it 'should change the given note duration to measures' do
-        score = Score::Tempo.new(TWO_FOUR, 120,
-            meter_changes: {
-              2 => Change::Immediate.new(FOUR_FOUR),
-              4 => Change::Immediate.new(SIX_EIGHT)
-        })
-        
-        { 1 => 2, 1.5 => 2.5, 2 => 3, 3 => 4, 3.75 => 5
-        }.each do |note_dur, meas_dur|
-          score.measures_long(note_dur).should eq(meas_dur)
-        end
+    context 'with two parts' do
+      it 'should return the duration of the longest part, in notes' do
+        Score::Tempo.new(TWO_FOUR, 120, parts: {
+          "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
+          "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
+        }).duration.should eq(2)
       end
     end
   end
@@ -258,8 +190,6 @@ describe Score::Tempo do
         :meter_changes => { 1 => Change::Immediate.new(5) } ],
       'non-immediate meter change' => [ FOUR_FOUR, 120,
         :meter_changes => { 1 => Change::Gradual.linear(TWO_FOUR,1) } ],
-      'non-integer meter change offset' => [ FOUR_FOUR, 120,
-        :meter_changes => { 1.1 => Change::Immediate.new(TWO_FOUR) } ],
       'invalid part' => [ FOUR_FOUR, 120, :parts => { "piano" => Part.new(-0.1) }],
       'invalid program' => [ FOUR_FOUR, 120, :program => [2..0] ],
     }.each do |context_str,args|
@@ -314,12 +244,12 @@ describe Score::Timed do
     end
   end
   
-  describe '#seconds_long' do
+  describe '#duration' do
     it 'should return the duration of the longest part' do
       Score::Timed.new(parts: {
         "abc" => Part.new(Dynamics::MF, notes: "/4 /4 /2 3/4".to_notes),
         "def" => Part.new(Dynamics::MF, notes: "/4 /4 /2 1".to_notes)
-      }).seconds_long.should eq(2)
+      }).duration.should eq(2)
     end
   end
 

@@ -36,26 +36,15 @@ class ScoreConverter
     if score.invalid?
       raise NotValidError, "Errors detected given score: #{score.errors}"
     end
-    mn_map = score.measure_note_map
-    new_parts = Hash[ score.parts.map do |name,part|
-      new_dcs = ScoreConverter.convert_changes(part.dynamic_changes, mn_map)
-      new_notes = part.notes.map {|n| n.clone } # note duration is already note-based
-      new_part = part.clone
-      new_part.notes = new_notes
-      new_part.dynamic_changes = new_dcs
-      [name, new_part]
-    end]      
-    new_program = ScoreConverter.convert_program(score.program, mn_map)
-    new_tempo_changes = ScoreConverter.convert_changes(score.tempo_changes, mn_map)
-    new_beat_durations = Hash[ score.beat_durations.map do |moff,bdur|
-      [mn_map[moff], Change::Immediate.new(bdur) ]
+    beat_duration_changes = Hash[ score.beat_durations.map do |noff,bdur|
+      [noff, Change::Immediate.new(bdur) ]
     end]
-    tempo_computer = ValueComputer.new(score.start_tempo, new_tempo_changes)
-    bdur_computer = ValueComputer.new(score.start_meter.beat_duration, new_beat_durations)
+    tempo_computer = ValueComputer.new(score.start_tempo, score.tempo_changes)
+    bdur_computer = ValueComputer.new(score.start_meter.beat_duration, beat_duration_changes)
     ntc = NoteTimeConverter.new(tempo_computer, bdur_computer, tempo_sample_rate)
 
-    @parts = new_parts
-    @program = new_program
+    @parts = Hash[ score.parts.map {|name,part| [name, part.clone] }]
+    @program = score.program.clone
     @note_time_map = ntc.note_time_map(note_offsets)
   end
   

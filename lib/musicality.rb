@@ -59,7 +59,6 @@ require 'musicality/notation/util/value_computer'
 require 'musicality/notation/conversion/tempo_conversion'
 require 'musicality/notation/conversion/change_conversion'
 require 'musicality/notation/conversion/note_time_converter'
-require 'musicality/notation/conversion/measure_note_map'
 require 'musicality/notation/conversion/score_converter'
 require 'musicality/notation/conversion/score_conversion'
 

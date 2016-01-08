@@ -57,7 +57,7 @@ class Score
       @start_key == other.start_key && @key_changes == other.key_changes
   end
   
-  def max_part_duration
+  def duration
     @parts.map {|name,part| part.duration }.max || 0.to_r
   end
   
@@ -66,14 +66,14 @@ class Score
   end
   
   class Timed < Score
-    def seconds_long
-      max_part_duration
-    end
-    alias duration seconds_long
   end
 
   # Tempo-based score with meter, bar lines, and a fixed pulse (beat).
-  # Offsets are measure-based, and tempo values are in beats-per-minute.
+  # 
+  # Offsets and durations are based on note duration, but note duration is
+  # determined by the tempo, which can change.
+  #
+  # Tempo values are in beats-per-minute.
   class Tempo < Score
     attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
 
@@ -102,34 +102,18 @@ class Score
       @start_meter == other.start_meter &&
       @meter_changes == other.meter_changes
     end
-    
-    def notes_long
-      max_part_duration
-    end
 
-    def measures_long note_dur = self.notes_long
-      noff_end = note_dur
-      noff_prev = 0.to_r
-      moff_prev, mdur_prev = 0.to_r, @start_meter.measure_duration
-      
-      @meter_changes.sort.each do |moff,change|
-        mdur = change.end_value.measure_duration
-        notes_elapsed = mdur_prev * (moff - moff_prev)
-        noff = noff_prev + notes_elapsed
-        
-        if noff >= noff_end
-          break
-        else
-          noff_prev = noff
-        end
-        
-        moff_prev, mdur_prev = moff, mdur
+    # Returns the measure duration of the most recent meter duration since the given note offset,
+    # or of the start meter if there are no meter changes.
+    def measure_duration note_offset = self.duration
+      if meter_changes.any?
+        candidates = meter_changes.select {|noff,change| noff <= note_offset }
+        candidates.max[1].end_value.measure_duration
+      else
+        start_meter.measure_duration
       end
-      return moff_prev + Rational(noff_end - noff_prev, mdur_prev)
     end
 
-    alias duration measures_long
-    
     private
     
     def check_start_tempo
@@ -160,11 +144,6 @@ class Score
       badtypes = @meter_changes.select {|k,v| !v.end_value.is_a?(Meter) }
       if badtypes.any?
         raise TypeError, "Found meter change values that are not Meter objects: #{badtypes}"
-      end
-
-      badoffsets = @meter_changes.select {|k,v| k != k.to_i }
-      if badoffsets.any?
-        raise NonIntegerError, "Found meter changes at non-integer offsets: #{badoffsets}"
       end
 
       nonzero_duration = @meter_changes.select {|k,v| !v.is_a?(Change::Immediate) }

@@ -23,14 +23,13 @@ class Score
   def notes part_notes
     raise ArgumentError, "No part notes given" if part_notes.empty?
 
-    durs = part_notes.values.map {|notes| notes.map {|n| n.duration }.inject(0,:+) }
-    durs_uniq = durs.uniq
+    durs_uniq = part_notes.values.map do |notes|
+      notes.map {|n| n.duration }.inject(0,:+)
+    end.uniq
     raise DurationMismatchError, "New part note durations do not all match" if durs_uniq.size > 1
     dur = durs_uniq.first
-    raise NonPositiveError, "Part note durations are not positive" if dur <= 0
 
-    a = self.duration
-    starting_part_dur = self.max_part_duration
+    a = starting_part_dur = self.duration
     part_notes.each do |part,notes|
       unless parts.has_key? part
         parts[part] = Part.new DEFAULT_START_DYNAMIC
@@ -46,7 +45,7 @@ class Score
 
     b = self.duration
     program.push a...b
-    a...b    
+    a...b
   end
 
   def dynamic_change new_dynamic, transition_dur: 0, offset: 0
