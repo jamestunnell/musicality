@@ -18,6 +18,7 @@ class Conductor
     bundles = bundles(selected_parts, lead_time)
     fpath = write_sc_code bundles, base_fpath
     exec_sc_code fpath, bundles.last.time, verbose
+    File.delete(fpath)
   end
 
   def bundles selected_parts = @performers.keys, lead_time
@@ -114,7 +115,7 @@ SCLANG
         when post_sclang_pid
           sclang_pid = $1.to_i
         when COMPLETION_MSG
-          Process.kill 'INT', sclang_pid
+          Process.kill 9, sclang_pid
         end
       end
     end
