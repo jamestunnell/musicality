@@ -21,8 +21,9 @@ class Project
     ps_task = Tasks::FileRaker::Visual.new(lilypond_task.files, :ps)
 
     outfiles = (
-        yaml_task.files + midi_task.files + supercollider_task.files + wav_task.files + 
-        aiff_task.files + flac_task.files + pdf_task.files + png_task.files + ps_task.files
+        yaml_task.files + lilypond_task.files + midi_task.files + supercollider_task.files + 
+        pdf_task.files + png_task.files + ps_task.files + 
+        wav_task.files + aiff_task.files + flac_task.files
     ).select {|fname| File.exists? fname }
     clean_task = Tasks::FileCleaner.new(outfiles)  
   end
