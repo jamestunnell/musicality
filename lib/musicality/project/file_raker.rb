@@ -97,7 +97,10 @@ class FileRaker < Rake::TaskLib
   class Visual < FileRaker
     def initialize lilypond_files, visual_file_type
       super(lilypond_files, visual_file_type, ".#{visual_file_type}") do |t|
-        sh "lilypond #{t.sources[0]} --#{visual_file_type}"
+        ly_fpath = t.sources[0]
+        out_dir = File.dirname(ly_fpath)
+        
+        sh "lilypond --output=\"#{out_dir}\" \"#{ly_fpath}\" --#{visual_file_type}"
       end
     end
   end
