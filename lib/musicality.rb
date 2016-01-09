@@ -110,6 +110,7 @@ require 'musicality/performance/midi/part_sequencer'
 require 'musicality/performance/midi/score_sequencer'
 require 'musicality/performance/midi/score_sequencing'
 
+require 'os'
 require 'musicality/performance/supercollider/message'
 require 'musicality/performance/supercollider/bundle'
 require 'musicality/performance/supercollider/server'

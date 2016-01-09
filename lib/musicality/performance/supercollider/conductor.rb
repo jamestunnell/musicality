@@ -115,7 +115,11 @@ SCLANG
         when post_sclang_pid
           sclang_pid = $1.to_i
         when COMPLETION_MSG
-          Process.kill 9, sclang_pid
+          if OS.windows?
+            Process.kill 9, sclang_pid
+          else
+            Process.kill "INT", sclang_pid
+          end
         end
       end
     end

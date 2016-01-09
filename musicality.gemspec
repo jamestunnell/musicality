@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "treetop", "~> 1.5"
   spec.add_dependency 'midilib', '~> 2.0'
   spec.add_dependency 'docopt', '~> 0.5'
+  spec.add_dependency 'os', '~> 0.9'
 
   spec.required_ruby_version = '>= 2.0'
 end
