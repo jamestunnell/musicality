@@ -1,3 +1,10 @@
+### 0.10.1 / 2016-01-08
+* Kill sclang process with Process.kill(9,pid) when running on Windows. Otherwise use Process.kill('INT',pid)
+* Delete .scd after it is processed
+* Fix error in PartEngraver#make_body
+* Specify output directory in lilypond command line
+* Add lilypond .ly files to list of output files to be cleaned
+
 ### 0.10.0 / 2016-01-08
 * Remove uneeded gem dependency
 * Treat all offsets and durations in Score::Tempo as note offsets. Don't check if meter change offsets are integer anymore.
