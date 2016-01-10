@@ -3,7 +3,10 @@ module SuperCollider
 module SynthDefs
 
 VOLUME_CONTROL = SynthDef.new(name: "volume_control", params: { :in => nil, :out => nil, :control => nil },
-  body: "  Out.ar(out, In.ar(in) * In.kr(control));",
+  body: <<-SCLANG,
+  var sig = In.ar([in,in+1]) * In.kr(control);
+  Out.ar(out,sig);
+SCLANG
   credit: "James Tunnell",
 )
  
