@@ -25,6 +25,7 @@ Options:
   --srate=SRATE  Sampling rate for converting tempo-based score to time-based
                  score, and for sampling dynamic change values [default: 200]
   --leadtime=LT  Time before performance begins (must be > 0) [default: 0.1]
+  --keepcode     Do not delete the intermediate SuperCollider code file (.scd)
   -h --help      Show this screen.
   --version      Show version.
 DOCOPT
@@ -63,7 +64,8 @@ end
 
 VERBOSE = args["--verbose"]
 PARTS = args["PART"]
-LEADTIME = args["--leadtime"].to_f
+LEAD_TIME = args["--leadtime"].to_f
+KEEP_CODE = args["--keepcode"]
 
 require 'yaml'
 include Musicality
@@ -86,7 +88,7 @@ File.open(SCORE_FILE) do |fin|
   if score.valid?
     conductor = SuperCollider::Conductor.new(score)
 
-    perform_kwargs = { :verbose => VERBOSE, :lead_time => LEADTIME }
+    perform_kwargs = { :verbose => VERBOSE, :lead_time => LEAD_TIME, :keep_code => KEEP_CODE }
     if PARTS.any?
       perform_kwargs[:selected_parts] = PARTS
     end

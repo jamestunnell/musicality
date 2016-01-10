@@ -14,11 +14,11 @@ class Conductor
     end]
   end
 
-  def perform base_fpath, selected_parts: @performers.keys, verbose: false, lead_time: 0.1
+  def perform base_fpath, selected_parts: @performers.keys, verbose: false, lead_time: 0.1, keep_code: false
     bundles = bundles(selected_parts, lead_time)
     fpath = write_sc_code bundles, base_fpath
     exec_sc_code fpath, bundles.last.time, verbose
-    File.delete(fpath)
+    File.delete(fpath) unless keep_code
   end
 
   def bundles selected_parts = @performers.keys, lead_time
