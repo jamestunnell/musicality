@@ -82,6 +82,7 @@ require 'musicality/composition/generation/counterpoint_generator'
 require 'musicality/composition/generation/random_rhythm_generator'
 
 require 'musicality/composition/dsl/score_methods'
+require 'musicality/composition/dsl/part_methods'
 require 'musicality/composition/dsl/score_dsl'
 
 require 'musicality/composition/convenience_methods'
