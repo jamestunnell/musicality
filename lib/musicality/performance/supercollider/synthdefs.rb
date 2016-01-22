@@ -1033,7 +1033,7 @@ CYMBAL_808 = SynthDef.new(name: "cymbal808", params: { :out => 0, :baseFreq => 3
   signal = signal + FreeVerb.ar(signal);
   signal = signal * EnvGen.ar(Env.new([0, 1, 0.4, 0, 0], [2, time, 50, 500], [0, -0.5, 0, -50]), timeScale:(1/1000), doneAction:2);
   signal = [signal, DelayN.ar(signal, 0.005, 0.005)];
-  OffsetOut.ar(out, signal*4*amp);
+  OffsetOut.ar(out, signal*amp ! 2);
 SCLANG
   credit: "Published on sc-users 2007-08-25 by Ryan Brown",
   source: "https://github.com/supercollider-quarks/SynthDefPool",
@@ -1574,7 +1574,7 @@ SCLANG
 )
 
 
-SynthDef.new(name: "sawpulse", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
+SAWPULSE = SynthDef.new(name: "sawpulse", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
   body: <<-SCLANG,
     var sig, plfo, fcurve;
     plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
@@ -1591,7 +1591,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "sawpulse2", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
+SAWPULSE2 = SynthDef.new(name: "sawpulse2", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
   body: <<-SCLANG,
     var sig, plfo, fcurve;
     plfo = SinOsc.kr(plfofreq, mul:mw, add:1);
@@ -1606,7 +1606,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "sinepluck", params: { :out => 0, :freq => 440, :amp => 1, :dur => nil },
+SINEPLUCK = SynthDef.new(name: "sinepluck", params: { :out => 0, :freq => 440, :amp => 1, :dur => nil },
   body: <<-SCLANG,
   var mod,tone;
   amp = amp * 0.8;
@@ -1620,7 +1620,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "snare", params: { :amp => 1, :dur => 0.05, :out => 0 },
+SNARE3 = SynthDef.new(name: "snare", params: { :amp => 1, :dur => 0.05, :out => 0 },
   body: <<-SCLANG,
 dur = dur * 16;
 Out.ar(out, amp * XLine.ar(2,1/1000,dur) * BPF.ar(PinkNoise.ar(0.8), XLine.ar(20000,1000,dur, doneAction:2), 0.8).dup);
@@ -1628,7 +1628,7 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SynthDef.new(name: "kick", params: { :out => 0, :amp => 1, :dur => 0.05 },
+KICK1 = SynthDef.new(name: "kick", params: { :out => 0, :amp => 1, :dur => 0.05 },
   body: <<-SCLANG,
 var tone;
 tone = SinOsc.ar(XLine.ar(800,2,dur*4, mul: 0.2, doneAction:2));
@@ -1638,7 +1638,7 @@ SCLANG
 )
 
 
-SynthDef.new(name: "poly1", params: { :out => 0, :gate => 1, :freq => 440 },
+POLY1 = SynthDef.new(name: "poly1", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv,fEnv,osc1, osc2,flt;
   aEnv=EnvGen.kr(Env.asr(0.2,1,0.1), gate, doneAction:2);
