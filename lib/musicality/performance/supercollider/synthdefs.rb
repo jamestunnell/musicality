@@ -9,7 +9,7 @@ VOLUME_CONTROL = SynthDef.new(name: "volume_control", params: { :in => nil, :out
 SCLANG
   credit: "James Tunnell",
 )
- 
+
 VOLUME_CHANGE = SynthDef.new(name: "volume_change", params: { :vol_bus => nil, :vol => nil, :dur => nil },
   body: "  Out.kr(vol_bus, Line.kr(In.kr(vol_bus), vol, dur));",
   credit: "James Tunnell",
@@ -206,8 +206,6 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-// 
-
 ESM = SynthDef.new(name: "esm", params: { :freq => 440, :mix => 0.5, :glide => 0, :cutoff => 20000, :rq => 1, :fdec => 0, :fint => 1,
   :vel => 1, :fvel => 1, :t_gate => 1, :vdec => 1, :vvel => 0, :od => 0, :mul => 0.1, :pan => 0, :out => 0 },
   body: <<-SCLANG,
@@ -280,7 +278,7 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-PROPHET5_STRINGS = SynthDef.new(name: "prophet5pwmstrings", params: { :out => 0, :freq => 440, :amp => 0.8, 
+PROPHET5_STRINGS = SynthDef.new(name: "prophet5pwmstrings", params: { :out => 0, :freq => 440, :amp => 0.8,
     :gate => 1, :lforate => 3, :lfowidth => 0.1, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, pulse, filter, env;
@@ -301,7 +299,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-OSC_WOBBLE = SynthDef.new(name: "singleoscillatorwobble", params: { :out => 0, :freq => 440, :amp => 0.8, 
+OSC_WOBBLE = SynthDef.new(name: "singleoscillatorwobble", params: { :out => 0, :freq => 440, :amp => 0.8,
     :gate => 1, :lforate => 10, :lfowidth => 0.5, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, pulse, filter, env;
@@ -322,7 +320,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-TRI_BELLS = SynthDef.new(name:"trianglewavebells", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+TRI_BELLS = SynthDef.new(name:"trianglewavebells", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :lforate => 10, :lfowidth => 0.0, :cutoff => 100, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var osc1, osc2, vibrato, filter, env;
@@ -370,7 +368,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-MOOG_BASS = SynthDef.new(name: "moogbass", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+MOOG_BASS = SynthDef.new(name: "moogbass", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :cutoff => 1000, :gain => 2.0, :lagamount => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -391,7 +389,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-MOOG_BASS2 = SynthDef.new(name: "moogbass2", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+MOOG_BASS2 = SynthDef.new(name: "moogbass2", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :attackTime => 0.2, :fenvamount => 0.5, :cutoff => 1000, :gain => 2.0, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -413,7 +411,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :lforate => 5900, :lfowidth => 0.01, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, saw, filter, env;
@@ -435,7 +433,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS_FOUNDATION = SynthDef.new(name: "bassfoundation", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+BASS_FOUNDATION = SynthDef.new(name: "bassfoundation", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :cutoff => 1000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -456,7 +454,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS_HIGHEND = SynthDef.new(name: "basshighend", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+BASS_HIGHEND = SynthDef.new(name: "basshighend", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :cutoff => 3000, :rq => 0.1, :drive => 2.0, :pan => 0.0 },
   body: <<-SCLANG,
   var osc, filter, env, filterenv;
@@ -492,7 +490,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-WINWOOD_LEAD = SynthDef.new(name: "winwoodlead", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1, 
+WINWOOD_LEAD = SynthDef.new(name: "winwoodlead", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :cutoff => 8000, :rq => 0.8, :lfowidth => 0.01, :lforate => 8, :lagamount => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var pulse, filter, env, lfo;
@@ -515,7 +513,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SITUATION_SYNTH = SynthDef.new(name: "situationsynth", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+SITUATION_SYNTH = SynthDef.new(name: "situationsynth", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
     :cutoff => 8000, :rq => 0.8, :lfowidth => 0.001, :lforate => 3.3, :pan => -0.1 },
   body: <<-SCLANG,
   var pulse, filter, env, filterenv, lfo;
@@ -530,7 +528,7 @@ SITUATION_SYNTH = SynthDef.new(name: "situationsynth", params: { :out => 0, :fre
 SCLANG
 )
 
-RES_SQUARES = SynthDef.new(name: "ressquares", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+RES_SQUARES = SynthDef.new(name: "ressquares", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
     :cutoff => 8000, :rq => 0.8, :pan => -0.1 },
   body: <<-SCLANG,
   var pulse, filter, env;
@@ -551,7 +549,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-EIGHTTOEIGHT_KICK = SynthDef.new(name: "eightoeightkick", params: { :out => 0, :freq => 440, :amp => 0.1, 
+EIGHTTOEIGHT_KICK = SynthDef.new(name: "eightoeightkick", params: { :out => 0, :freq => 440, :amp => 0.1,
     :ringTime => 10.0, :releaseTime => 1.0, :distortion => 0.1, :pan => -0.1 },
   body: <<-SCLANG,
   var impulse, filter, env;
@@ -572,7 +570,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
     :lforate => 4.85, :lfowidth => 0.1, :cutoff => 5000, :rq => 0.25, :pan => 0.0 },
   body: <<-SCLANG,
   //tone wheel organ emulation via two oscillators pp. 50-51
@@ -596,7 +594,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-EVERYTHING_RHODES = SynthDef.new(name: "everythingrhodes", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1, 
+EVERYTHING_RHODES = SynthDef.new(name: "everythingrhodes", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
     :lforate => 1.85, :lfowidth => 0.5, :cutoff => 2000, :rq => 0.2, :pan => 0.0 },
   body: <<-SCLANG,
   var pulse, filter, env;
@@ -617,7 +615,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-SPACE_THEREMIN = SynthDef.new(name: "spacetheremin", params: { :out => 0, :freq => 440, :amp => 0.1, 
+SPACE_THEREMIN = SynthDef.new(name: "spacetheremin", params: { :out => 0, :freq => 440, :amp => 0.1,
     :gate => 1, :lforate => 6, :lfowidth => 0.5, :cutoff => 4000, :rq => 0.25, :lagTime => 0.1, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, osc, filter, env;
@@ -638,7 +636,7 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-FAT_VELOCITY_BASS = SynthDef.new(name: "fatvelocitybass", params: { :out => 0, :freq => 440, :amp => 0.5, 
+FAT_VELOCITY_BASS = SynthDef.new(name: "fatvelocitybass", params: { :out => 0, :freq => 440, :amp => 0.5,
     :gate => 1, :cutoff => 2000, :rq => 0.15, :lagTime => 0.01, :pan => 0.0 },
   body: <<-SCLANG,
   var lfo, osc, filter, env;
@@ -993,7 +991,7 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CS80_LEAD_MH = SynthDef.new(name: "cs80lead_mh", params: { :freq => 880, :amp => 0.5, :att => 0.75, :decay => 0.5, 
+CS80_LEAD_MH = SynthDef.new(name: "cs80lead_mh", params: { :freq => 880, :amp => 0.5, :att => 0.75, :decay => 0.5,
     :sus => 0.8, :rel => 1.0, :fatt => 0.75, :fdecay => 0.5, :fsus => 0.8, :frel => 1.0, :cutoff => 200, :pan => 0,
     :dtune => 0.002, :vibrate => 4, :vibdepth => 0.015, :gate => 1, :ratio => 1,:out => 0 },
   body: <<-SCLANG,

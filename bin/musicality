@@ -3,10 +3,18 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-The 'new' subcommand wll create a new musicality project.
+The 'new' subcommand wll create a new musicality project in the given directory.
+If the given directory does not exist then it will be created. If it exists
+then it must be empty or else the command will abort. 
+
+The 'update' subcommand will update/restore the project files (Gemfile,
+Rakefile, and config.yml) while preserving any modifications. Unless a
+directory is specified, the current working directory is assumed to be the
+project directory.
 
 Usage:
   #{exe_name} new PROJECT_DIR [options]
+  #{exe_name} update [PROJECT_DIR] [options]
   #{exe_name} -h | --help
   #{exe_name} --version
 
@@ -36,4 +44,7 @@ end
 
 if args["new"]
   Musicality::Project.new(args["PROJECT_DIR"])
+elsif args["update"]
+  project_dir = args["PROJECT_DIR"] || Dir.pwd
+  Musicality::Project.update(project_dir)
 end
