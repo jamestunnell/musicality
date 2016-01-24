@@ -17,29 +17,33 @@ class Project
   end
 
   def initialize dest_dir
-    Project.create_project_dir(dest_dir)
-    Project.create_scores_dir(dest_dir)
-    Project.create_gemfile(dest_dir)
-    Project.create_rakefile(dest_dir)
-    Project.create_config(dest_dir)
+    Project.create_project_dir_if_needed(dest_dir)
+    Project.create_scores_dir_if_needed(dest_dir)
+    Project.update(dest_dir)
   end
 
   def self.update dest_dir
     if File.exists?(gemfile_path(dest_dir))
+      puts "Updating Gemfile"
       update_gemfile(dest_dir)
     else
+      puts "Creating Gemfile"
       create_gemfile(dest_dir)
     end
 
     if File.exists?(rakefile_path(dest_dir))
+      puts "Updating Rakefile"
       update_rakefile(dest_dir)
     else
+      puts "Creating Rakefile"
       create_rakefile(dest_dir)
     end
 
     if File.exists?(config_path(dest_dir))
+      puts "Updating config.yml"
       update_config(dest_dir)
     else
+      puts "Creating config.yml"
       create_config(dest_dir)
     end
   end
@@ -56,12 +60,11 @@ class Project
     File.join(dest_dir,"Rakefile")
   end
 
-  def self.create_project_dir(dest_dir)
-    if Dir.exists? dest_dir
-      unless Dir.glob(File.join(dest_dir,"*")).empty?
-        raise ArgumentError, "existing directory #{dest_dir} is not empty."
-      end
+  def self.create_project_dir_if_needed(dest_dir)
+    if Dir.exists?(dest_dir)
+      puts "Project directory already exists"
     else
+      puts "Creating project directory #{dest_dir}"
       Dir.mkdir(dest_dir)
       unless Dir.exists?(dest_dir)
         raise "directory #{dest_dir} could not be created"
@@ -69,9 +72,17 @@ class Project
     end
   end
 
-  def self.create_scores_dir(dest_dir, scores_dir = Project::BASE_SCORES_DIR)
+  def self.create_scores_dir_if_needed(dest_dir, scores_dir = Project::BASE_SCORES_DIR)
     scores_dir = File.join(dest_dir, scores_dir)
-    Dir.mkdir(scores_dir)
+    if Dir.exists? scores_dir
+      puts "Scores directory already exists"
+    else
+      puts "Creating scores directory #{scores_dir}"
+      Dir.mkdir(scores_dir)
+      unless Dir.exists?(scores_dir)
+        raise "directory #{scores_dir} could not be created"
+      end
+    end
   end
 
   #

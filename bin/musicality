@@ -5,7 +5,7 @@ exe_name = File.basename(__FILE__)
 doc = <<DOCOPT
 The 'new' subcommand wll create a new musicality project in the given directory.
 If the given directory does not exist then it will be created. If it exists
-then it must be empty or else the command will abort. 
+then any existing project files will be updated as under the update subcommand.
 
 The 'update' subcommand will update/restore the project files (Gemfile,
 Rakefile, and config.yml) while preserving any modifications. Unless a
@@ -19,7 +19,7 @@ Usage:
   #{exe_name} --version
 
 Arguments:
-  PROJECT_DIR Path of an empty directory or directory to be created
+  PROJECT_DIR project root directory
 
 Options:
   -h --help     Show this screen.
