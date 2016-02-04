@@ -2,10 +2,11 @@ module Musicality
 
 class Project
   CONFIG_FILE_NAME = "config.yml"
-  BASE_SCORES_DIR = "scores"
+  SCORES_DIR = "scores"
+  SCORE_EXT = ".score"
+  OUT_DIR = "output"
   SAMPLE_FORMATS = ["int8", "int16", "int24", "int32", "mulaw", "alaw", "float"]
   DEFAULT_CONFIG = {
-    :scores => File.join(BASE_SCORES_DIR, "**", "*.score"),
     :tempo_sample_rate => 200,
     :audio_sample_rate => 44100,
     :audio_sample_format => "int16"
@@ -72,7 +73,7 @@ class Project
     end
   end
 
-  def self.create_scores_dir_if_needed(dest_dir, scores_dir = Project::BASE_SCORES_DIR)
+  def self.create_scores_dir_if_needed(dest_dir, scores_dir = Project::SCORES_DIR)
     scores_dir = File.join(dest_dir, scores_dir)
     if Dir.exists? scores_dir
       puts "Scores directory already exists"

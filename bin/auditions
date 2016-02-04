@@ -1,0 +1,147 @@
+#!/usr/bin/env ruby
+
+exe_name = File.basename(__FILE__)
+
+doc = <<DOCOPT
+If the -i/--interactive flag is not set, the audition output files are simply
+created and then left for the user to play and delete on their own.
+
+If the -i/--interactive flag is set, the audition output files are played under
+user manual control. The user can replay any file, skip back/forth between
+files, delete files that don't sound good, and finally quit when done, getting a
+report of the remaining hopefuls. VLC media player must be installed for this
+mode to work.
+
+Usage:
+  #{exe_name} AUDITION_FILE SCORE_FILE [options]
+
+Arguments:
+  AUDITION_FILE  Audition specification file (interpreted using AuditionDSL::load)
+  SCORE_FILE     Score YAML file (packed as a Hash or not)
+
+Options:
+  -i --interactive  Play audition files under user control
+  --outdir=OUTD     Dir where files will be put (defaults to same dir as
+                    audition file). Will be created if needed.
+  --format=FORMAT   Audio file format to output [default: flac]
+  -h --help         Show this screen.
+  --version         Show version.
+DOCOPT
+
+require 'docopt'
+begin
+  args = Docopt::docopt(doc)
+  puts args
+rescue Docopt::Exit => e
+  puts e.message
+  exit
+end
+
+require 'musicality'
+
+if args["--version"]
+  puts "#{exe_name} from musicality v#{Musicality::VERSION}"
+  exit
+end
+
+SCORE_FILE = args["SCORE_FILE"]
+unless File.exists? SCORE_FILE
+  puts "Score file #{SCORE_FILE} does not exist. Aborting."
+  exit
+end
+
+AUDITION_FILE = args["AUDITION_FILE"]
+unless File.exists? AUDITION_FILE
+  puts "Audition file #{AUDITION_FILE} does not exist. Aborting."
+  exit
+end
+
+require 'fileutils'
+
+if args["--outdir"]
+  OUTDIR = args["--outdir"]
+  unless Dir.exists? OUTDIR
+    puts "Output directory #{OUTDIR} does not exist. Creating."
+    FileUtils.mkdir_p OUTDIR
+    unless Dir.exists? OUTDIR
+      puts "Output directory #{OUTDIR} could not be created. Aborting."
+      exit
+    end
+  end
+else
+  OUTDIR = File.dirname(AUDITION_FILE)
+end
+
+INTERACTIVE = args["--interactive"]
+AUDIO_FORMAT = args["--format"].downcase
+TEMPO_SAMPLE_RATE = 200
+ALLOWED_FNAME_SYMBOLS = /[A-Za-z0-9_]/
+
+unless ["flac","wav","aiff"].include?(AUDIO_FORMAT)
+  puts "Unsupported audio format #{AUDIO_FORMAT}. Aborting."
+  exit
+end
+
+require 'yaml'
+include Musicality
+
+print "Reading file '#{SCORE_FILE}'..."
+score = YAML.load(File.read(SCORE_FILE))
+
+if score.is_a? Hash
+  score = score.unpack
+end
+puts "done"
+
+print "Reading file '#{AUDITION_FILE}'..."
+auditions = AuditionDSL.load(AUDITION_FILE).auditions
+puts "done"
+
+auditions.each do |audition|
+  unless score.parts.has_key? audition.part_name
+    puts "Score does not have part #{audition.part_name} for audition. Aborting."
+    exit
+  end
+
+  score.program = audition.program
+  unless score.is_a? Score::Timed
+    print "Converting to timed score..."
+    score = score.to_timed(TEMPO_SAMPLE_RATE)
+    puts "done"
+  end
+
+  unless score.valid?
+    puts "Score is not valid. See errors:"
+    puts score.errors.join("\n")
+    exit
+  end
+
+  base_fpath = "#{OUTDIR}/#{audition.part_name}_"
+
+  audition.performers.each do |name, sc_settings|
+    if /[\W]/ =~ name
+      puts "Replacing Non-word characters found in #{name} with underscores."
+      name = name.gsub(/[\W]/,"_")
+    end
+
+    score.parts[audition.part_name].settings = [ sc_settings ]
+    conductor = SuperCollider::Conductor.new(score)
+
+    base_fpath2 = base_fpath + name
+    conductor.perform(base_fpath2)
+
+    input_fpath = base_fpath2 + ".osc"
+    output_fpath = base_fpath2 + "." + AUDIO_FORMAT
+
+    print "Rendering #{output_fpath}..."
+    `scsynth -N #{input_fpath} _ #{output_fpath} 44100 #{AUDIO_FORMAT} int16`
+    puts "done"
+    File.delete(input_fpath)
+  end
+
+  # if INTERACTIVE
+  #   # TODO
+  #   # In interactive mode each file is performed and played back
+  #   # under user control
+  # ends
+end
