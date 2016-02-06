@@ -56,7 +56,13 @@ class Score
       end
     end
   end
-  
+
+  def audition part_name, program, &block
+    audition = Audition.new(part_name, program)
+    audition.instance_eval(&block)
+    @auditions.push audition
+  end
+
   class Tempo < Score
     def tempo_change new_tempo, transition_dur: 0, offset: 0
       if transition_dur == 0
@@ -65,7 +71,7 @@ class Score
         tempo_changes[self.duration + offset] = Change::Gradual.linear(new_tempo, transition_dur)
       end
     end
-    
+
     def meter_change new_meter, offset: 0
       meter_changes[self.duration + offset] = Change::Immediate.new(new_meter)
     end

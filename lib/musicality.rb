@@ -26,6 +26,7 @@ require 'musicality/notation/model/meter'
 require 'musicality/notation/model/meters'
 require 'musicality/notation/model/key'
 require 'musicality/notation/model/keys'
+require 'musicality/notation/model/audition'
 require 'musicality/notation/model/score'
 
 require 'treetop'
@@ -84,8 +85,6 @@ require 'musicality/composition/generation/random_rhythm_generator'
 require 'musicality/composition/dsl/score_methods'
 require 'musicality/composition/dsl/part_methods'
 require 'musicality/composition/dsl/score_dsl'
-require 'musicality/composition/dsl/part_audition'
-require 'musicality/composition/dsl/audition_dsl'
 
 require 'musicality/composition/convenience_methods'
 

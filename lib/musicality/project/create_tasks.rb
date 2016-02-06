@@ -20,10 +20,10 @@ module Musicality
     png_task = Tasks::FileRaker::Visual.new(lilypond_task.files, :png)
     ps_task = Tasks::FileRaker::Visual.new(lilypond_task.files, :ps)
 
-    auditions_default_task = Tasks::Auditions.new score_files, yaml_task.files
-    auditions_flac_task = Tasks::Auditions::FLAC.new score_files, yaml_task.files
-    auditions_wav_task = Tasks::Auditions::WAV.new score_files, yaml_task.files
-    auditions_aiff_task = Tasks::Auditions::AIFF.new score_files, yaml_task.files
+    auditions_default_task = Tasks::Auditions.new yaml_task.files
+    auditions_flac_task = Tasks::Auditions.new yaml_task.files, "flac"
+    auditions_wav_task = Tasks::Auditions.new yaml_task.files, "wav"
+    auditions_aiff_task = Tasks::Auditions.new yaml_task.files, "aiff"
 
     outfiles = (
         yaml_task.files + lilypond_task.files + midi_task.files + supercollider_task.files +

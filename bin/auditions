@@ -3,7 +3,7 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-Creates audition audio files from the audition specification.
+Creates audition audio files from the given score's auditions.
 
 In the default (non-interactive) mode, the audition output files are simply
 created and then left for the user to play and delete on their own.
@@ -32,10 +32,9 @@ commands at any time:
   - quit:   Stop the audition.
 
 Usage:
-  #{exe_name} AUDITION_FILE SCORE_FILE [options]
+  #{exe_name} SCORE_FILE [options]
 
 Arguments:
-  AUDITION_FILE  Audition specification file (interpreted using AuditionDSL::load)
   SCORE_FILE     Score YAML file (packed as a Hash or not)
 
 Options:
@@ -69,12 +68,6 @@ unless File.exists? SCORE_FILE
   exit
 end
 
-AUDITION_FILE = args["AUDITION_FILE"]
-unless File.exists? AUDITION_FILE
-  puts "Audition file #{AUDITION_FILE} does not exist. Aborting."
-  exit
-end
-
 require 'fileutils'
 
 if args["--outdir"]
@@ -88,7 +81,7 @@ if args["--outdir"]
     end
   end
 else
-  OUTDIR = File.dirname(AUDITION_FILE)
+  OUTDIR = File.dirname(SCORE_FILE)
 end
 
 INTERACTIVE = args["--interactive"]
@@ -112,13 +105,11 @@ if score.is_a? Hash
 end
 puts "done"
 
-print "Reading file '#{AUDITION_FILE}'..."
-auditions = AuditionDSL.load(AUDITION_FILE).auditions
-puts "done"
-
 require 'open3'
 
-auditions.each do |audition|
+score.auditions.each do |audition|
+  puts "Beginning audition for part '#{audition.part_name}'"
+
   unless score.parts.has_key? audition.part_name
     puts "Score does not have part #{audition.part_name} for audition. Aborting."
     exit

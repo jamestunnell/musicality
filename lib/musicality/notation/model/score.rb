@@ -10,7 +10,7 @@ class Score
   special_packing(:sections){|s| Hash[ s.map {|name,range| [name,range.to_s] } ]}
   special_unpacking(:sections){|s| Hash[ s.map {|name,str| [name,parse_numeric_range(str)] } ]}
 
-  attr_accessor :parts, :sections, :program, :start_key, :key_changes
+  attr_accessor :parts, :sections, :program, :start_key, :key_changes, :auditions
   attr_writer :title, :composer
 
   def title value = nil
@@ -29,7 +29,7 @@ class Score
     end
   end
 
-  def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}
+  def initialize parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}, auditions: []
     @parts = parts
     @program = program
     @title = title
@@ -37,6 +37,7 @@ class Score
     @sections = sections
     @start_key = start_key
     @key_changes = key_changes
+    @auditions = auditions
     yield(self) if block_given?
   end
 
@@ -78,13 +79,13 @@ class Score
     attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
 
     # See Score#initialize for remaining kwargs
-    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}
+    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}, auditions: []
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
       @start_meter = start_meter
       @meter_changes = meter_changes
 
-      super(parts: parts, program: program, title: title, composer: composer, sections: sections, start_key: start_key, key_changes: key_changes)
+      super(parts: parts, program: program, title: title, composer: composer, sections: sections, start_key: start_key, key_changes: key_changes, auditions: auditions)
     end
 
     def check_methods

@@ -1,6 +1,6 @@
 module Musicality
 
-class PartAudition
+class Audition
   attr_reader :part_name, :program, :performers
   def initialize part_name, program
     @part_name = part_name
