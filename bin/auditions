@@ -3,14 +3,33 @@
 exe_name = File.basename(__FILE__)
 
 doc = <<DOCOPT
-If the -i/--interactive flag is not set, the audition output files are simply
+Creates audition audio files from the audition specification.
+
+In the default (non-interactive) mode, the audition output files are simply
 created and then left for the user to play and delete on their own.
 
-If the -i/--interactive flag is set, the audition output files are played under
-user manual control. The user can replay any file, skip back/forth between
-files, delete files that don't sound good, and finally quit when done, getting a
-report of the remaining hopefuls. VLC media player must be installed for this
-mode to work.
+In the interactive audition mode, audition files will be played under control of
+the user. Each audition file will have a status associated with it, and will be
+one of:
+  - undecided
+  - rejected
+  - accepted
+
+Playback will continue as long as there are still undecided auditions.
+Once an audition is marked accepted/rejected it will be removed from the
+playlist. When the audition ends, the final status of each audition will be
+displayed. The user will then have the option of deleting the rejected
+audition files.
+
+During the interactive audition mode, the user can enter one of the following
+commands at any time:
+  - accept: Accept the current audition and start playing the next audition
+            under consideration.
+  - reject: Reject the current audition and start playing the next audition
+            under consideration.
+  - prev:   Play the previous audition that is still under consideration.
+  - next:   Skip to the next audition that is still under consideration.
+  - quit:   Stop the audition.
 
 Usage:
   #{exe_name} AUDITION_FILE SCORE_FILE [options]
@@ -20,10 +39,10 @@ Arguments:
   SCORE_FILE     Score YAML file (packed as a Hash or not)
 
 Options:
-  -i --interactive  Play audition files under user control
+  -i --interactive  Enable interactive mode
   --outdir=OUTD     Dir where files will be put (defaults to same dir as
                     audition file). Will be created if needed.
-  --format=FORMAT   Audio file format to output [default: flac]
+  --format=FORMAT   Audio file format to output. Valid formats are FLAC, WAV, and AIFF [default: FLAC]
   -h --help         Show this screen.
   --version         Show version.
 DOCOPT
@@ -97,6 +116,8 @@ print "Reading file '#{AUDITION_FILE}'..."
 auditions = AuditionDSL.load(AUDITION_FILE).auditions
 puts "done"
 
+require 'open3'
+
 auditions.each do |audition|
   unless score.parts.has_key? audition.part_name
     puts "Score does not have part #{audition.part_name} for audition. Aborting."
@@ -118,6 +139,7 @@ auditions.each do |audition|
 
   base_fpath = "#{OUTDIR}/#{audition.part_name}_"
 
+  output_files = []
   audition.performers.each do |name, sc_settings|
     if /[\W]/ =~ name
       puts "Replacing Non-word characters found in #{name} with underscores."
@@ -128,7 +150,7 @@ auditions.each do |audition|
     conductor = SuperCollider::Conductor.new(score)
 
     base_fpath2 = base_fpath + name
-    conductor.perform(base_fpath2)
+    conductor.perform(base_fpath2, selected_parts: [audition.part_name])
 
     input_fpath = base_fpath2 + ".osc"
     output_fpath = base_fpath2 + "." + AUDIO_FORMAT
@@ -136,12 +158,93 @@ auditions.each do |audition|
     print "Rendering #{output_fpath}..."
     `scsynth -N #{input_fpath} _ #{output_fpath} 44100 #{AUDIO_FORMAT} int16`
     puts "done"
+
     File.delete(input_fpath)
+    output_files.push output_fpath
   end
 
-  # if INTERACTIVE
-  #   # TODO
-  #   # In interactive mode each file is performed and played back
-  #   # under user control
-  # ends
+  if INTERACTIVE
+    def kill_pid pid
+      if OS.windows?
+        Process.kill 9, pid
+      else
+        Process.kill "INT", pid
+      end
+    end
+
+    undecided = output_files
+    rejected = []
+    accepted = []
+
+    user_input = ""
+    i = 0
+
+    user_input_thread = Thread.new do
+      while true
+        user_input = STDIN.gets.chomp
+        #STDOUT.puts "got user input \"#{user_input}\""
+      end
+    end
+
+    # launch VLC with the 'remote control' console interface
+    Open3.popen2("vlc --intf rc #{undecided.join(" ")}") do |stdin, stdout, wait_thread|
+      pid = wait_thread.pid
+
+      vlc_running = true
+      while vlc_running
+        case user_input
+        when "next", "prev"
+          stdin.puts user_input
+        when "accept","reject"
+          begin
+            stdout.read_nonblock(2**16)
+          rescue IO::WaitReadable
+          end
+          stdin.puts "status"
+
+          result = stdout.readline
+          i = undecided.find_index {|fstr| result.include? fstr }
+          raise "Could not find file from status output #{result}" if i.nil?
+
+          if user_input == "accept"
+            accepted.push undecided.delete_at(i)
+          else
+            rejected.push undecided.delete_at(i)
+          end
+          stdin.puts "next"
+        when "quit"
+          vlc_running = false
+          stdin.puts "quit"
+        end
+        user_input = ""
+
+        if undecided.empty?
+          vlc_running = false
+          stdin.puts "quit"
+        end
+      end
+    end
+
+    user_input_thread.kill
+
+    if undecided.any?
+      puts "Undecided:"
+      undecided.each { |f| puts "  " + f }
+      puts
+    end
+
+    if rejected.any?
+      puts "Rejected:"
+      rejected.each { |f| puts "  " + f }
+      puts
+    end
+
+    if accepted.any?
+      puts "Accepted:"
+      accepted.each { |f| puts "  " + f }
+      puts
+    end
+
+    # TODO ask the user if they would like to delete the rejected auditions
+  end
 end
