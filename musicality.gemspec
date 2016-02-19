@@ -9,11 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ["James Tunnell"]
   spec.email         = ["jamestunnell@gmail.com"]
   spec.summary       = %q{Music notation, composition, and performance}
-  spec.description   = "The library is based around an abstract representation "
-  "for music notation, including pitch, note, dynamic, score, etc. A Ruby-based "
-  "DSL is provided to aid in composition. Scores can be converted to common "
-  "formats, like MIDI and LilyPond. Scores can also be rendered as audio via "
-  "SuperCollider."
+  spec.description   = "The library is based around an abstract representation \
+for music notation, including pitch, note, dynamic, score, etc. A Ruby-based \
+DSL is provided to aid in composition. Scores can be converted to common \
+formats, like MIDI and LilyPond. Scores can also be rendered as audio via \
+SuperCollider."
   spec.homepage      = "https://github.com/jamestunnell/musicality"
   spec.license       = "MIT"
 
