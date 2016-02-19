@@ -1,3 +1,14 @@
+### 0.11.0 / 2016-02-18
+* Fix SuperCollider volume control to output stereo
+* Add :keep_code keyword arg to SuperCollider::Conductor#perform
+* Add convenience method Part#dynamic_change for adding a new dynamic change
+* Add Project::update method and 'musicality update' subcommand
+* Allow 'musicality new' to be ran on a non-empty directory. Existing scores directories will ignored, and existing project directories will be updated
+* Add auditions executable. Add auditions rake tasks: auditions, auditions:wav, etc.
+* Fix bug in Score#collated?
+* Support interactive auditions using VLC on Linux
+* Change Score::Tempo#initialize to only require the start tempo, making start meter an optional keyword argument
+
 ### 0.10.1 / 2016-01-08
 * Kill sclang process with Process.kill(9,pid) when running on Windows. Otherwise use Process.kill('INT',pid)
 * Delete .scd after it is processed
@@ -29,7 +40,7 @@
 * Add Part#settings. Create settings classes for LilyPond and MIDI
 * Add Part#lilypond_settings in lilypond_settings.rb and Part#midi_settings in midi_settings.rb
 * Add support for non-realtime SUperCollider performance
-* Make dynamic levels increase exponentially, like 
+* Make dynamic levels increase exponentially, like
 * In ScoreCollator#collate_changes, return new start value as well as dynamic changes, instead of always creating an initial immediate change
 * Add SynthDef class to be able to include SynthDefs in SuperCollider code
 * Add musicality project infrastructure
@@ -65,7 +76,7 @@
 * Conversion of both tempo-based scores (measured and unmeasured) directly to time-based score
 * Trimming of gradual changes, useful in collating scores
 * Refactoring of ValueComputer using Function and Transition utility classes
-* Add optional start_value for gradual changes, for making them absolute (by default they're relative) 
+* Add optional start_value for gradual changes, for making them absolute (by default they're relative)
 * Add 'with' kw arg to change pack/unpack methods, for converting start/end values
 
 ### 0.2.0 / 2014-11-24
@@ -90,4 +101,3 @@
 * Packing/unpacking to/from hash, using stringizing/parsing to condense, esp. for notes
 * Convert score to MIDI file via midilib gem
 * bin/midify command-line utility to run MIDI conversion on score YAML file
-
