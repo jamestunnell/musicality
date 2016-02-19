@@ -10,11 +10,11 @@ include Meters
 #
 
 # minimum score, with no parts
-s = Score::Tempo.new(FOUR_FOUR, 120)
+s = Score::Tempo.new(120)
 
 # add a part
 s.parts["piano"] = Part.new(MP) do |p|
-  p.notes = q(C4,C4,G4,G4,A4,A4) + h(G4) + 
+  p.notes = q(C4,C4,G4,G4,A4,A4) + h(G4) +
             q(F4,F4,E4,E4,D4,D4) + h(C4)
 end
 

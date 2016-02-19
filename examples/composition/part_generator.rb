@@ -11,12 +11,12 @@ major = Heptatonic::Prima::MAJOR
 pitch_seqs = {
   D4 => minor, C4 => major, E4 => minor, F4 => minor
 }.map do |pitch,scale_class|
-  scale_class.to_pitch_seq(pitch)        
+  scale_class.to_pitch_seq(pitch)
 end
 
 rhythm_seq2 = RepeatingSequence.new([3/8.to_r]*4)
 
-score = Score::Tempo.new(SIX_EIGHT,90) do |s|
+score = Score::Tempo.new(90, start_meter: SIX_EIGHT) do |s|
   s.parts["main"] = Part.new(Dynamics::MF) do |p|
     p.settings.push MidiSettings::LEAD_SAWTOOTH
 
@@ -27,7 +27,7 @@ score = Score::Tempo.new(SIX_EIGHT,90) do |s|
     pitches = pitch_seqs.map { |pseq| pseq.at(poffsets).to_a }.flatten
     p.notes += make_notes(rhythm,pitches)
   end
-  
+
   s.parts["bass"] = Part.new(Dynamics::MP) do |p|
     p.settings.push MidiSettings::LEAD_SQUARE
 
@@ -38,7 +38,7 @@ score = Score::Tempo.new(SIX_EIGHT,90) do |s|
     pitches = pitch_seqs.map { |pseq| pseq.at(poffsets).to_a }.flatten
     p.notes += make_notes(rhythm,pitches)
   end
-  
+
   s.parts["pluck"] = Part.new(Dynamics::MP) do |p|
     p.settings.push MidiSettings::ORCHESTRAL_HARP
 
@@ -49,7 +49,7 @@ score = Score::Tempo.new(SIX_EIGHT,90) do |s|
     pitches = pitch_seqs.map { |pseq| pseq.at(poffsets).to_a }.flatten
     p.notes += make_notes(rhythm,pitches)
   end
-  
+
   s.program = [0...s.measures_long]*2
 end
 

@@ -4,7 +4,7 @@
 #   include Pitches
 #   ScoreDSL.load('twinkle.score')
 
-tempo_score Meters::FOUR_FOUR, 120 do
+tempo_score 120 do
   title "Twinkle, Twinkle, Little Star"
 
   Cmaj = [C3,E3,G3]
@@ -14,7 +14,7 @@ tempo_score Meters::FOUR_FOUR, 120 do
     notes(
       "rhand" => q(C4,C4,G4,G4,A4,A4) + h(G4) +
                  q(F4,F4,E4,E4,D4,D4) + h(C4),
-      "lhand" => h(Cmaj,Cmaj,Fmaj,Cmaj) + 
+      "lhand" => h(Cmaj,Cmaj,Fmaj,Cmaj) +
                  h(Fmaj,Cmaj,Gmaj,Cmaj)
     )
   end

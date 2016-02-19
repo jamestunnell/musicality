@@ -13,13 +13,13 @@ def random_melody rhythm, pitch_palette
   pitch_sampler = RandomSampler.new(pitches,Probabilities.random(pitches.size))
   make_notes(rhythm, pitch_sampler.sample(rhythm.size))
 end
-  
+
 def random_counterpoint rhythm, rhythm_palette, sample_rate, pitch_palette
   cpg = CounterpointGenerator.new(rhythm,rhythm_palette)
   counterpoint = cpg.best_solutions(25,0.5,sample_rate).sample
   pitches = pitch_palette.sample(rand(2..pitch_palette.size))
   pitch_sampler = RandomSampler.new(pitches,Probabilities.random(pitches.size))
-  make_notes(counterpoint, pitch_sampler.sample(counterpoint.size))  
+  make_notes(counterpoint, pitch_sampler.sample(counterpoint.size))
 end
 
 2.times do
@@ -43,7 +43,7 @@ end
   end
 end
 
-score = Score::Tempo.new(Meters::FOUR_FOUR, 120,
+score = Score::Tempo.new(120,
   parts: { "bass" => bass, "guitar" => guitar },
   program: [ 0...([bass.duration,guitar.duration].min) ]
 )

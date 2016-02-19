@@ -9,9 +9,11 @@ Gem::Specification.new do |spec|
   spec.authors       = ["James Tunnell"]
   spec.email         = ["jamestunnell@gmail.com"]
   spec.summary       = %q{Music notation, composition, and performance}
-  spec.description   = %q{The library is based around an abstract representation for music notation. \
-                          From here, functions are built up to make composing elaborate pieces in this notation representation more manageable. \
-                          Finally, music performance is supported by providing translation to common formats, like MIDI. }
+  spec.description   = "The library is based around an abstract representation "
+  "for music notation, including pitch, note, dynamic, score, etc. A Ruby-based "
+  "DSL is provided to aid in composition. Scores can be converted to common "
+  "formats, like MIDI and LilyPond. Scores can also be rendered as audio via "
+  "SuperCollider."
   spec.homepage      = "https://github.com/jamestunnell/musicality"
   spec.license       = "MIT"
 
@@ -24,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 2.9"
   spec.add_development_dependency "pry"
-  
+
   spec.add_dependency "treetop", "~> 1.5"
   spec.add_dependency 'midilib', '~> 2.0'
   spec.add_dependency 'docopt', '~> 0.5'
