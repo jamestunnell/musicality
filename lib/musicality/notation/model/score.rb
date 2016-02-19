@@ -79,7 +79,7 @@ class Score
     attr_accessor :start_tempo, :tempo_changes, :start_meter, :meter_changes
 
     # See Score#initialize for remaining kwargs
-    def initialize start_meter, start_tempo, tempo_changes: {}, meter_changes: {}, parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}, auditions: []
+    def initialize start_tempo, tempo_changes: {}, start_meter: Meters::FOUR_FOUR, meter_changes: {}, parts: {}, program: [], title: nil, composer: nil, sections: {}, start_key: Keys::C_MAJOR, key_changes: {}, auditions: []
       @start_tempo = start_tempo
       @tempo_changes = tempo_changes
       @start_meter = start_meter

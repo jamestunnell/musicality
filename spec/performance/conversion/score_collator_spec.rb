@@ -9,11 +9,11 @@ describe ScoreCollator do
           Note.half([E2])
       ])
     end
-    
+
     context 'first note starts before the segment start' do
       context 'first note ends right at segment start' do
         it 'should not be included in the part' do
-          score = Score::Tempo.new(FOUR_FOUR, 120,
+          score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
             parts: {1 => @part},
             program: ["1/4".to_r..."5/4".to_r])
           collator = ScoreCollator.new(score)
@@ -24,10 +24,10 @@ describe ScoreCollator do
           expect(notes[1].pitches[0]).to eq E2
         end
       end
-      
+
       context 'first note ends after segment start' do
         it 'should not be included in the part, and a rest is inserted' do
-          score = Score::Tempo.new(FOUR_FOUR, 120,
+          score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
             parts: {1 => @part},
             program: ["1/8".to_r..."5/4".to_r])
           collator = ScoreCollator.new(score)
@@ -41,11 +41,11 @@ describe ScoreCollator do
         end
       end
     end
-    
+
     context 'first note starts at segment start' do
       context 'last note starts at program end' do
         it 'should not be included in the part' do
-          score = Score::Tempo.new(FOUR_FOUR, 120,
+          score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
             parts: {1 => @part},
             program: [0.to_r..."3/4".to_r])
           collator = ScoreCollator.new(score)
@@ -54,10 +54,10 @@ describe ScoreCollator do
           expect(notes.size).to eq(@part.notes.size - 1)
         end
       end
-      
+
       context 'last note start before program end, but lasts until after' do
         it 'should be included in the part, but truncated' do
-          score = Score::Tempo.new(FOUR_FOUR, 120,
+          score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
             parts: {1 => @part},
             program: [0.to_r...1.to_r])
           collator = ScoreCollator.new(score)
@@ -67,10 +67,10 @@ describe ScoreCollator do
           expect(notes[-1].duration).to eq("1/4".to_r)
         end
       end
-      
+
       context 'last note ends before program segment end' do
         it 'should insert a rest between last note end and segment end' do
-          score = Score::Tempo.new(FOUR_FOUR, 120,
+          score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
             parts: {1 => @part},
             program: [0.to_r..."6/4".to_r])
           collator = ScoreCollator.new(score)
@@ -82,10 +82,10 @@ describe ScoreCollator do
         end
       end
     end
-    
+
     context 'part contains trimmed gradual changes' do
       it 'should exclude the change when it is not at all in a program segment' do
-        score = Score::Tempo.new(FOUR_FOUR, 120,
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
           parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
             2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,0)
           }) },
@@ -96,7 +96,7 @@ describe ScoreCollator do
         dcs = parts[1].dynamic_changes
         expect(dcs.size).to eq(0)
         expect(parts[1].start_dynamic).to be_within(1e-5).of(Dynamics::PP)
-        
+
         score.program = [0...1]
         collator = ScoreCollator.new(score)
         parts = collator.collate_parts
@@ -104,9 +104,9 @@ describe ScoreCollator do
         expect(dcs.size).to eq(0)
         expect(parts[1].start_dynamic).to be_within(1e-5).of(Dynamics::FF)
       end
-      
+
       it 'should trim the change further if needed' do
-        score = Score::Tempo.new(FOUR_FOUR, 120,
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR,
           parts: { 1 => Part.new(Dynamics::FF, dynamic_changes: {
             2 => Change::Gradual.linear(Dynamics::PP,5).trim(1,1)
           }) },
@@ -119,17 +119,17 @@ describe ScoreCollator do
         expect(dcs[0.to_r]).to eq(Change::Gradual.linear(Dynamics::PP,5).trim(2,2))
       end
     end
-    
+
     it 'should preserve links' do
       notes = Note.split_parse("1Db4;Bb4")
       score = Score::Tempo.new(
-        FOUR_FOUR,120,
+        120, start_meter: FOUR_FOUR,
         parts: { "lead" => Part.new(Dynamics::MP, notes: notes) },
         program: [0..1,0..1],
       )
       collator = ScoreCollator.new(score)
       parts = collator.collate_parts
-      
+
       notes = parts["lead"].notes
       expect(notes.size).to eq 2
       notes.each do |note|
@@ -138,17 +138,17 @@ describe ScoreCollator do
       end
     end
   end
-  
+
   describe '#collate_tempo_changes' do
     before :all do
       @change0 = Change::Immediate.new(120)
       @change1 = Change::Immediate.new(200)
       @change2 = Change::Gradual.linear(100,1)
     end
-    
+
     context 'tempo change starts at end of program segment' do
       it 'should not be included in the tempo changes' do
-        score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR, tempo_changes: {
           1 => @change1, 2 => @change2 }, program: [0...2])
         collator = ScoreCollator.new(score)
         st, tcs = collator.collate_tempo_changes
@@ -159,24 +159,24 @@ describe ScoreCollator do
 
     context 'tempo change starts and ends before segment' do
       before :all do
-        score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR, tempo_changes: {
           2 => @change2 }, program: [4..5])
         collator = ScoreCollator.new(score)
         @st, @tcs = collator.collate_tempo_changes
       end
-      
+
       it 'should not be included in the tempo changes' do
         expect(@tcs.size).to eq 0
       end
-      
+
       it 'should be used as start tempo' do
         expect(@st).to be_within(1e-5).of @change2.end_value
       end
     end
-    
+
     context 'tempo change starts before segment, but ends during segment' do
       it 'should e included in the tempo changes, but truncated' do
-        score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR, tempo_changes: {
           1.5.to_r => @change2 }, program: [2..4])
         collator = ScoreCollator.new(score)
         st, tcs = collator.collate_tempo_changes
@@ -186,10 +186,10 @@ describe ScoreCollator do
         expect(tcs[0.to_r].remaining).to eq(0.5)
       end
     end
-    
+
     context 'tempo change starts during segment, lasts until after' do
       it 'should be included in the tempo changes, but truncated' do
-        score = Score::Tempo.new(FOUR_FOUR, 120, tempo_changes: {
+        score = Score::Tempo.new(120, start_meter: FOUR_FOUR, tempo_changes: {
           1 => @change1, 2 => @change2 }, program: [0..2.5])
         collator = ScoreCollator.new(score)
         st, tcs = collator.collate_tempo_changes
@@ -207,7 +207,7 @@ describe ScoreCollator do
       change0 = Change::Immediate.new(FOUR_FOUR)
       change1 = Change::Immediate.new(THREE_FOUR)
       change2 = Change::Immediate.new(SIX_EIGHT)
-      score = Score::Tempo.new(FOUR_FOUR, 120, meter_changes: {
+      score = Score::Tempo.new(120, start_meter: FOUR_FOUR, meter_changes: {
         1 => change1, 2 => change2 }, program: [0...2])
       collator = ScoreCollator.new(score)
       sm, mcs = collator.collate_meter_changes

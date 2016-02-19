@@ -23,7 +23,8 @@ describe Score::Tempo do
       1 => Change::Immediate.new(TWO_FOUR),
       3 => Change::Immediate.new(SIX_EIGHT)
     }
-    @score = Score::Tempo.new(THREE_FOUR, 120,
+    @score = Score::Tempo.new(120,
+      start_meter: THREE_FOUR,
       parts: @parts,
       program: @prog,
       tempo_changes: tcs,
