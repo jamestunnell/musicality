@@ -1,3 +1,9 @@
+### 0.11.2 / 2016-03-29
+* Fix a bug in SuperCollider performance code
+
+### 0.11.1 / 2016-02-18
+* Fix gem description string in .gemspec
+
 ### 0.11.0 / 2016-02-18
 * Fix SuperCollider volume control to output stereo
 * Add :keep_code keyword arg to SuperCollider::Conductor#perform

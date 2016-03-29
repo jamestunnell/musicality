@@ -22,7 +22,7 @@ class Performer
     group = create_part_group parent_group, bundles
     set_start_volume volume_control_bus, bundles
     add_volume_control group, aux_audio_bus, volume_control_bus, lead_time, bundles
-    add_volume_changes volume_control_bus, lead_time, bundles
+    add_volume_changes group, volume_control_bus, lead_time, bundles
     add_part_notes group, aux_audio_bus, lead_time, bundles
 
     bundles
@@ -51,7 +51,7 @@ class Performer
     bundles.push vol_control.bundle_queue(lead_time / 2.0)
   end
 
-  def add_volume_changes volume_control_bus, lead_time, bundles
+  def add_volume_changes group, volume_control_bus, lead_time, bundles
     # change part volume
     part.dynamic_changes.each do |offset,change|
       case change
