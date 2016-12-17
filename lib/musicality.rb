@@ -78,6 +78,8 @@ require 'musicality/composition/util/note_generation'
 require 'musicality/composition/model/scale'
 require 'musicality/composition/model/scale_class'
 require 'musicality/composition/model/scale_classes'
+require 'musicality/composition/model/rhythm_class'
+require 'musicality/composition/model/rhythm'
 
 require 'musicality/composition/generation/counterpoint_generator'
 require 'musicality/composition/generation/random_rhythm_generator'
