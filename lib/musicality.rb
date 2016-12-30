@@ -82,6 +82,7 @@ require 'musicality/composition/model/rhythm_class'
 require 'musicality/composition/model/rhythm'
 
 require 'musicality/composition/drum_machine/drum_pattern'
+require 'musicality/composition/drum_machine/drum_machine'
 
 require 'musicality/composition/generation/counterpoint_generator'
 require 'musicality/composition/generation/random_rhythm_generator'
