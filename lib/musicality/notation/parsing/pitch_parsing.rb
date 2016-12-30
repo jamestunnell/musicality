@@ -252,6 +252,7 @@ module Pitch
     if has_terminal?(@regexps[gr = '\A[Aa]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
       r0.extend(LetterA0)
+      r0.extend(LetterA0)
       @index += 1
     else
       terminal_parse_failure('[Aa]')
@@ -280,6 +281,7 @@ module Pitch
 
     if has_terminal?(@regexps[gr = '\A[Bb]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
+      r0.extend(LetterB0)
       r0.extend(LetterB0)
       @index += 1
     else
@@ -310,6 +312,7 @@ module Pitch
     if has_terminal?(@regexps[gr = '\A[Cc]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
       r0.extend(LetterC0)
+      r0.extend(LetterC0)
       @index += 1
     else
       terminal_parse_failure('[Cc]')
@@ -338,6 +341,7 @@ module Pitch
 
     if has_terminal?(@regexps[gr = '\A[Dd]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
+      r0.extend(LetterD0)
       r0.extend(LetterD0)
       @index += 1
     else
@@ -368,6 +372,7 @@ module Pitch
     if has_terminal?(@regexps[gr = '\A[Ee]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
       r0.extend(LetterE0)
+      r0.extend(LetterE0)
       @index += 1
     else
       terminal_parse_failure('[Ee]')
@@ -397,6 +402,7 @@ module Pitch
     if has_terminal?(@regexps[gr = '\A[Ff]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
       r0.extend(LetterF0)
+      r0.extend(LetterF0)
       @index += 1
     else
       terminal_parse_failure('[Ff]')
@@ -425,6 +431,7 @@ module Pitch
 
     if has_terminal?(@regexps[gr = '\A[Gg]'] ||= Regexp.new(gr), :regexp, index)
       r0 = instantiate_node(SyntaxNode,input, index...(index + 1))
+      r0.extend(LetterG0)
       r0.extend(LetterG0)
       @index += 1
     else

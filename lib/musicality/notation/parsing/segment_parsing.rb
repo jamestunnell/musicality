@@ -70,6 +70,9 @@ module Segment
         @index = i2
         r2 = nil
       else
+        if s2.size < 3
+          @terminal_failures.pop
+        end
         r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
       end
       s0 << r2

@@ -80,7 +80,7 @@ module Duration
         r2 = true
         @index += match_len
       else
-        terminal_parse_failure("/")
+        terminal_parse_failure('"/"')
         r2 = nil
       end
       s0 << r2
@@ -128,7 +128,7 @@ module Duration
         r3 = true
         @index += match_len
       else
-        terminal_parse_failure("/")
+        terminal_parse_failure('"/"')
         r3 = nil
       end
       if r3
@@ -173,7 +173,7 @@ module Duration
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("/")
+      terminal_parse_failure('"/"')
       r1 = nil
     end
     s0 << r1
