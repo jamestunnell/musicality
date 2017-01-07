@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../../../spec_helper')
 
 def notes_duration(notes)
   notes.map {|note| note.duration }.inject(0, :+)
