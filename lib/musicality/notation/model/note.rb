@@ -5,10 +5,10 @@ require 'set'
 class Note
   include Packable
   include Validatable
-  
+
   attr_reader :pitches, :links, :duration, :marks
   attr_accessor :articulation
-  
+
   def initialize duration, pitches = [], links: {}, articulation: Articulations::NORMAL, marks: []
     self.duration = duration
     if !pitches.is_a? Enumerable
@@ -19,18 +19,24 @@ class Note
     @articulation = articulation
     @marks = marks
   end
-  
+
   def check_methods
-    [ :check_pitches ]
+    [ :check_duration, :check_pitches ]
   end
-  
+
+  def check_duration
+    if duration <= 0
+      raise RangeError, "Duration is non-positive: #{duration}"
+    end
+  end
+
   def check_pitches
     non_pitches = @pitches.select {|p| !p.is_a?(Pitch) }
     if non_pitches.any?
       raise TypeError, "Found non-pitches: #{non_pitches}"
     end
   end
-  
+
   def == other
     return (@duration == other.duration) &&
     (self.pitches == other.pitches) &&
@@ -38,7 +44,7 @@ class Note
     (@articulation == other.articulation) &&
     (@marks == marks)
   end
-  
+
   def clone
     Marshal.load(Marshal.dump(self))
   end
@@ -58,7 +64,7 @@ class Note
   def transpose diff
     self.clone.transpose! diff
   end
-  
+
   def transpose! diff
     @pitches = @pitches.map {|pitch| pitch.transpose(diff) }
     @links = Hash[ @links.map do |k,v|
@@ -106,7 +112,7 @@ class Note
       Note.new(dur, pitches, articulation: articulation, links: links, marks: marks)
     end
   end
-  
+
   {
     :sixteenth => Rational(1,16),
     :dotted_sixteenth => Rational(3,32),
