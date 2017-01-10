@@ -1,191 +1,76 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Sequencer::NotesFIFO do
-  describe '#initialize' do
-    it 'should add the given notes to the FIFO' do
-      notes = [Note.half, Note.quarter]
-      fifo = Sequencer::NotesFIFO.new(notes)
-      fifo.notes.should eq(notes)
-      fifo.duration.should eq(Rational(3,4))
-    end
-  end
-
-  describe '#empty?' do
-    context 'FIFO does not have notes' do
-      it 'should return true' do
-        # initialized without notes
-        Sequencer::NotesFIFO.new.empty?.should be_truthy
-
-        # or removed later
-        fifo = Sequencer::NotesFIFO.new
-        fifo.remove_notes(fifo.duration)
-        fifo.empty?.should be_truthy
-      end
-    end
-
-    context 'FIFO has notes' do
-      it 'should return false' do
-        # initialized with notes
-        notes = [Note.whole, Note.half, Note.quarter]
-        Sequencer::NotesFIFO.new(notes).empty?.should be_falsey
-
-        # or added later
-        fifo = Sequencer::NotesFIFO.new
-        fifo.add_notes(notes)
-        fifo.empty?.should be_falsey
-      end
-    end
-  end
-
-  describe '#add_notes' do
-    context 'given empty array' do
-      before :all do
-        @notes = [Note.whole, Note.half, Note.quarter]
-        @fifo = Sequencer::NotesFIFO.new(@notes)
-        @prev_duration = @fifo.duration
-        @fifo.add_notes([])
-      end
-
-      it 'should not change the current note array' do
-        @fifo.notes.should eq(@notes)
-      end
-
-      it 'should not change the duration' do
-        @fifo.duration.should eq(@prev_duration)
-      end
-    end
-
-    context 'given array of one note' do
-      before :all do
-        @notes = [Note.quarter, Note.half]
-        @fifo = Sequencer::NotesFIFO.new(@notes)
-        @prev_duration = @fifo.duration
-        @new_note = Note.whole
-        @fifo.add_notes([@new_note])
-      end
-
-      it 'should append the given note to the FIFO note array' do
-        @fifo.notes.should eq(@notes + [@new_note])
-      end
-
-      it 'should increase the FIFO duration by the total duration of the given note' do
-        @fifo.duration.should eq(@prev_duration + @new_note.duration)
-      end
-    end
-
-    context 'given an array of more than one note' do
-      before :all do
-        @notes = [Note.quarter, Note.half]
-        @fifo = Sequencer::NotesFIFO.new(@notes)
-        @prev_duration = @fifo.duration
-        @new_notes = [ Note.whole, Note.quarter ]
-        @fifo.add_notes(@new_notes)
-      end
-
-      it 'should append the given notes to the FIFO note array' do
-        @fifo.notes.should eq(@notes + @new_notes)
-      end
-
-      it 'should increase the FIFO duration by the total duration of the given notes' do
-        add_dur = @new_notes.inject(0){|sum, n| sum + n.duration }
-        @fifo.duration.should eq(@prev_duration + add_dur)
-      end
-    end
-  end
-
-  describe '#remove_notes' do
-    before :each do
-      @notes = [Note.whole, Note.half, Note.quarter]
-      @fifo = Sequencer::NotesFIFO.new(@notes)
-    end
-
-    context 'given negative target duration' do
-      it 'should raise ArgumentError' do
-        expect { @fifo.remove_notes(-1) }.to raise_error(ArgumentError)
-      end
-    end
-
-    context 'given target duration greater than FIFO duration' do
-      it 'should raise ArgumentError' do
-        expect { @fifo.remove_notes(@fifo.duration + 1) }.to raise_error(ArgumentError)
-      end
-    end
-
-    context 'given target_duration of 0' do
-      it 'should return an empty array and not affect FIFO' do
-        removed_notes = @fifo.remove_notes(0)
-        removed_notes.should be_empty
-        @fifo.notes.should eq(@notes)
-      end
-    end
-
-    context 'given target duration equal to FIFO duration' do
-      it 'should empty FIFO and bring duration to 0' do
-        @fifo.remove_notes(@fifo.duration)
-        @fifo.empty?.should be_truthy
-        @fifo.duration.should eq(0)
-      end
-    end
-
-    context 'given positive target duration less than FIFO duration' do
-      context 'target duration lands exactly on note boundary' do
-        before :all do
-          @notes = [Note.whole, Note.half, Note.quarter]
-          @fifo = Sequencer::NotesFIFO.new(@notes)
-          @prev_fifo_dur = @fifo.duration
-          @target_dur = 1.5
-        end
-
-        it 'should reduce FIFO duration by the given target duration' do
-          @fifo.remove_notes(@target_dur)
-          @fifo.duration.should eq(@prev_fifo_dur - @target_dur)
-        end
-
-        it 'should remove notes from the front of the FIFO, totally in tact' do
-          removed = @fifo.remove_notes(@target_dur)
-          removed.should eq(@notes[0..1])
-          @fifo.notes.should eq([@notes.last])
-        end
-      end
-
-      context 'target duration lands somewhere during one of the notes' do
-        before :each do
-          @notes = [Note.whole, Note.half([Pitches::C4]), Note.quarter]
-          @fifo = Sequencer::NotesFIFO.new(@notes)
-          @prev_fifo_dur = @fifo.duration
-          @target_dur = 1.25
-        end
-
-        it 'should reduce FIFO duration by the given target duration' do
-          @fifo.remove_notes(@target_dur)
-          @fifo.duration.should eq(@prev_fifo_dur - @target_dur)
-        end
-
-        it 'should remove notes from the front of the FIFO, dividing the last one into two tied notes' do
-          expected_removed = [
-            Note.whole,
-            Note.quarter([Pitches::C4], links: { Pitches::C4 => Link::Tie.new })
-          ]
-
-          expected_remaining = [
-            Note.quarter([Pitches::C4]),
-            Note.quarter
-          ]
-
-          removed = @fifo.remove_notes(@target_dur)
-
-          removed.should eq(expected_removed)
-          @fifo.notes.should eq(expected_remaining)
-        end
-      end
-    end
-  end
-end
-
 describe Sequencer do
   describe '#next_part_notes' do
+    context '1 part with NoteArray sequenceable' do
+      describe 'given target duration that occurs in between note boundaries' do
+        it 'should return the part notes with the last note being shortened but tied' do
+          @seq = Sequencer.new("X" => NoteArray.new([Note.half(Pitches::G2)]))
+          @seq.next_part_notes(Rational(1,4)).should eq(
+            "X" => [ Note.quarter(Pitches::G2).tie(Pitches::G2) ]
+          )
+        end
+      end
+    end
+
+    context '2 parts (X,Y) with NoteArray sequenceables, X twice as long as Y' do
+      before :each do
+        @x_note_array = NoteArray.new([ Note.quarter(Pitches::D3), Note.quarter(Pitches::C3),
+                          Note.quarter(Pitches::G3), Note.quarter(Pitches::F3) ])
+        @y_note_array = NoteArray.new([ Note.half(Pitches::A3) ])
+        @seq = Sequencer.new("X" => @x_note_array, "Y" => @y_note_array)
+      end
+
+      context 'target duration equal to X duration' do
+        context 'next_part_notes not called yet before' do
+          it 'should produce all the notes for X and double the notes for Y' do
+            @seq.next_part_notes(@x_note_array.duration).should eq(
+              {"X" => @x_note_array.notes, "Y" => @y_note_array.notes*2}
+            )
+          end
+        end
+
+        context 'next_part_notes already called once with target duration equal to X duration' do
+          it 'should produce all the notes for X and double the notes for Y' do
+            @seq.next_part_notes(@x_note_array.duration)
+            @seq.next_part_notes(@x_note_array.duration).should eq(
+              {"X" => @x_note_array.notes, "Y" => @y_note_array.notes*2}
+            )
+          end
+        end
+      end
+
+      context 'target duration equal to Y duration' do
+        context 'next_part_notes not called yet before' do
+          it 'should return first half of X notes and all of Y' do
+            @seq.next_part_notes(Rational(@x_note_array.duration,2)).should eq(
+              { "X" => @x_note_array.notes[0..1], "Y" => @y_note_array.notes }
+            )
+          end
+        end
+
+        context 'next_part_notes already called once with half of X duration' do
+          it 'should return last half of X notes and all of Y' do
+            @seq.next_part_notes(Rational(@x_note_array.duration,2))
+            @seq.next_part_notes(Rational(@x_note_array.duration,2)).should eq(
+              { "X" => @x_note_array.notes[2..3], "Y" => @y_note_array.notes }
+            )
+          end
+        end
+      end
+    end
   end
 
   describe '#reset' do
+    it 'should reset each sequenceable' do
+      sequencable1 = instance_double("NoteArray")
+      sequencable2 = instance_double("NoteArray")
+
+      expect(sequencable1).to receive(:reset)
+      expect(sequencable2).to receive(:reset)
+
+      seq = Sequencer.new("X" => sequencable1, "Y" => sequencable2)
+      seq.reset
+    end
   end
 end

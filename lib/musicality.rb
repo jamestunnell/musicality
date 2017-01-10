@@ -82,8 +82,9 @@ require 'musicality/composition/model/rhythm_class'
 require 'musicality/composition/model/rhythm'
 
 require 'musicality/composition/sequencing/sequenceable'
+require 'musicality/composition/sequencing/note_fifo'
 require 'musicality/composition/sequencing/sequencer'
-require 'musicality/composition/sequencing/note_arrays'
+require 'musicality/composition/sequencing/note_array'
 require 'musicality/composition/sequencing/drum_machine/drum_pattern'
 require 'musicality/composition/sequencing/drum_machine/drum_machine'
 
