@@ -5,8 +5,8 @@ describe Note do
   before :all do
     @pitch = C4
   end
-  
-  describe '.new' do
+
+  describe '#initialize' do
     it 'should assign :duration that is given during construction' do
       Note.new(2).duration.should eq(2)
     end
@@ -14,15 +14,15 @@ describe Note do
     it "should assign :articulation to NORMAL if not given" do
       Note.new(2).articulation.should eq(NORMAL)
     end
-    
+
     it "should assign :articulation parameter if given during construction" do
       Note.new(2, articulation: STACCATO).articulation.should eq(STACCATO)
     end
-    
+
     it 'should assign :marks to [] if not given' do
       Note.new(2).marks.should eq([])
     end
-    
+
     it 'should assign :marks if given' do
       [
         [], [BEGIN_SLUR], [END_SLUR]
@@ -30,11 +30,11 @@ describe Note do
         Note.quarter(marks: marks).marks.should eq(marks)
       end
     end
-    
+
     it 'should have no pitches if not given' do
       Note.new(2).pitches.should be_empty
     end
-    
+
     it 'should assign pitches when given' do
       pitches = [ C2, D2 ]
       n = Note.new(2, pitches)
@@ -42,7 +42,7 @@ describe Note do
       n.pitches.should include(pitches[1])
     end
   end
-  
+
   describe '#duration=' do
     it 'should assign duration' do
       note = Note.new 2, [@pitch]
@@ -50,7 +50,7 @@ describe Note do
       note.duration.should eq 3
     end
   end
-  
+
   {
     :sixteenth => Rational(1,16),
     :dotted_sixteenth => Rational(3,32),
@@ -68,7 +68,7 @@ describe Note do
       end
     end
   end
-  
+
   describe '#transpose' do
     context 'given pitch diff' do
       before(:all) do
@@ -76,13 +76,13 @@ describe Note do
         @interval = 4
         @note2 = @note1.transpose(@interval)
       end
-        
+
       it 'should modifiy pitches by adding pitch diff' do
         @note2.pitches.each_with_index do |p,i|
           p.diff(@note1.pitches[i]).should eq(@interval)
         end
       end
-        
+
       it 'should also affect link targets' do
         @note1.links.each do |k,v|
           kt = k.transpose(@interval)
@@ -91,7 +91,7 @@ describe Note do
         end
       end
     end
-    
+
     context 'with links that have no target pitch' do
       it 'should not raise error' do
         n = Note::half([E2],links: {E2 => Link::Tie.new})
@@ -99,20 +99,41 @@ describe Note do
       end
     end
   end
-  
+
   describe '#resize' do
     it 'should return new note object with given duration' do
       note = Note::quarter.resize("1/2".to_r)
       note.duration.should eq(Rational(1,2))
     end
   end
-  
+
+  describe '#tie' do
+    context 'given a pitch object' do
+      it 'should return new note object tied to given pitch' do
+        note = Note.half(@pitch).tie(@pitch)
+        note.links.should have_key(@pitch)
+        note.links[@pitch].should be_a Link::Tie
+      end
+    end
+
+    context 'given an array of pitch objects' do
+      it 'should return new note object tied to given pitches' do
+        pitches = [@pitch,@pitch+1]
+        note = Note.half(pitches).tie(pitches)
+        pitches.each do |pitch|
+          note.links.should have_key(pitch)
+          note.links[pitch].should be_a Link::Tie
+        end
+      end
+    end
+  end
+
   describe '#to_s' do
     before :all do
       @note_parser = Parsing::NoteParser.new
     end
-    
-    context 
+
+    context
     it 'should produce string that when parsed produces an equal note' do
       durations = ["1/8".to_r,"1".to_r,"5/3".to_r]
       include Articulations
@@ -124,7 +145,7 @@ describe Note do
         [[C5,E6,Gb2],{ C5 => Link::Glissando.new(D5) }],
         [[C5,E6,Gb2],{ C5 => Link::Portamento.new(D5), Gb2 => Link::Tie.new }],
       ]
-      
+
       notes = []
       durations.each do |d|
         pitches_links_sets.each do |pitches_links_set|
@@ -140,7 +161,7 @@ describe Note do
           end
         end
       end
-      
+
       notes.each do |note|
         str = note.to_s
         res = @note_parser.parse(str)
@@ -149,18 +170,18 @@ describe Note do
       end
     end
   end
-  
+
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
       n = Note.new(1,[C2])
       YAML.load(n.to_yaml).should eq n
-      
+
       n = Note.new(1,[C2,E2])
       YAML.load(n.to_yaml).should eq n
-      
+
       n = Note.new(1,[C2], articulation: STACCATO)
       YAML.load(n.to_yaml).should eq n
-      
+
       n = Note.new(1,[E2], links: {E2 => Link::Portamento.new(F2)})
       YAML.load(n.to_yaml).should eq n
     end
@@ -181,7 +202,7 @@ describe Note do
       n2.should eq n
     end
   end
-  
+
   describe '#valid?' do
     context 'note with positive duration' do
       it 'should return true' do

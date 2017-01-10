@@ -61,6 +61,18 @@ class Note
     return new_note
   end
 
+  def tie pitches
+    new_note = self.clone
+    if pitches.is_a? Pitch
+      pitches = [pitches]
+    end
+
+    pitches.each do |pitch|
+      new_note.links[pitch] = Link::Tie.new
+    end
+    return new_note
+  end
+
   def transpose diff
     self.clone.transpose! diff
   end
