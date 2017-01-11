@@ -1,8 +1,10 @@
 module Musicality
 
 class Sequencer
+  attr_reader :part_sequenceables
+  
   def initialize part_sequenceables
-    @part_sequenceables = part_sequenceables
+    @part_sequenceables = part_sequenceables.freeze
     @part_note_fifos = Hash[ part_sequenceables.keys.map {|partname| [ partname, NoteFIFO.new ] } ]
   end
 

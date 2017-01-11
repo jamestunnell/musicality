@@ -5,7 +5,7 @@ class DrumMachine < Sequencer
     raise ArgumentError if drum_patterns.empty?
 
     prev_durations = []
-    part_note_arrays = {}
+    existing_part_notes = {}
     drum_patterns.each do |drum_pattern|
       durations = drum_pattern.part_notes.values.map do |notes|
         notes.inject(0) {|sum, note| sum + note.duration }
@@ -19,16 +19,25 @@ class DrumMachine < Sequencer
       end
 
       drum_pattern.part_notes.each do |part_name, notes|
-        unless part_note_arrays.has_key?(part_name)
-          part_note_arrays[part_name] = prev_durations.map { |d| Note.new(d) }
+        # Create part with rest notes from all the previous patterns durations
+        unless existing_part_notes.has_key?(part_name)
+          existing_part_notes[part_name] = prev_durations.map { |d| Note.new(d) }
         end
-        part_note_arrays[part_name] += notes
+
+        existing_part_notes[part_name] += notes
+      end
+
+      # For parts that exist previously but not in the current drum pattern, add a rest note
+      existing_part_notes.each do |part_name, notes|
+        unless drum_pattern.part_notes.has_key?(part_name)
+          existing_part_notes[part_name].push Note.new(duration)
+        end
       end
 
       prev_durations.push duration
     end
 
-    part_sequenceables = Hash[ part_note_arrays.map do |part_name, note_array|
+    part_sequenceables = Hash[ existing_part_notes.map do |part_name, note_array|
       [ part_name, NoteArray.new(note_array) ]
     end]
 
