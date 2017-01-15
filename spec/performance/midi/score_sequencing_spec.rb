@@ -16,7 +16,7 @@ describe Score::Timed do
   describe '#to_midi_seq' do
     it 'should produce a MIDI::Sequence' do
       seq = @score.to_midi_seq
-      seq.should be_a MIDI::Sequence
+      expect(seq).to be_a MIDI::Sequence
     end
   end
 end
@@ -39,7 +39,7 @@ describe Score::Tempo do
   describe '#to_midi_seq' do
     it 'should produce a MIDI::Sequence' do
       seq = @score.to_midi_seq 200
-      seq.should be_a MIDI::Sequence
+      expect(seq).to be_a MIDI::Sequence
     end
   end
 end

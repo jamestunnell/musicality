@@ -15,16 +15,16 @@ describe DrumMachine do
       end
 
       it 'should produce a NoteArray sequenceables for each part in pattern' do
-        @dm.part_sequenceables.should have_key("X")
-        @dm.part_sequenceables["X"].should be_a NoteArray
+        expect(@dm.part_sequenceables).to have_key("X")
+        expect(@dm.part_sequenceables["X"]).to be_a NoteArray
 
-        @dm.part_sequenceables.should have_key("Y")
-        @dm.part_sequenceables["Y"].should be_a NoteArray
+        expect(@dm.part_sequenceables).to have_key("Y")
+        expect(@dm.part_sequenceables["Y"]).to be_a NoteArray
       end
 
       it 'should provide part notes from the pattern to the NoteArray' do
-        @dm.part_sequenceables["X"].notes.should eq(@pattern.part_notes["X"])
-        @dm.part_sequenceables["Y"].notes.should eq(@pattern.part_notes["Y"])
+        expect(@dm.part_sequenceables["X"].notes).to eq(@pattern.part_notes["X"])
+        expect(@dm.part_sequenceables["Y"].notes).to eq(@pattern.part_notes["Y"])
       end
     end
 
@@ -37,11 +37,11 @@ describe DrumMachine do
         end
 
         it 'should produce a NoteArray sequenceables for each part in pattern' do
-          @dm.part_sequenceables.should have_key("X")
-          @dm.part_sequenceables["X"].should be_a NoteArray
+          expect(@dm.part_sequenceables).to have_key("X")
+          expect(@dm.part_sequenceables["X"]).to be_a NoteArray
 
-          @dm.part_sequenceables.should have_key("Y")
-          @dm.part_sequenceables["Y"].should be_a NoteArray
+          expect(@dm.part_sequenceables).to have_key("Y")
+          expect(@dm.part_sequenceables["Y"]).to be_a NoteArray
         end
 
         it 'should start part "X" with notes from the first pattern' do
@@ -53,7 +53,7 @@ describe DrumMachine do
           last_notes = @pattern2.part_notes["Y"]
           expect(@dm.part_sequenceables["Y"].notes.slice(1..-1)).to eq(last_notes)
         end
-        
+
         it 'should start part "Y" with a rest note that has same duration as the first pattern' do
           expect(@dm.part_sequenceables["Y"].notes.first).to eq(Note.new(@pattern1.duration))
         end

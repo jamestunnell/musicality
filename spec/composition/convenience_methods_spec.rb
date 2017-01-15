@@ -5,12 +5,12 @@ describe 'transpose' do
     notes = "/4A2,C2 /4D2,F2,Gb2 /8 /8E4".to_notes
     semitones = 3
     notes2 = transpose(notes,semitones)
-    
-    notes2.size.should eq(notes.size)
+
+    expect(notes2.size).to eq(notes.size)
     notes2.each_index do |i|
       notes2[i].pitches.each_with_index do |pitch2,j|
         pitch = notes[i].pitches[j]
-        pitch2.diff(pitch).should eq(semitones)
+        expect(pitch2.diff(pitch)).to eq(semitones)
       end
     end
   end
@@ -30,19 +30,19 @@ end
   describe method do
     context 'given no args' do
       it 'should produce an empty array' do
-        send(method).should eq([])
+        expect(send(method)).to eq([])
       end
     end
 
     context 'given one pitch' do
       it 'should produce an array with one note, with proper duration' do
-        send(method,*[C2]).should eq([Note.new(dur,C2)])
+        expect(send(method,*[C2])).to eq([Note.new(dur,C2)])
       end
     end
 
     context 'given one pitch group' do
       it 'should produce an array with one note, given pitch group, and with proper duration' do
-        send(method,*[[C2,E2,G2]]).should eq([Note.new(dur,[C2,E2,G2])])
+        expect(send(method,*[[C2,E2,G2]])).to eq([Note.new(dur,[C2,E2,G2])])
       end
     end
 
@@ -51,7 +51,7 @@ end
         pg1 = A3
         pg2 = [B3,G3]
         pg3 = F4
-        send(method,*[pg1,pg2,pg3]).should eq([
+        expect(send(method,*[pg1,pg2,pg3])).to eq([
           Note.new(dur,pg1), Note.new(dur,pg2), Note.new(dur,pg3)
         ])
       end

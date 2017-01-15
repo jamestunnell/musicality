@@ -6,15 +6,15 @@ describe NoteSequenceExtractor do
     it 'should clone original notes' do
       notes = [ Note.quarter([C2]), Note.half, Note.half ]
       extr = NoteSequenceExtractor.new(notes)
-      extr.notes[0].should eq(notes[0])
+      expect(extr.notes[0]).to eq(notes[0])
       notes[0].transpose!(1)
-      extr.notes[0].should_not eq(notes[0])
+      expect(extr.notes[0]).to_not eq(notes[0])
     end
 
     it 'should maintain the same number of notes' do
       extr = NoteSequenceExtractor.new(
         [ Note.quarter, Note.half, Note.half ])
-      extr.notes.size.should eq 3
+      expect(extr.notes.size).to eq 3
     end
 
     it 'should remove any links where the source pitch does not exist in the note' do
@@ -22,19 +22,19 @@ describe NoteSequenceExtractor do
         [ Note.quarter([E4], links: {C4 => Link::Tie.new}),
           Note.quarter([C4,E4]) ]
       )
-      extr.notes[0].links.should_not have_key(C4)
+      expect(extr.notes[0].links).to_not have_key(C4)
 
       extr = NoteSequenceExtractor.new(
         [ Note.quarter([E4], links: {C4 => Link::Glissando.new(G4)}),
           Note.quarter([C4,E4,G4]) ]
       )
-      extr.notes[0].links.should_not have_key(C4)
+      expect(extr.notes[0].links).to_not have_key(C4)
 
       extr = NoteSequenceExtractor.new(
         [ Note.quarter([E4], links: {C4 => Link::Portamento.new(G4)}),
           Note.quarter([C4,E4,G4]) ]
       )
-      extr.notes[0].links.should_not have_key(C4)
+      expect(extr.notes[0].links).to_not have_key(C4)
     end
 
     it 'should keep glissando/portamento links even when the target pitch does not exist in the next note.' do
@@ -42,13 +42,13 @@ describe NoteSequenceExtractor do
         [ Note.quarter([C4], links: {C4 => Link::Glissando.new(G4)}),
           Note.quarter([E4]) ]
       )
-      extr.notes[0].links.should have_key(C4)
+      expect(extr.notes[0].links).to have_key(C4)
 
       extr = NoteSequenceExtractor.new(
         [ Note.quarter([C4], links: {C4 => Link::Portamento.new(G4)}),
           Note.quarter([E4]) ]
       )
-      extr.notes[0].links.should have_key(C4)
+      expect(extr.notes[0].links).to have_key(C4)
     end
   end
 
@@ -56,7 +56,7 @@ describe NoteSequenceExtractor do
     context 'empty note array' do
       it 'should return empty' do
         seqs = NoteSequenceExtractor.new([]).extract_sequences
-        seqs.should be_empty
+        expect(seqs).to be_empty
       end
     end
 
@@ -64,7 +64,7 @@ describe NoteSequenceExtractor do
       it 'should return empty' do
         notes = [ Note::quarter, Note::quarter ]
         seqs = NoteSequenceExtractor.new(notes).extract_sequences
-        seqs.should be_empty
+        expect(seqs).to be_empty
       end
     end
 
@@ -75,15 +75,15 @@ describe NoteSequenceExtractor do
       end
 
       it 'should return array with one sequence' do
-        @seqs.size.should eq 1
+        expect(@seqs.size).to eq 1
       end
 
       it 'should have start offset of 0' do
-        @seqs[0].start.should eq 0
+        expect(@seqs[0].start).to eq 0
       end
 
       it 'should have stop offset <= note duration' do
-        @seqs[0].stop.should be <= @note.duration
+        expect(@seqs[0].stop).to be <= @note.duration
       end
     end
 
@@ -95,15 +95,15 @@ describe NoteSequenceExtractor do
       end
 
       it 'should return array with one sequence' do
-        @seqs.size.should eq 1
+        expect(@seqs.size).to eq 1
       end
 
       it 'should have start offset of 0' do
-        @seqs[0].start.should eq 0
+        expect(@seqs[0].start).to eq 0
       end
 
       it 'should have stop offset <= combined duration of the two notes' do
-        @seqs[0].stop.should be <= (@notes[0].duration + @notes[1].duration)
+        expect(@seqs[0].stop).to be <= (@notes[0].duration + @notes[1].duration)
       end
     end
 
@@ -114,30 +114,30 @@ describe NoteSequenceExtractor do
       end
 
       it 'should return array with as many sequences as pitches' do
-        @seqs.size.should eq @note.pitches.size
+        expect(@seqs.size).to eq @note.pitches.size
       end
 
       it 'should start the sequences at 0' do
-        @seqs.each {|s| s.start.should eq(0) }
+        @seqs.each {|s| expect(s.start).to eq(0) }
       end
 
       it 'should end each sequence at or before note duration' do
-        @seqs.each {|s| s.stop.should be <= @note.duration }
+        @seqs.each {|s| expect(s.stop).to be <= @note.duration }
       end
 
       it 'should put one element in each seq' do
-        @seqs.each {|s| s.elements.size.should eq(1) }
+        @seqs.each {|s| expect(s.elements.size).to eq(1) }
       end
 
       it 'should assign a different pitch to each' do
-        @seqs.map {|seq| seq.elements.first.pitch }.sort.should eq @note.pitches.sort
+        expect(@seqs.map {|seq| seq.elements.first.pitch }.sort).to eq @note.pitches.sort
       end
     end
 
     context 'array with multiple notes and links' do
       before :all do
         @notes = [
-          Note.quarter([C3,E3], links: { C3 => Link::Tie.new, 
+          Note.quarter([C3,E3], links: { C3 => Link::Tie.new,
             E3 => Link::Glissando.new(G3)}),
           Note.eighth([C3,G3])
         ]
@@ -145,22 +145,22 @@ describe NoteSequenceExtractor do
       end
 
       it 'should create a single sequence for linked notes' do
-        @seqs.size.should eq(2)
+        expect(@seqs.size).to eq(2)
       end
 
       it 'should set first element pitch to match first note' do
-        @seqs[0].elements.first.pitch.should eq(@notes[0].pitches[0])
-        @seqs[1].elements.first.pitch.should eq(@notes[0].pitches[1])
+        expect(@seqs[0].elements.first.pitch).to eq(@notes[0].pitches[0])
+        expect(@seqs[1].elements.first.pitch).to eq(@notes[0].pitches[1])
       end
 
       it 'should collapse tie link to a single element' do
-        @seqs[0].elements.size.should eq(1)
-        @seqs[0].duration.should be <= (@notes[0].duration + @notes[1].duration)
+        expect(@seqs[0].elements.size).to eq(1)
+        expect(@seqs[0].duration).to be <= (@notes[0].duration + @notes[1].duration)
       end
 
       it 'should expand the glissando into multiple elements' do
-        @seqs[1].elements.size.should be > 2
-        @seqs[1].duration.should be <= (@notes[0].duration + @notes[1].duration)
+        expect(@seqs[1].elements.size).to be > 2
+        expect(@seqs[1].duration).to be <= (@notes[0].duration + @notes[1].duration)
       end
     end
 
@@ -171,15 +171,15 @@ describe NoteSequenceExtractor do
       end
 
       it 'should produce one sequence' do
-        @seqs.size.should eq(1)
+        expect(@seqs.size).to eq(1)
       end
 
       it 'should include pitches up to (not including) target pitch' do
-        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Eb3,E3,F3,Gb3)
+        expect(@seqs[0].elements.map{|e| e.pitch}).to include(D3,Eb3,E3,F3,Gb3)
       end
 
       it 'should produce sequence with duration <= note duration' do
-        @seqs[0].duration.should be <= @note.duration
+        expect(@seqs[0].duration).to be <= @note.duration
       end
     end
 
@@ -190,15 +190,15 @@ describe NoteSequenceExtractor do
       end
 
       it 'should produce one sequence' do
-        @seqs.size.should eq(1)
+        expect(@seqs.size).to eq(1)
       end
 
       it 'should include pitches down to (not including) target pitch' do
-        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Db3,C3,B2,Bb2)
+        expect(@seqs[0].elements.map{|e| e.pitch}).to include(D3,Db3,C3,B2,Bb2)
       end
 
       it 'should produce sequence with duration <= note duration' do
-        @seqs[0].duration.should be <= @note.duration
+        expect(@seqs[0].duration).to be <= @note.duration
       end
     end
 
@@ -210,15 +210,15 @@ describe NoteSequenceExtractor do
       end
 
       it 'should produce a single sequence' do
-        @seqs.size.should eq(1)
+        expect(@seqs.size).to eq(1)
       end
 
       it 'should includes pitches up through target pitch' do
-        @seqs[0].elements.map{|e| e.pitch}.should include(D3,Eb3,E3,F3,Gb3,G3)
+        expect(@seqs[0].elements.map{|e| e.pitch}).to include(D3,Eb3,E3,F3,Gb3,G3)
       end
 
       it 'should produce sequence with duration <= note1dur + note2dur' do
-        @seqs[0].duration.should be <= (@notes[0].duration + @notes[1].duration)
+        expect(@seqs[0].duration).to be <= (@notes[0].duration + @notes[1].duration)
       end
     end
 

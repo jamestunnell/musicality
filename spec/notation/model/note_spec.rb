@@ -8,38 +8,38 @@ describe Note do
 
   describe '#initialize' do
     it 'should assign :duration that is given during construction' do
-      Note.new(2).duration.should eq(2)
+      expect(Note.new(2).duration).to eq(2)
     end
 
     it "should assign :articulation to NORMAL if not given" do
-      Note.new(2).articulation.should eq(NORMAL)
+      expect(Note.new(2).articulation).to eq(NORMAL)
     end
 
     it "should assign :articulation parameter if given during construction" do
-      Note.new(2, articulation: STACCATO).articulation.should eq(STACCATO)
+      expect(Note.new(2, articulation: STACCATO).articulation).to eq(STACCATO)
     end
 
     it 'should assign :marks to [] if not given' do
-      Note.new(2).marks.should eq([])
+      expect(Note.new(2).marks).to eq([])
     end
 
     it 'should assign :marks if given' do
       [
         [], [BEGIN_SLUR], [END_SLUR]
       ].each do |marks|
-        Note.quarter(marks: marks).marks.should eq(marks)
+        expect(Note.quarter(marks: marks).marks).to eq(marks)
       end
     end
 
     it 'should have no pitches if not given' do
-      Note.new(2).pitches.should be_empty
+      expect(Note.new(2).pitches).to be_empty
     end
 
     it 'should assign pitches when given' do
       pitches = [ C2, D2 ]
       n = Note.new(2, pitches)
-      n.pitches.should include(pitches[0])
-      n.pitches.should include(pitches[1])
+      expect(n.pitches).to include(pitches[0])
+      expect(n.pitches).to include(pitches[1])
     end
   end
 
@@ -47,7 +47,7 @@ describe Note do
     it 'should assign duration' do
       note = Note.new 2, [@pitch]
       note.duration = 3
-      note.duration.should eq 3
+      expect(note.duration).to eq 3
     end
   end
 
@@ -64,7 +64,7 @@ describe Note do
   }.each do |fn_name,tgt_dur|
     describe ".#{fn_name}" do
       it "should make a note with duration #{tgt_dur}" do
-        Note.send(fn_name).duration.should eq tgt_dur
+        expect(Note.send(fn_name).duration).to eq tgt_dur
       end
     end
   end
@@ -79,15 +79,15 @@ describe Note do
 
       it 'should modifiy pitches by adding pitch diff' do
         @note2.pitches.each_with_index do |p,i|
-          p.diff(@note1.pitches[i]).should eq(@interval)
+          expect(p.diff(@note1.pitches[i])).to eq(@interval)
         end
       end
 
       it 'should also affect link targets' do
         @note1.links.each do |k,v|
           kt = k.transpose(@interval)
-          @note2.links.should have_key kt
-          @note2.links[kt].target_pitch.should eq(v.target_pitch.transpose(@interval))
+          expect(@note2.links).to have_key kt
+          expect(@note2.links[kt].target_pitch).to eq(v.target_pitch.transpose(@interval))
         end
       end
     end
@@ -103,7 +103,7 @@ describe Note do
   describe '#resize' do
     it 'should return new note object with given duration' do
       note = Note::quarter.resize("1/2".to_r)
-      note.duration.should eq(Rational(1,2))
+      expect(note.duration).to eq(Rational(1,2))
     end
   end
 
@@ -111,8 +111,8 @@ describe Note do
     context 'given a pitch object' do
       it 'should return new note object tied to given pitch' do
         note = Note.half(@pitch).tie(@pitch)
-        note.links.should have_key(@pitch)
-        note.links[@pitch].should be_a Link::Tie
+        expect(note.links).to have_key(@pitch)
+        expect(note.links[@pitch]).to be_a Link::Tie
       end
     end
 
@@ -121,8 +121,8 @@ describe Note do
         pitches = [@pitch,@pitch+1]
         note = Note.half(pitches).tie(pitches)
         pitches.each do |pitch|
-          note.links.should have_key(pitch)
-          note.links[pitch].should be_a Link::Tie
+          expect(note.links).to have_key(pitch)
+          expect(note.links[pitch]).to be_a Link::Tie
         end
       end
     end
@@ -166,7 +166,7 @@ describe Note do
         str = note.to_s
         res = @note_parser.parse(str)
         note2 = res.to_note
-        note2.should eq(note)
+        expect(note2).to eq(note)
       end
     end
   end
@@ -174,23 +174,23 @@ describe Note do
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
       n = Note.new(1,[C2])
-      YAML.load(n.to_yaml).should eq n
+      expect(YAML.load(n.to_yaml)).to eq n
 
       n = Note.new(1,[C2,E2])
-      YAML.load(n.to_yaml).should eq n
+      expect(YAML.load(n.to_yaml)).to eq n
 
       n = Note.new(1,[C2], articulation: STACCATO)
-      YAML.load(n.to_yaml).should eq n
+      expect(YAML.load(n.to_yaml)).to eq n
 
       n = Note.new(1,[E2], links: {E2 => Link::Portamento.new(F2)})
-      YAML.load(n.to_yaml).should eq n
+      expect(YAML.load(n.to_yaml)).to eq n
     end
   end
 
   describe '#pack' do
     it 'should produce a Hash' do
       n = Note.quarter([E2,F2,A2], articulation: STACCATO, marks: [BEGIN_SLUR], links: {E2 => Link::Tie.new, F2 => Link::Glissando.new(C3)})
-      n.pack.should be_a Hash
+      expect(n.pack).to be_a Hash
     end
   end
 
@@ -198,15 +198,15 @@ describe Note do
     it 'should produce an object equal the original' do
       n = Note.quarter([E2,F2,A2], articulation: STACCATO, marks: [BEGIN_SLUR], links: {E2 => Link::Tie.new, F2 => Link::Glissando.new(C3)})
       n2 = Note.unpack n.pack
-      n2.should be_a Note
-      n2.should eq n
+      expect(n2).to be_a Note
+      expect(n2).to eq n
     end
   end
 
   describe '#valid?' do
     context 'note with positive duration' do
       it 'should return true' do
-        Note.new(1,[C2]).should be_valid
+        expect(Note.new(1,[C2])).to be_valid
       end
     end
   end

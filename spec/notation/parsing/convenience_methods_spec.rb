@@ -9,7 +9,7 @@ class_cases = { Duration => {
   Note => {
     '/2' => Note::half,
     '99/10C2' => Note.new('99/10'.to_r, [C2]),
-    '5/2Db4,Eb5.' => Note.new('5/2'.to_r, [Db4,Eb5], articulation:STACCATO) 
+    '5/2Db4,Eb5.' => Note.new('5/2'.to_r, [Db4,Eb5], articulation:STACCATO)
   },
   Pitch => {
     'C2' => C2,
@@ -31,23 +31,23 @@ class_cases.each do |klass,cases|
   describe("#{klass}.parse") do
     it "should produce a single #{klass}" do
       cases.each do |str,tgt|
-        klass.parse(str).should eq(tgt)
+        expect(klass.parse(str)).to eq(tgt)
       end
     end
   end
-  
+
   describe("#{klass}.split_parse") do
     context 'joined with whitespace, using default pattern' do
       it "should produce multiple of #{klass}" do
         str = cases.keys.join(" ")
-        klass.split_parse(str).should eq(cases.values)
+        expect(klass.split_parse(str)).to eq(cases.values)
       end
     end
-    
+
     context 'joined by custom separator, using matching pattern' do
       it "should raise produce multiple of #{klass}" do
         str = cases.keys.join(";")
-        klass.split_parse(str,";").should eq(cases.values)
+        expect(klass.split_parse(str,";")).to eq(cases.values)
       end
     end
   end
@@ -64,7 +64,7 @@ end
       describe "\##{method}" do
         it "should return a #{klass}" do
           class_cases[klass].each do |str,tgt|
-            str.send(method).should eq(tgt)
+            expect(str.send(method)).to eq(tgt)
           end
         end
       end
@@ -83,14 +83,14 @@ end
         context 'joined with whitespace' do
           it "should return multiple of #{klass}" do
             str = class_cases[klass].keys.join(" ")
-            str.send(method).should eq(class_cases[klass].values)
+            expect(str.send(method)).to eq(class_cases[klass].values)
           end
         end
-        
+
         context 'joined by custom separator, using matching pattern' do
           it "should raise produce multiple of #{klass}" do
             str = class_cases[klass].keys.join(";")
-            str.send(method,";").should eq(class_cases[klass].values)
+            expect(str.send(method,";")).to eq(class_cases[klass].values)
           end
         end
       end

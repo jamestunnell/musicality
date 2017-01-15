@@ -5,7 +5,7 @@ describe Parsing::NonnegativeRationalParser do
 
   ["1/2","0/50","05/003","502530/1","0/1"].each do |str|
     it "should parse '#{str}'" do
-      parser.parse(str).should_not be nil
+    expect(parser.parse(str)).to_not be nil
     end
   end
 end

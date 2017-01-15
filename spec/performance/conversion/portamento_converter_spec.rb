@@ -14,21 +14,21 @@ describe PortamentoConverter do
       ].each do |start,finish,step_size|
         context "start at #{start.to_s}, end at #{finish.to_s}" do
           pitches = PortamentoConverter.portamento_pitches(start,finish,step_size)
-          
+
           it 'should begin at start pitch' do
-            pitches.first.should eq(start)
+            expect(pitches.first).to eq(start)
           end
-          
+
           it 'should space pitches using given cent step size' do
             (1...pitches.size).each do |i|
               diff = pitches[i].total_cents - pitches[i-1].total_cents
-              diff.should eq(step_size)
+              expect(diff).to eq(step_size)
             end
           end
-          
+
           it 'should end where one more step would be >= target pitch' do
             diff = finish.total_cents - pitches.last.total_cents
-            diff.should be <= step_size
+            expect(diff).to be <= step_size
           end
         end
       end
@@ -44,50 +44,50 @@ describe PortamentoConverter do
       ].each do |start,finish,step_size|
         context "start at #{start.to_s}, end at #{finish.to_s}" do
           pitches = PortamentoConverter.portamento_pitches(start,finish,step_size)
-          
+
           it 'should begin at start pitch' do
-            pitches.first.should eq(start)
+            expect(pitches.first).to eq(start)
           end
-          
+
           it 'should space pitches using negative of given cent step size' do
             (1...pitches.size).each do |i|
               diff = pitches[i-1].total_cents - pitches[i].total_cents
-              diff.should eq(step_size)
+              expect(diff).to eq(step_size)
             end
           end
-          
+
           it 'should end where one more step would be <= target pitch' do
             diff = pitches.last.total_cents - finish.total_cents
-            diff.should be <= step_size
+            expect(diff).to be <= step_size
           end
         end
       end
     end
   end
-  
+
   describe '.portamento_elements' do
     before :all do
       @dur = Rational(3,2)
       @att = Attack::NONE
       @els = PortamentoConverter.portamento_elements(C4,F4,25,@dur,@att)
     end
-    
+
     it 'should return an array of NoteSequence::Element objects' do
-      @els.each {|el| el.should be_a NoteSequence::Element }
+      @els.each {|el| expect(el).to be_a NoteSequence::Element }
     end
-    
+
     it 'should split up duration among elements' do
       sum = @els.map {|el| el.duration }.inject(0,:+)
-      sum.should eq(@dur)
+      expect(sum).to eq(@dur)
     end
-    
+
     it 'should set attack as given for first element only and set others to NONE' do
       els = PortamentoConverter.portamento_elements(C4,D4,10,1,Attack::ACCENT)
-      els.first.attack.should eq(Attack::ACCENT)
-      els[1..-1].each {|el| el.attack.should eq(Attack::NONE) }
+      expect(els.first.attack).to eq(Attack::ACCENT)
+      els[1..-1].each {|el| expect(el.attack).to eq(Attack::NONE) }
       els = PortamentoConverter.portamento_elements(C4,D4,10,1,Attack::TENUTO)
-      els.first.attack.should eq(Attack::TENUTO)
-      els[1..-1].each {|el| el.attack.should eq(Attack::NONE) }
+      expect(els.first.attack).to eq(Attack::TENUTO)
+      els[1..-1].each {|el| expect(el.attack).to eq(Attack::NONE) }
     end
   end
 end

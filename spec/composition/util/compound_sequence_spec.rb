@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 describe CompoundSequence do
   seqs = [ AddingSequence.new([1,1,0,2,-1]),
            RepeatingSequence.new([0,1,0,5,-13]) ]
-  
+
   describe "#at" do
     context 'given single offset' do
       [ :+, :* ].each do |sym|
@@ -14,14 +14,14 @@ describe CompoundSequence do
               vals = seqs.map {|s| s.at(offset) }
               val = vals[1..-1].inject(vals.first,sym)
               val2 = cseq.send(:at,offset)
-              val2.should eq(val)
+              expect(val2).to eq(val)
             end
           end
         end
       end
     end
   end
-  
+
   { :at => [[-5,1,33,2,0,-11], [-3,-2,-1,0,1,2,-3,-2,-1]],
     :take => [ 0, 5, 10, 13 ],
     :take_back => [ 0, 2, 6, 15 ],
@@ -40,11 +40,11 @@ describe CompoundSequence do
                 _vals[1..-1].inject(_vals.first,sym)
               end
               vals2 = cseq.send(method,arg).to_a
-              vals2.should eq(vals)
+              expect(vals2).to eq(vals)
             end
           end
         end
       end
-    end    
+    end
   end
 end

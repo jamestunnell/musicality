@@ -3,7 +3,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 NOTE_PARSER = Parsing::NoteParser.new
 
 describe Parsing::NoteNode do
-  context 'rest note' do  
+  context 'rest note' do
     {
       '/2' => Note.new(Rational(1,2)),
       '4/2' => Note.new(Rational(4,2)),
@@ -13,17 +13,17 @@ describe Parsing::NoteNode do
       res = NOTE_PARSER.parse(str)
       context str do
         it 'should parse as NoteNode' do
-          res.should be_a Parsing::NoteNode
+          expect(res).to be_a Parsing::NoteNode
         end
-  
+
         describe '#to_note' do
           n = res.to_note
           it 'should produce a Note' do
-            n.should be_a Note
+            expect(n).to be_a Note
           end
-          
+
           it 'should produce value matching input str' do
-            n.should eq tgt
+            expect(n).to eq tgt
           end
         end
       end
@@ -38,20 +38,20 @@ describe Parsing::NoteNode do
       "56/33B1!" => Note.new(Rational(56,33),[B1],articulation:STACCATISSIMO),
     }.each do |str,tgt|
       res = NOTE_PARSER.parse(str)
-      
+
       context str do
         it 'should parse as `Node' do
-          res.should be_a Parsing::NoteNode
+          expect(res).to be_a Parsing::NoteNode
         end
-  
+
         describe '#to_note' do
           n = res.to_note
           it 'should produce a Note' do
-            n.should be_a Note
+            expect(n).to be_a Note
           end
-          
+
           it 'should produce value matching input str' do
-            n.should eq tgt
+            expect(n).to eq tgt
           end
         end
       end
@@ -69,18 +69,18 @@ describe Parsing::NoteNode do
       res = NOTE_PARSER.parse(str)
       context str do
         it 'should parse as NoteNode' do
-          res.should be_a Parsing::NoteNode
+          expect(res).to be_a Parsing::NoteNode
         end
-  
+
         describe '#to_note' do
           n = res.to_note
 
           it 'should produce a Note' do
-            n.should be_a Note
+            expect(n).to be_a Note
           end
-          
+
           it 'should produce value matching input str' do
-            n.should eq tgt
+            expect(n).to eq tgt
           end
         end
       end
@@ -96,7 +96,7 @@ describe Parsing::NoteNode do
           it 'should produce a Note with marks set correctly' do
             str = "#{begin_marks_str}/4Bb2#{end_marks_str}"
             n = NOTE_PARSER.parse(str).to_note
-            n.marks.should eq(begin_marks+end_marks)
+            expect(n.marks).to eq(begin_marks+end_marks)
           end
         end
       end
@@ -107,7 +107,7 @@ describe Parsing::NoteNode do
     it 'should produce a Note with marks set to []' do
       str = "/4Bb2"
       n = NOTE_PARSER.parse(str).to_note
-      n.marks.should eq([])
+      expect(n.marks).to eq([])
     end
   end
 end

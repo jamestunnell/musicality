@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Parsing::PitchNode do
   parser = Parsing::PitchParser.new
-  
+
   {
     'C4' => C4,
     'Db2' => Db2,
@@ -19,19 +19,19 @@ describe Parsing::PitchNode do
     res = parser.parse(str)
     context str do
       it 'should parse as PitchNode' do
-        res.should be_a Parsing::PitchNode
+        expect(res).to be_a Parsing::PitchNode
       end
-      
+
       describe '#to_pitch' do
         p = res.to_pitch
         it 'should produce a Pitch object' do
-          p.should be_a Pitch
+          expect(p).to be_a Pitch
         end
-        
+
         it 'should produce pitch matching input str' do
-          p.should eq tgt
+          expect(p).to eq tgt
         end
       end
     end
-  end  
+  end
 end

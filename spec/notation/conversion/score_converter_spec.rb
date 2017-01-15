@@ -21,32 +21,32 @@ describe ScoreConverter do
 
     it 'should return Hash with original part names' do
       parts = ScoreConverter.new(@score,200).convert_parts
-      parts.should be_a Hash
-      parts.keys.sort.should eq(@score.parts.keys.sort)
+      expect(parts).to be_a Hash
+      expect(parts.keys.sort).to eq(@score.parts.keys.sort)
     end
 
     it 'should convert part dynamic change offsets from note-based to time-based' do
       parts = ScoreConverter.new(@score,200).convert_parts
-      parts.should have_key("simple")
+      expect(parts).to have_key("simple")
       part = parts["simple"]
-      part.dynamic_changes.keys.sort.should eq([2,6])
+      expect(part.dynamic_changes.keys.sort).to eq([2,6])
       change = part.dynamic_changes[2.0]
-      change.end_value.should eq(@changeA.end_value)
+      expect(change.end_value).to eq(@changeA.end_value)
       change = part.dynamic_changes[6.0]
-      change.end_value.should eq(@changeB.end_value)
-      change.duration.should eq(4)
+      expect(change.end_value).to eq(@changeB.end_value)
+      expect(change.duration).to eq(4)
 
       @score.start_meter = THREE_FOUR
       parts = ScoreConverter.new(@score,200).convert_parts
-      parts.should have_key("simple")
+      expect(parts).to have_key("simple")
       part = parts["simple"]
-      part.dynamic_changes.keys.sort.should eq([2,6])
+      expect(part.dynamic_changes.keys.sort).to eq([2,6])
       change = part.dynamic_changes[2.0]
-      change.end_value.should eq(@changeA.end_value)
-      change.duration.should eq(0)
+      expect(change.end_value).to eq(@changeA.end_value)
+      expect(change.duration).to eq(0)
       change = part.dynamic_changes[6.0]
-      change.end_value.should eq(@changeB.end_value)
-      change.duration.should eq(4)
+      expect(change.end_value).to eq(@changeB.end_value)
+      expect(change.duration).to eq(4)
     end
 
     context 'gradual changes with positive elapsed and/or remaining' do
@@ -61,9 +61,9 @@ describe ScoreConverter do
        parts = converter.convert_parts
        dcs = parts["abc"].dynamic_changes
 
-       dcs.keys.should eq([4, 14])
-       dcs[4.0].should eq(Change::Gradual.linear(Dynamics::F,4).to_trimmed(2,6))
-       dcs[14.0].should eq(Change::Gradual.linear(Dynamics::F,2).to_trimmed(8,10))
+       expect(dcs.keys).to eq([4, 14])
+       expect(dcs[4.0]).to eq(Change::Gradual.linear(Dynamics::F,4).to_trimmed(2,6))
+       expect(dcs[14.0]).to eq(Change::Gradual.linear(Dynamics::F,2).to_trimmed(8,10))
      end
     end
   end
@@ -77,25 +77,25 @@ describe ScoreConverter do
 
     it 'shuld return array with same size' do
       prog = @converter.convert_program
-      prog.should be_a Array
-      prog.size.should eq(@score.program.size)
+      expect(prog).to be_a Array
+      expect(prog.size).to eq(@score.program.size)
     end
 
     it 'should convert program segments offsets from note-based to time-based' do
       prog = ScoreConverter.new(@score,200).convert_program
-      prog.size.should eq(2)
-      prog[0].first.should eq(0)
-      prog[0].last.should eq(8)
-      prog[1].first.should eq(4)
-      prog[1].last.should eq(10)
+      expect(prog.size).to eq(2)
+      expect(prog[0].first).to eq(0)
+      expect(prog[0].last).to eq(8)
+      expect(prog[1].first).to eq(4)
+      expect(prog[1].last).to eq(10)
 
       @score.start_meter = THREE_FOUR
       prog = ScoreConverter.new(@score,200).convert_program
-      prog.size.should eq(2)
-      prog[0].first.should eq(0)
-      prog[0].last.should eq(8)
-      prog[1].first.should eq(4)
-      prog[1].last.should eq(10)
+      expect(prog.size).to eq(2)
+      expect(prog[0].first).to eq(0)
+      expect(prog[0].last).to eq(8)
+      expect(prog[1].first).to eq(4)
+      expect(prog[1].last).to eq(10)
     end
   end
 
@@ -103,7 +103,7 @@ describe ScoreConverter do
     it 'should return a timed score' do
       score = Score::Tempo.new(120, start_meter: FOUR_FOUR)
       converter = ScoreConverter.new(score,200)
-      converter.convert_score.should be_a Score::Timed
+      expect(converter.convert_score).to be_a Score::Timed
     end
 
     it 'should use output from convert_program' do
@@ -111,7 +111,7 @@ describe ScoreConverter do
       score = Score::Tempo.new(120, start_meter: FOUR_FOUR, program: prog)
       converter = ScoreConverter.new(score,200)
       nscore = converter.convert_score
-      nscore.program.should eq(converter.convert_program)
+      expect(nscore.program).to eq(converter.convert_program)
     end
 
     it 'should use output from convert_parts' do
@@ -122,7 +122,7 @@ describe ScoreConverter do
       )
       converter = ScoreConverter.new(score,200)
       nscore = converter.convert_score
-      nscore.parts.should eq(converter.convert_parts)
+      expect(nscore.parts).to eq(converter.convert_parts)
     end
   end
 end

@@ -7,14 +7,14 @@ describe Optimization do
         [ C4, Bb4, G2, A3 ].each do |p1|
           [ C4, Bb4, G2, A3 ].each do |p2|
             sol = Optimization.linking([p1], [p2])
-            sol.size.should eq 1
-            sol.should have_key p1
-            sol[p1].should eq p2
+            expect(sol.size).to eq 1
+            expect(sol).to have_key p1
+            expect(sol[p1]).to eq p2
           end
         end
       end
     end
-    
+
     context 'two unlinked, one untargeted' do
       it 'should map the closest unlinked to the one untargeted' do
         unlinked = [C4,G4]
@@ -26,11 +26,11 @@ describe Optimization do
           [Bb3] => {C4 => Bb3}
         }.each do |untargeted, expected_map|
           sol = Optimization.linking(unlinked, untargeted)
-          sol.should eq expected_map
+          expect(sol).to eq expected_map
         end
       end
     end
-    
+
     context 'one unlinked, two untargeted' do
       it 'should map the one unlinked to the closest untargeted' do
         unlinked = [C4]
@@ -41,11 +41,11 @@ describe Optimization do
           [G3,G4] => {C4 => G3}
         }.each do |untargeted, expected_map|
           sol = Optimization.linking(unlinked, untargeted)
-          sol.should eq expected_map
+          expect(sol).to eq expected_map
         end
       end
     end
-    
+
     context 'many unlinked, many untargeted' do
       it 'should map [unlinked.size, untargeted.size].min unlinked to untargeted, such that total pitch diffs is minimized' do
         {
@@ -65,7 +65,7 @@ describe Optimization do
         }.each do |unlinked_untargeted, expected_map|
           unlinked,untargeted = unlinked_untargeted
           sol = Optimization.linking(unlinked, untargeted)
-          sol.should eq expected_map
+          expect(sol).to eq expected_map
         end
       end
     end

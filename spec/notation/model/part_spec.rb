@@ -5,29 +5,29 @@ describe Part do
   describe '#initialize' do
     it 'should use empty containers for parameters not given' do
       p = Part.new(Dynamics::MP)
-      p.notes.should be_empty
-      p.dynamic_changes.should be_empty
+      expect(p.notes).to be_empty
+      expect(p.dynamic_changes).to be_empty
     end
-    
+
     it "should assign parameters given during construction" do
       p = Part.new(Dynamics::PPP)
-      p.start_dynamic.should eq Dynamics::PPP
-      
+      expect(p.start_dynamic).to eq Dynamics::PPP
+
       notes = [Note::whole([A2]), Note::half]
       dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
       p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs)
-      p.notes.should eq notes
-      p.dynamic_changes.should eq dcs
+      expect(p.notes).to eq notes
+      expect(p.dynamic_changes).to eq dcs
 
       p = Part.new(Dynamics::P, settings: [ "dummy" ])
-      p.settings.should eq [ "dummy" ]
+      expect(p.settings).to eq [ "dummy" ]
     end
   end
 
   describe '#find_settings' do
     context 'settings is empty' do
       it 'should return nil' do
-        Part.new(Dynamics::P).find_settings(Integer).should be_nil
+        expect(Part.new(Dynamics::P).find_settings(Integer)).to be_nil
       end
     end
 
@@ -38,14 +38,14 @@ describe Part do
 
       context 'given class of object in settings' do
         it 'should return the object' do
-          @part.find_settings(Integer).should be_a Integer
-          @part.find_settings(String).should be_a String
+          expect(@part.find_settings(Integer)).to be_a Integer
+          expect(@part.find_settings(String)).to be_a String
         end
       end
 
       context 'given class not of any object in settings' do
         it 'should return nil' do
-          @part.find_settings(Float).should be_nil
+          expect(@part.find_settings(Float)).to be_nil
         end
       end
     end
@@ -54,7 +54,7 @@ describe Part do
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
       p = Samples::SAMPLE_PART
-      YAML.load(p.to_yaml).should eq p
+      expect(YAML.load(p.to_yaml)).to eq p
     end
   end
 
@@ -63,7 +63,7 @@ describe Part do
       notes = [Note::whole([A2]), Note::half]
       dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
       p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, settings: [ "dummy" ])
-      p.pack.should be_a Hash
+      expect(p.pack).to be_a Hash
     end
   end
 
@@ -73,8 +73,8 @@ describe Part do
       dcs = { "1/2".to_r => Change::Immediate.new(Dynamics::P), 1 => Change::Gradual.sigmoid(Dynamics::MF,1) }
       p = Part.new(Dynamics::FF, notes: notes, dynamic_changes: dcs, settings: [ "dummy" ])
       p2 = Part.unpack p.pack
-      p2.should be_a Part
-      p2.should eq p
+      expect(p2).to be_a Part
+      expect(p2).to eq p
     end
   end
 
@@ -93,11 +93,11 @@ describe Part do
     }.each do |context_str, args|
       context context_str do
         it 'should return false' do
-          Part.new(*args).should be_invalid
+          expect(Part.new(*args)).to be_invalid
         end
       end
     end
-    
+
     {
       'valid notes' => [ Dynamics::PP,
         :notes => [ Note::whole, quarter([C5]) ]],
@@ -110,7 +110,7 @@ describe Part do
       context context_str do
         it 'should return true' do
           part = Part.new(*args)
-          part.should be_valid
+          expect(part).to be_valid
         end
       end
     end

@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Parsing::NumDenNode do
   dur_parser = Parsing::DurationParser.new
-  
+
   {
     '1/2' => Rational(1,2),
     '5/100' => Rational(5,100),
@@ -11,17 +11,17 @@ describe Parsing::NumDenNode do
     res = dur_parser.parse(str)
     context str do
       it 'should parse as NumDenNode' do
-        res.should be_a Parsing::NumDenNode
+        expect(res).to be_a Parsing::NumDenNode
       end
 
       describe '#to_r' do
         r = res.to_r
         it 'should produce a Rational' do
-          r.should be_a Rational
+          expect(r).to be_a Rational
         end
-        
+
         it 'should produce value matching input str' do
-          r.should eq tgt
+          expect(r).to eq tgt
         end
       end
     end
@@ -38,17 +38,17 @@ describe Parsing::NumOnlyNode do
     res = dur_parser.parse(str)
     context str do
       it 'should parse as NumOnlyNode' do
-        res.should be_a Parsing::NumOnlyNode
+        expect(res).to be_a Parsing::NumOnlyNode
       end
 
       describe '#to_r' do
         r = res.to_r
         it 'should produce a Rational' do
-          r.should be_a Rational
+          expect(r).to be_a Rational
         end
-        
+
         it 'should produce value matching input str' do
-          r.should eq tgt
+          expect(r).to eq tgt
         end
       end
     end
@@ -65,17 +65,17 @@ describe Parsing::DenOnlyNode do
     res = dur_parser.parse(str)
     context str do
       it 'should parse as DenOnlyNode' do
-        res.should be_a Parsing::DenOnlyNode
+        expect(res).to be_a Parsing::DenOnlyNode
       end
 
       describe '#to_r' do
         r = res.to_r
         it 'should produce a Rational' do
-          r.should be_a Rational
+          expect(r).to be_a Rational
         end
-        
+
         it 'should produce value matching input str' do
-          r.should eq tgt
+          expect(r).to eq tgt
         end
       end
     end

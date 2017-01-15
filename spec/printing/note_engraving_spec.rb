@@ -6,7 +6,7 @@ describe Note do
       it 'should return empty array' do
         [1,2,3,4,7,11].each do |dur|
           subdurs = Note.new(dur).fractional_subdurs(Rational(1,32))
-          subdurs.should be_empty
+          expect(subdurs).to be_empty
         end
       end
     end
@@ -23,11 +23,11 @@ describe Note do
           subdurs2 = n.fractional_subdurs(Rational(1,512))
 
           it 'should return descending power-of-two fractions' do
-            subdurs2.should eq subdurs2.sort.reverse
+            expect(subdurs2).to eq subdurs2.sort.reverse
           end
 
           it 'should return fractions that sum to note duration' do
-            subdurs2.inject(0.to_r,:+).should eq(dur)
+            expect(subdurs2.inject(0.to_r,:+)).to eq(dur)
           end
         end
       end
@@ -44,7 +44,7 @@ describe Note do
         subdurs2 = n.fractional_subdurs(Rational(1,1024))
 
         it 'should return fractions that sum to fractional note duration' do
-          subdurs2.inject(0.to_r,:+).should eq(dur - dur.to_i)
+          expect(subdurs2.inject(0.to_r,:+)).to eq(dur - dur.to_i)
         end
       end
     end
@@ -83,7 +83,7 @@ describe Note do
     #     it 'should return a string with "r" plus the duration denominator' do
     #       [1,0.5,0.25,0.125,0.0625].each do |dur|
     #         n = Note.new(dur.to_r)
-    #         n.to_lilypond.should eq("r" + n.duration.denominator.to_s)
+    #         expect(n.to_lilypond).to eq("r" + n.duration.denominator.to_s)
     #       end
     #     end
     #   end
@@ -92,7 +92,7 @@ describe Note do
     #     it 'should return a string with "r" plus half the duration denominator plus a "."' do
     #       [0.75,0.375].each do |dur|
     #         n = Note.new(dur.to_r)
-    #         n.to_lilypond.should eq("r" + (n.duration.denominator/2).to_s + ".")
+    #         expect(n.to_lilypond).to eq("r" + (n.duration.denominator/2).to_s + ".")
     #       end
     #     end
     #   end
@@ -108,9 +108,9 @@ describe Note do
     #         dur = subdurs.inject(0.to_r,:+)
     #         n = Note.new(dur)
     #         strs = n.to_lilypond.split
-    #         strs.size.should eq subdurs.size
+    #         expect(strs.size).to eq subdurs.size
     #         strs.each_with_index do |str,i|
-    #           str.should eq("r" + subdurs[i].to_r.denominator.to_s)
+    #           expect(str).to eq("r" + subdurs[i].to_r.denominator.to_s)
     #         end
     #       end
     #     end
@@ -120,7 +120,7 @@ describe Note do
     #     it 'should return "r" + 3/2 duration enclosed inside \tuplet 3/2 {}' do
     #       [Rational(1,6),Rational(1,3),Rational(1,12)].each do |dur|
     #         n = Note.new(dur.to_r)
-    #         n.to_lilypond.should eq("\\tuplet 3/2 {r#{(1.5.to_r*dur).denominator}}")
+    #         expect(n.to_lilypond).to eq("\\tuplet 3/2 {r#{(1.5.to_r*dur).denominator}}")
     #       end
     #     end
     #   end
@@ -132,7 +132,7 @@ describe Note do
     #       [1,0.5,0.25,0.125,0.0625].each do |dur|
     #         [C3,Eb2,G4].each do |pitch|
     #           n = Note.new(dur.to_r, pitch)
-    #           n.to_lilypond.should eq(pitch.to_lilypond + n.duration.denominator.to_s)
+    #           expect(n.to_lilypond).to eq(pitch.to_lilypond + n.duration.denominator.to_s)
     #         end
     #       end
     #     end
@@ -143,7 +143,7 @@ describe Note do
     #       [1,0.25,0.0625].each do |dur|
     #         pitch_group = [Eb2,C3,G4]
     #         n = Note.new(dur.to_r, pitch_group)
-    #         n.to_lilypond.should eq("<" + pitch_group.map {|p| p.to_lilypond}.join(" ") + ">" + n.duration.denominator.to_s)
+    #         expect(n.to_lilypond).to eq("<" + pitch_group.map {|p| p.to_lilypond}.join(" ") + ">" + n.duration.denominator.to_s)
     #       end
     #     end
     #   end
@@ -155,7 +155,7 @@ describe Note do
     #       [0.75,0.375].each do |dur|
     #         [C3,Eb2,G4].each do |pitch|
     #           n = Note.new(dur.to_r, pitch)
-    #           n.to_lilypond.should eq(pitch.to_lilypond + (n.duration.denominator/2).to_s + ".")
+    #           expect(n.to_lilypond).to eq(pitch.to_lilypond + (n.duration.denominator/2).to_s + ".")
     #         end
     #       end
     #     end
@@ -166,7 +166,7 @@ describe Note do
     #       [0.75,0.375].each do |dur|
     #         pitch_group = [Eb2,C3,G4]
     #         n = Note.new(dur.to_r, pitch_group)
-    #         n.to_lilypond.should eq("<" + pitch_group.map {|p| p.to_lilypond}.join(" ") + ">" + (n.duration.denominator/2).to_s + ".")
+    #         expect(n.to_lilypond).to eq("<" + pitch_group.map {|p| p.to_lilypond}.join(" ") + ">" + (n.duration.denominator/2).to_s + ".")
     #       end
     #     end
     #   end
@@ -186,12 +186,12 @@ describe Note do
     #           n = Note.new(dur,pitch)
     #           str = n.to_lilypond
     #           strs = str.split
-    #           strs.size.should eq subdurs.size
+    #           expect(strs.size).to eq subdurs.size
     #           strs.each_with_index do |str,i|
     #             if i != (strs.size-1)
-    #               str.should eq(pitch.to_lilypond + subdurs[i].to_r.denominator.to_s + "~")
+    #               expect(str).to eq(pitch.to_lilypond + subdurs[i].to_r.denominator.to_s + "~")
     #             else
-    #               str.should eq(pitch.to_lilypond + subdurs[i].to_r.denominator.to_s)
+    #               expect(str).to eq(pitch.to_lilypond + subdurs[i].to_r.denominator.to_s)
     #             end
     #           end
     #         end

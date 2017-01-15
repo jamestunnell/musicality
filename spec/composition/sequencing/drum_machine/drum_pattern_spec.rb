@@ -8,7 +8,7 @@ describe DrumPattern do
   describe '#initialize' do
     context 'no part_name_portions given' do
       it 'should produce no part_notes' do
-        DrumPattern.new(0, {}).part_notes.should be_empty
+        expect(DrumPattern.new(0, {}).part_notes).to be_empty
       end
     end
 
@@ -22,9 +22,9 @@ describe DrumPattern do
       context 'total duration of 1 given' do
         it 'should produce 1 part_notes with total duration of 1' do
           dp = DrumPattern.new(1, "X" => [1,1])
-          dp.part_notes.size.should eq(1)
-          dp.part_notes.keys[0].should eq("X")
-          notes_duration(dp.part_notes.values[0]).should eq(1)
+          expect(dp.part_notes.size).to eq(1)
+          expect(dp.part_notes.keys[0]).to eq("X")
+          expect(notes_duration(dp.part_notes.values[0])).to eq(1)
         end
       end
     end
@@ -38,7 +38,7 @@ describe DrumPattern do
         end
 
         it 'should produce as many part_notes as were given' do
-          @dp.part_notes.size.should eq(@part_name_portions.size)
+          expect(@dp.part_notes.size).to eq(@part_name_portions.size)
         end
 
         it 'should produce part_notes that match given part_name_portions' do
@@ -49,7 +49,7 @@ describe DrumPattern do
 
         it 'should produce all part_notes with total duration equal to that of pattern' do
           @dp.part_notes.values.each do |notes|
-            notes_duration(notes).should eq(@duration)
+            expect(notes_duration(notes)).to eq(@duration)
           end
         end
       end

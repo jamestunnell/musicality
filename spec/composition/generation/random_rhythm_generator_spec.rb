@@ -13,27 +13,27 @@ describe RandomRhythmGenerator do
       end
     end
   end
-  
+
   before :all do
     @rrgs = [
       { 1/8.to_r => 0.25, 1/4.to_r => 0.5, 1/2.to_r => 0.25 },
       { 1/6.to_r => 0.25, 1/4.to_r => 0.25, 1/3.to_r => 0.25, 1/12.to_r => 0.25 }
     ].map {|durs_w_probs| RandomRhythmGenerator.new(durs_w_probs) }
   end
-  
+
   describe '#random_rhythm' do
     it 'should return durations that add to given total dur' do
       @rrgs.each do |rrg|
         [3,1,1/2.to_r,5/8.to_r,15/16.to_r].each do |total_dur|
           20.times do
             rhythm = rrg.random_rhythm(total_dur)
-            rhythm.inject(0,:+).should eq(total_dur)
+            expect(rhythm.inject(0,:+)).to eq(total_dur)
           end
         end
       end
     end
   end
-  
+
   describe '#random_dur' do
     it 'should return a random duration, according to the probabilities given at initialization' do
       @rrgs.each do |rrg|
@@ -42,7 +42,7 @@ describe RandomRhythmGenerator do
         rrg.durations.each_with_index do |dur,i|
           count = counts[dur]
           tgt_prob = rrg.probabilities[i]
-          (count / 1000.to_f).should be_within(0.05).of(tgt_prob)
+          expect((count / 1000.to_f)).to be_within(0.05).of(tgt_prob)
         end
       end
     end

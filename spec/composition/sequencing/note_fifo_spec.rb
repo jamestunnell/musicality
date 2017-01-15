@@ -5,8 +5,8 @@ describe Sequencer::NoteFIFO do
     it 'should add the given notes to the FIFO' do
       notes = [Note.half, Note.quarter]
       fifo = Sequencer::NoteFIFO.new(notes)
-      fifo.notes.should eq(notes)
-      fifo.duration.should eq(Rational(3,4))
+      expect(fifo.notes).to eq(notes)
+      expect(fifo.duration).to eq(Rational(3,4))
     end
   end
 
@@ -14,12 +14,12 @@ describe Sequencer::NoteFIFO do
     context 'FIFO does not have notes' do
       it 'should return true' do
         # initialized without notes
-        Sequencer::NoteFIFO.new.empty?.should be_truthy
+        expect(Sequencer::NoteFIFO.new.empty?).to be_truthy
 
         # or removed later
         fifo = Sequencer::NoteFIFO.new
         fifo.remove_notes(fifo.duration)
-        fifo.empty?.should be_truthy
+        expect(fifo.empty?).to be_truthy
       end
     end
 
@@ -27,12 +27,12 @@ describe Sequencer::NoteFIFO do
       it 'should return false' do
         # initialized with notes
         notes = [Note.whole, Note.half, Note.quarter]
-        Sequencer::NoteFIFO.new(notes).empty?.should be_falsey
+        expect(Sequencer::NoteFIFO.new(notes).empty?).to be_falsey
 
         # or added later
         fifo = Sequencer::NoteFIFO.new
         fifo.add_notes(notes)
-        fifo.empty?.should be_falsey
+        expect(fifo.empty?).to be_falsey
       end
     end
   end
@@ -47,11 +47,11 @@ describe Sequencer::NoteFIFO do
       end
 
       it 'should not change the current note array' do
-        @fifo.notes.should eq(@notes)
+        expect(@fifo.notes).to eq(@notes)
       end
 
       it 'should not change the duration' do
-        @fifo.duration.should eq(@prev_duration)
+        expect(@fifo.duration).to eq(@prev_duration)
       end
     end
 
@@ -65,11 +65,11 @@ describe Sequencer::NoteFIFO do
       end
 
       it 'should append the given note to the FIFO note array' do
-        @fifo.notes.should eq(@notes + [@new_note])
+        expect(@fifo.notes).to eq(@notes + [@new_note])
       end
 
       it 'should increase the FIFO duration by the total duration of the given note' do
-        @fifo.duration.should eq(@prev_duration + @new_note.duration)
+        expect(@fifo.duration).to eq(@prev_duration + @new_note.duration)
       end
     end
 
@@ -83,12 +83,12 @@ describe Sequencer::NoteFIFO do
       end
 
       it 'should append the given notes to the FIFO note array' do
-        @fifo.notes.should eq(@notes + @new_notes)
+        expect(@fifo.notes).to eq(@notes + @new_notes)
       end
 
       it 'should increase the FIFO duration by the total duration of the given notes' do
         add_dur = @new_notes.inject(0){|sum, n| sum + n.duration }
-        @fifo.duration.should eq(@prev_duration + add_dur)
+        expect(@fifo.duration).to eq(@prev_duration + add_dur)
       end
     end
   end
@@ -114,16 +114,16 @@ describe Sequencer::NoteFIFO do
     context 'given target_duration of 0' do
       it 'should return an empty array and not affect FIFO' do
         removed_notes = @fifo.remove_notes(0)
-        removed_notes.should be_empty
-        @fifo.notes.should eq(@notes)
+        expect(removed_notes).to be_empty
+        expect(@fifo.notes).to eq(@notes)
       end
     end
 
     context 'given target duration equal to FIFO duration' do
       it 'should empty FIFO and bring duration to 0' do
         @fifo.remove_notes(@fifo.duration)
-        @fifo.empty?.should be_truthy
-        @fifo.duration.should eq(0)
+        expect(@fifo.empty?).to be_truthy
+        expect(@fifo.duration).to eq(0)
       end
     end
 
@@ -138,13 +138,13 @@ describe Sequencer::NoteFIFO do
 
         it 'should reduce FIFO duration by the given target duration' do
           @fifo.remove_notes(@target_dur)
-          @fifo.duration.should eq(@prev_fifo_dur - @target_dur)
+          expect(@fifo.duration).to eq(@prev_fifo_dur - @target_dur)
         end
 
         it 'should remove notes from the front of the FIFO, totally in tact' do
           removed = @fifo.remove_notes(@target_dur)
-          removed.should eq(@notes[0..1])
-          @fifo.notes.should eq([@notes.last])
+          expect(removed).to eq(@notes[0..1])
+          expect(@fifo.notes).to eq([@notes.last])
         end
       end
 
@@ -158,7 +158,7 @@ describe Sequencer::NoteFIFO do
 
         it 'should reduce FIFO duration by the given target duration' do
           @fifo.remove_notes(@target_dur)
-          @fifo.duration.should eq(@prev_fifo_dur - @target_dur)
+          expect(@fifo.duration).to eq(@prev_fifo_dur - @target_dur)
         end
 
         it 'should remove notes from the front of the FIFO, dividing the last one into two tied notes' do
@@ -174,8 +174,8 @@ describe Sequencer::NoteFIFO do
 
           removed = @fifo.remove_notes(@target_dur)
 
-          removed.should eq(expected_removed)
-          @fifo.notes.should eq(expected_remaining)
+          expect(removed).to eq(expected_removed)
+          expect(@fifo.notes).to eq(expected_remaining)
         end
       end
     end

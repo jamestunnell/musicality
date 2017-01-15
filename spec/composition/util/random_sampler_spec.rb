@@ -28,17 +28,17 @@ describe RandomSampler do
           sampler.values.each_with_index do |val,i|
             count = counts[val]
             tgt_prob = sampler.probabilities[i]
-            (count / 1000.to_f).should be_within(0.1).of(tgt_prob)
+            expect(count / 1000.to_f).to be_within(0.1).of(tgt_prob)
           end
         end
       end
     end
-    
+
     context 'given number of samples to take' do
       it 'should return array with the given number of samples' do
         @samplers.each do |sampler|
           [1,2,5,10].each do |n|
-            sampler.sample(n).size.should eq(n)
+            expect(sampler.sample(n).size).to eq(n)
           end
         end
       end

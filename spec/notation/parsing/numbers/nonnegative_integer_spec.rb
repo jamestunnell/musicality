@@ -5,11 +5,11 @@ describe Parsing::NonnegativeIntegerParser do
 
   ["1","50","05","502530","0"].each do |str|
     it "should parse '#{str}'" do
-      parser.parse(str).should_not be nil
+      expect(parser.parse(str)).to_not be nil
     end
   end
 
   it 'should not parse an empty string' do
-    parser.parse("").should be nil
+    expect(parser.parse("")).to be nil
   end
 end

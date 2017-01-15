@@ -16,11 +16,11 @@ describe Parsing::SegmentParser do
       str,tgt = str_tgt
       res = parser.parse(str)
       it 'should parse' do
-        res.should_not be nil
+        expect(res).to_not be nil
       end
-      
+
       it 'should return node that converts to exclusive range via #to_range' do
-        res.to_range.should eq tgt
+        expect(res.to_range).to eq tgt
       end
     end
   end

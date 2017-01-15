@@ -4,7 +4,7 @@ describe Parsing::NoteParser do
   before :all do
     @parser = Parsing::NoteParser.new
   end
-  
+
    valid_cases = {
     'duration only' => ['1/4','/2','1','55/33'],
     'single pitch' => ['/4C2','5/3Db3','/33E#8'],
@@ -26,11 +26,11 @@ describe Parsing::NoteParser do
     'begins marks at the end' => ['1Bb3('],
     'end marks at the beginning ' => [')3C3']
   }
-  
+
   valid_cases.each do |descr, strs|
     context(descr + ' (valid)') do
       it 'should parse' do
-        strs.each {|s| @parser.should parse(s) }
+        strs.each {|s| expect(@parser).to parse(s) }
       end
     end
   end
@@ -38,7 +38,7 @@ describe Parsing::NoteParser do
   invalid_cases.each do |descr, strs|
     context(descr + ' (invalid)') do
       it 'should not parse' do
-        strs.each {|s| @parser.should_not parse(s) }
+        strs.each {|s| expect(@parser).to_not parse(s) }
       end
     end
   end

@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
 describe Parsing::MeterParser do
   parser = Parsing::MeterParser.new
-  
+
   {
     '4/4' => FOUR_FOUR,
     '2*3/8' => SIX_EIGHT,
@@ -11,13 +11,13 @@ describe Parsing::MeterParser do
     '3/4' => THREE_FOUR
   }.each do |str,met|
     res = parser.parse(str)
-    
+
     it "should parse #{str}" do
-      res.should_not be nil
+      expect(res).to_not be nil
     end
-    
+
     it 'should produce node that properly converts to meter' do
-      res.to_meter.should eq met
+      expect(res.to_meter).to eq met
     end
   end
 end

@@ -36,7 +36,7 @@ describe Score::Tempo do
     it 'should use ScoreConverter#convert_score' do
       nscore1 = @score.to_timed(200)
       nscore2 = ScoreConverter.new(@score,200).convert_score
-      nscore1.should eq(nscore2)
+      expect(nscore1).to eq(nscore2)
     end
   end
 end

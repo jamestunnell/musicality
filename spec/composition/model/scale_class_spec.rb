@@ -12,65 +12,65 @@ describe ScaleClass do
       end
     end
   end
-  
+
   describe '#intervals' do
     it 'should return intervals given to #initialize' do
       valid.each do |intervals|
-        ScaleClass.new(intervals).intervals.should eq(intervals)
+        expect(ScaleClass.new(intervals).intervals).to eq(intervals)
       end
     end
   end
-  
+
   describe '#==' do
     it 'should compare given enumerable to intervals' do
       valid.each do |intervals|
         sc = ScaleClass.new(intervals)
-        sc.should eq(intervals)
-        sc.should_not eq(intervals + [2])
+        expect(sc).to eq(intervals)
+        expect(sc).to_not eq(intervals + [2])
       end
     end
   end
-  
+
   describe '#rotate' do
     it 'should return a new ScaleClass, with rotated intervals' do
       valid.each do |intervals|
         sc = ScaleClass.new(intervals)
         [ 0, 1, -1, 4, -3, 2, 6 ].each do |n|
           sc2 = sc.rotate(n)
-          sc2.should_not be(sc)
-          sc2.should eq(intervals.rotate(n))
+          expect(sc2).to_not be(sc)
+          expect(sc2).to eq(intervals.rotate(n))
         end
       end
     end
-    
+
     it 'should rotate by 1, by default' do
       intervals = valid.first
-      ScaleClass.new(intervals).rotate.should eq(intervals.rotate(1))
+      expect(ScaleClass.new(intervals).rotate).to eq(intervals.rotate(1))
     end
   end
-  
+
   describe '#each' do
     before :all do
       @sc = ScaleClass.new(valid.first)
     end
-    
+
     context 'block given' do
       it 'should yield all interval values' do
         xs = []
         @sc.each do |x|
           xs.push(x)
         end
-        xs.should eq(@sc.intervals)
+        expect(xs).to eq(@sc.intervals)
       end
     end
-    
+
     context 'no block given' do
       it 'should return an enumerator' do
-        @sc.each.should be_a Enumerator
+        expect(@sc.each).to be_a Enumerator
       end
     end
   end
-  
+
   describe '#to_pitch_seq' do
     before :all do
       @sc = ScaleClass.new([2,2,1,2,2,2,1])
@@ -79,20 +79,20 @@ describe ScaleClass do
       @prev_octave = [C3,D3,E3,F3,G3,A3,B3,C4]
       @pseq = @sc.to_pitch_seq(@start_pitch)
     end
-    
+
     it 'should return a AddingSequence' do
-      @pseq.should be_a AddingSequence
+      expect(@pseq).to be_a AddingSequence
     end
-    
+
     it 'should be centered at given start pitch' do
-      @pseq.at(0).should eq(@start_pitch)
+      expect(@pseq.at(0)).to eq(@start_pitch)
     end
-    
+
     it 'should walk forward/backward through scale' do
-      @pseq.take(8).to_a.should eq(@first_octave)
-      @pseq.over(0...8).to_a.should eq(@first_octave)
-      @pseq.take_back(7).to_a.should eq(@prev_octave.reverse.drop(1))
-      @pseq.over(-7..0).to_a.should eq(@prev_octave)
+      expect(@pseq.take(8).to_a).to eq(@first_octave)
+      expect(@pseq.over(0...8).to_a).to eq(@first_octave)
+      expect(@pseq.take_back(7).to_a).to eq(@prev_octave.reverse.drop(1))
+      expect(@pseq.over(-7..0).to_a).to eq(@prev_octave)
     end
   end
 end

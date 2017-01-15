@@ -13,53 +13,53 @@ require 'yaml'
 
     describe '#initialize' do
       it 'should assign the given pitch to :target_pitch' do
-        @obj.target_pitch.should eq(@tgt_pitch)
+        expect(@obj.target_pitch).to eq(@tgt_pitch)
       end
     end
-    
+
     describe '#==' do
       it 'should return true if two links have the same target pitch' do
-        @obj.should eq(klass.new(@tgt_pitch))
+        expect(@obj).to eq(klass.new(@tgt_pitch))
       end
-      
+
       it 'should return false if two links do not have the same target pitch' do
-        @obj.should_not eq(klass.new(@tgt_pitch.transpose(1)))
+        expect(@obj).to_not eq(klass.new(@tgt_pitch.transpose(1)))
       end
-      
+
       it 'should return false if the link type is different' do
-        @obj.should_not eq(klass2.new(@tgt_pitch))
+        expect(@obj).to_not eq(klass2.new(@tgt_pitch))
       end
     end
-    
+
     describe '#clone' do
       it 'should return a link equal to original' do
-        @obj.clone.should eq @obj
+        expect(@obj.clone).to eq @obj
       end
     end
-    
+
     describe '#to_yaml' do
       it 'should produce YAML that can be loaded' do
-        YAML.load(@obj.to_yaml).should eq @obj
+        expect(YAML.load(@obj.to_yaml)).to eq @obj
       end
     end
 
     describe '#pack' do
       it 'should produce a Hash' do
-        @obj.pack.should be_a Hash
+        expect(@obj.pack).to be_a Hash
       end
     end
 
     describe 'unpack' do
       it 'should produce a Link object equal the original' do
         obj2 = @obj.class.unpack @obj.pack
-        obj2.should be_a @obj.class
-        obj2.should eq @obj
+        expect(obj2).to be_a @obj.class
+        expect(obj2).to eq @obj
       end
     end
-    
+
     describe '#to_s' do
       it 'should produce string that include link char and target pitch str' do
-        @obj.to_s.should eq(link_symbol + @tgt_pitch.to_s)
+        expect(@obj.to_s).to eq(link_symbol + @tgt_pitch.to_s)
       end
     end
   end
@@ -72,43 +72,43 @@ describe Link::Tie do
 
   describe '#==' do
     it 'should return true if another Tie object is given' do
-      @obj.should eq(Link::Tie.new)
+      expect(@obj).to eq(Link::Tie.new)
     end
-    
+
     it 'should return false if an object of another class is given' do
-      @obj.should_not eq(5)
+      expect(@obj).to_not eq(5)
     end
   end
-  
+
   describe '#clone' do
     it 'should return a link equal to original' do
-      @obj.clone.should eq @obj
+      expect(@obj.clone).to eq @obj
     end
   end
-  
+
   describe '#to_yaml' do
     it 'should produce YAML that can be loaded' do
-      YAML.load(@obj.to_yaml).should eq @obj
+      expect(YAML.load(@obj.to_yaml)).to eq @obj
     end
   end
 
   describe '#pack' do
     it 'should produce a Hash' do
-      @obj.pack.should be_a Hash
+      expect(@obj.pack).to be_a Hash
     end
   end
 
   describe 'unpack' do
     it 'should produce a Link object equal the original' do
       obj2 = @obj.class.unpack @obj.pack
-      obj2.should be_a @obj.class
-      obj2.should eq @obj
+      expect(obj2).to be_a @obj.class
+      expect(obj2).to eq @obj
     end
   end
 
   describe '#to_s' do
     it "should return #{LINK_SYMBOLS[Link::Tie]}" do
-      @obj.to_s.should eq(LINK_SYMBOLS[Link::Tie])
+      expect(@obj.to_s).to eq(LINK_SYMBOLS[Link::Tie])
     end
   end
 end
