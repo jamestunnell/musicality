@@ -1,6 +1,6 @@
 module Musicality
 
-module PitchClasses  
+module PitchClasses
   C = Bs = 0
   Cs = Db = 1
   D = 2
@@ -15,8 +15,6 @@ module PitchClasses
   B = Cb = 11
 end
 
-PITCH_CLASSES = PitchClasses.constants.map do |sym|
-  PitchClasses.const_get(sym)
-end.sort
+PITCH_CLASSES = PitchClasses.constants.map { |sym| PitchClasses.const_get(sym) }.sort
 
 end

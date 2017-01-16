@@ -107,10 +107,10 @@ describe Note do
     end
   end
 
-  describe '#tie' do
+  describe '#tie_to' do
     context 'given a pitch object' do
       it 'should return new note object tied to given pitch' do
-        note = Note.half(@pitch).tie(@pitch)
+        note = Note.half(@pitch).tie_to(@pitch)
         expect(note.links).to have_key(@pitch)
         expect(note.links[@pitch]).to be_a Link::Tie
       end
@@ -119,7 +119,7 @@ describe Note do
     context 'given an array of pitch objects' do
       it 'should return new note object tied to given pitches' do
         pitches = [@pitch,@pitch+1]
-        note = Note.half(pitches).tie(pitches)
+        note = Note.half(pitches).tie_to(pitches)
         pitches.each do |pitch|
           expect(note.links).to have_key(pitch)
           expect(note.links[pitch]).to be_a Link::Tie

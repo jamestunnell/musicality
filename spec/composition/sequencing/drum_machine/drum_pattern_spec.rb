@@ -15,15 +15,15 @@ describe DrumPattern do
     context 'one part_name_portions given' do
       context 'total duration of 0 given' do
         it 'should raise ArgumentError' do
-          expect { DrumPattern.new(0, "X" => [1,1]) }.to raise_error(ArgumentError)
+          expect { DrumPattern.new(0, DrumParts::SNARE_DRUM => [1,1]) }.to raise_error(ArgumentError)
         end
       end
 
       context 'total duration of 1 given' do
         it 'should produce 1 part_notes with total duration of 1' do
-          dp = DrumPattern.new(1, "X" => [1,1])
+          dp = DrumPattern.new(1, DrumParts::SNARE_DRUM => [1,1])
           expect(dp.part_notes.size).to eq(1)
-          expect(dp.part_notes.keys[0]).to eq("X")
+          expect(dp.part_notes.keys[0]).to eq(DrumParts::SNARE_DRUM)
           expect(notes_duration(dp.part_notes.values[0])).to eq(1)
         end
       end
@@ -32,7 +32,7 @@ describe DrumPattern do
     context 'multiple part_name_portions given' do
       context 'total duration of 2 given' do
         before :all do
-          @part_name_portions = {"X" => [1,1], "Y" => [1,1,3]}
+          @part_name_portions = {DrumParts::SNARE_DRUM => [1,1], DrumParts::CLOSED_HI_HAT => [1,1,3]}
           @duration = 2
           @dp = DrumPattern.new(@duration, @part_name_portions)
         end

@@ -43,6 +43,17 @@ class DrumMachine < Sequencer
 
     super(part_sequenceables)
   end
+
+  def make_empty_parts drum_kit, part_dynamics = {}
+    Hash[ part_names.map do |part_name|
+      unless drum_kit.part_settings.has_key?(part_name)
+        raise ArgumentError, "Drum kit does not have settings for part: #{part_name}"
+      end
+      part_dynamic = part_dynamics.has_key?(part_name) ? part_dynamics[part_name] : Dynamics::MF
+      part = Part.new(part_dynamic, settings: [drum_kit.part_settings[part_name]])
+      [ part_name, part ]
+    end]
+  end
 end
 
 end

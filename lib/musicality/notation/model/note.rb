@@ -61,7 +61,7 @@ class Note
     return new_note
   end
 
-  def tie pitches
+  def tie_to pitches
     new_note = self.clone
     if pitches.is_a? Pitch
       pitches = [pitches]
@@ -71,6 +71,10 @@ class Note
       new_note.links[pitch] = Link::Tie.new
     end
     return new_note
+  end
+
+  def mark_accented!
+    @articulation = Articulations::ACCENT
   end
 
   def transpose diff

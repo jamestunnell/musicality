@@ -7,7 +7,7 @@ describe Sequencer do
         it 'should return the part notes with the last note being shortened but tied' do
           @seq = Sequencer.new("X" => NoteArray.new([Note.half(Pitches::G2)]))
           expect(@seq.next_part_notes(Rational(1,4))).to eq(
-            "X" => [ Note.quarter(Pitches::G2).tie(Pitches::G2) ]
+            "X" => [ Note.quarter(Pitches::G2).tie_to(Pitches::G2) ]
           )
         end
       end

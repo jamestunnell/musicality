@@ -2,109 +2,6 @@ module Musicality
 module SuperCollider
 module SynthDefs
 
-VOLUME_CONTROL = SynthDef.new(name: "volume_control", params: { :in => nil, :out => nil, :control => nil },
-  body: <<-SCLANG,
-  var sig = In.ar([in,in+1]) * In.kr(control);
-  Out.ar(out,sig);
-SCLANG
-  credit: "James Tunnell",
-)
-
-VOLUME_CHANGE = SynthDef.new(name: "volume_change", params: { :vol_bus => nil, :vol => nil, :dur => nil },
-  body: "  Out.kr(vol_bus, Line.kr(In.kr(vol_bus), vol, dur));",
-  credit: "James Tunnell",
-)
-
-KICK808 = SynthDef.new(name: "kick808", params: { :out => 0 },
-  body: <<-SCLANG,
-  var sig = LPF.ar(Ringz.ar(Impulse.ar(0), 60, 1), 500);
-  var cmp = CompanderD.ar(sig, -20.dbamp, 1, 0.3, 0.003, 0.08);
-
-  cmp = cmp * (10.dbamp);
-  Out.ar(out, cmp.dup);
-SCLANG
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014"
-)
-
-KICK2 = SynthDef.new(name: "kick2", params: { :out => 0 },
-  body: <<-SCLANG,
-  var env0, env1, env1m, sig;
-
-  env0 =  EnvGen.ar(
-    Env([0.5, 1, 0.5, 0], [0.005, 0.06, 0.26], [-4, -2, -4]), doneAction:2
-  );
-  env1 = EnvGen.ar(Env([110, 59, 29], [0.005, 0.29], [-4, -5]));
-  env1m = env1.midicps;
-
-  sig = LFPulse.ar(env1m, 0, 0.5, 1, -0.5);
-  sig = sig + WhiteNoise.ar(1);
-  sig = LPF.ar(sig, env1m * 1.5, env0);
-  sig = sig + SinOsc.ar(env1m, 0.5, env0);
-
-  sig = sig * 1.2;
-  sig = sig.clip2(1);
-
-  Out.ar(out, sig.dup * 0.1);
-SCLANG
-  credit: "Reformatted for the Roundhouse Synth Design course from 08091500Acid309 by otophilia from SuperCollider/examples folder",
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-SNARE1 = SynthDef.new(name: "snare1", params: { :out => 0, :amp => 0.8 },
-  body: <<-SCLANG,
-  var env0, env1, env2, env1m, oscs, noise, sig;
-
-  env0 = EnvGen.ar(Env([0.5, 1, 0.5, 0], [0.005, 0.03, 0.10], [-4, -2, -4]));
-  env1 = EnvGen.ar(Env([110, 60, 49], [0.005, 0.1], [-4, -5]));
-  env1m = env1.midicps;
-  env2 = EnvGen.ar(Env([1, 0.4, 0], [0.05, 0.13], [-2, -2]), doneAction:2);
-
-  oscs = LFPulse.ar(env1m, 0, 0.5, 1, -0.5) +
-  LFPulse.ar(env1m * 1.6, 0, 0.5, 0.5, -0.25);
-  oscs = LPF.ar(oscs, env1m * 1.2, env0);
-  oscs = oscs + SinOsc.ar(env1m, 0.8, env0);
-
-  noise = WhiteNoise.ar(0.2);
-  noise = HPF.ar(noise, 200, 2);
-  noise = BPF.ar(noise, 6900, 0.6, 3) + noise;
-  noise = noise * env2;
-
-  sig = oscs + noise;
-  sig = sig.clip2(1) * amp;
-
-  Out.ar(out, sig.dup);
-SCLANG
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-CLAP1 = SynthDef.new(name: "clap1", params: { :out => 0, :amp => 0.5 },
-  body: <<-SCLANG,
-  var env1, env2, sig, noise1, noise2;
-
-  env1 = EnvGen.ar(Env(
-    [0, 1, 0, 1, 0, 1, 0, 1, 0],
-    [0.001, 0.013, 0, 0.01, 0, 0.01, 0, 0.03],
-    [0, -3, 0, -3, 0, -3, 0, -4]
-  ));
-  env2 = EnvGen.ar(Env([0, 1, 0], [0.02, 0.3], [0, -4]), doneAction:2);
-
-  noise1 = WhiteNoise.ar(env1);
-  noise1 = HPF.ar(noise1, 600);
-  noise1 = BPF.ar(noise1, 2000, 3);
-
-  noise2 = WhiteNoise.ar(env2);
-  noise2 = HPF.ar(noise2, 1000);
-  noise2 = BPF.ar(noise2, 1200, 0.7, 0.7);
-
-  sig = noise1 + noise2;
-  sig = sig * 2;
-  sig = sig.softclip * amp;
-
-  Out.ar(out, sig.dup);
-SCLANG
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
 AXEL = DEFAULT = SynthDef.new(name: "axel", params: { :freq => 440, :lpfreq => 12000, :rq => 0.2, :gate => 1, :out => 0 },
   body: <<-SCLANG,
   var chorus = LFNoise2.ar(1).range(0.99, 1.01);
@@ -193,19 +90,6 @@ SCLANG
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-BASS4 = SynthDef.new(name: "bass4", params: { :out => 0, :gate => 1, :freq => 440 },
-  body: <<-SCLANG,
-  var aEnv, fEnv, osc, flt;
-  aEnv = EnvGen.kr(Env.asr(0, 1, 1), gate, doneAction: 2);
-  fEnv = EnvGen.kr(Env.perc(0, 3), levelScale: 6000);
-  osc = Mix([Saw.ar(freq * [1, 1.005]), Pulse.ar(freq / 2, 0.5)]);
-  flt = LPF.ar(osc, fEnv + 100, aEnv);
-  Out.ar(out, flt);
-SCLANG
-  credit: "From the Kraftwerk 'Spacelab' example in SuperCollider/examples by jy",
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
 ESM = SynthDef.new(name: "esm", params: { :freq => 440, :mix => 0.5, :glide => 0, :cutoff => 20000, :rq => 1, :fdec => 0, :fint => 1,
   :vel => 1, :fvel => 1, :t_gate => 1, :vdec => 1, :vvel => 0, :od => 0, :mul => 0.1, :pan => 0, :out => 0 },
   body: <<-SCLANG,
@@ -258,23 +142,6 @@ ROCKIT = SynthDef.new(name: "rockit", params: { :freq => 440, :detune => 2, :gat
   Out.ar(out, Pan2.ar(mix, 0));
 SCLANG
   credit: "From the 'Emulating Video Game Sounds' recipe, page 78 of 'Steal This Sound' by Mitchell Sigman, Adapted by Arthur Carabott",
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-SNARE2 = SynthDef.new(name: "snare2", params: { :sfreq => 1500, :out => 0 },
-  body: <<-SCLANG,
-  var tri = Mix([LFTri.ar([111, 175, 224])]) * 0.5;
-  var sine = Mix([SinOsc.ar([330, 180])]) * 0.5;
-  var env = EnvGen.ar(Env.perc(0.01, 0.2), doneAction:2);
-  var snares = WhiteNoise.ar(1);
-  var snareEnv = EnvGen.ar(Env.perc(0.01, 0.2));
-
-  snares = HPF.ar(snares, sfreq);
-  snares = snares * snareEnv;
-
-  Out.ar(out, Mix([tri, sine, snares]) * env);
-SCLANG
-  credit: "Based on Sound on Sound Synth Secrets 35, by Arthur Carabott",
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
@@ -368,49 +235,6 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-MOOG_BASS = SynthDef.new(name: "moogbass", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
-    :cutoff => 1000, :gain => 2.0, :lagamount => 0.01, :pan => 0.0 },
-  body: <<-SCLANG,
-  var osc, filter, env, filterenv;
-
-  osc = Mix(VarSaw.ar(freq.lag(lagamount)*[1.0,1.001,2.0],Rand(0.0,1.0)!3,Rand(0.5,0.75)!3,0.33));
-  filterenv = EnvGen.ar(Env.adsr(0.2,0.0,1.0,0.2),gate,doneAction:2);
-  filter =  MoogFF.ar(osc,cutoff*(1.0+(0.5*filterenv)),gain);
-  env = EnvGen.ar(Env.adsr(0.001,0.3,0.9,0.2),gate,doneAction:2);
-
-  Out.ar(out,Pan2.ar((0.7*filter+(0.3*filter.distort))*env*amp*1.5,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-MOOG_BASS2 = SynthDef.new(name: "moogbass2", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
-    :attackTime => 0.2, :fenvamount => 0.5, :cutoff => 1000, :gain => 2.0, :pan => 0.0 },
-  body: <<-SCLANG,
-  var osc, filter, env, filterenv;
-
-  //alternative: richer source
-  osc = Mix(Pulse.ar(freq.lag(0.05)*[1.0,1.001,2.0],Rand(0.45,0.5)!3,0.33));
-  filterenv = EnvGen.ar(Env.adsr(attackTime,0.0,1.0,0.2),gate,doneAction:2);
-  filter =  MoogFF.ar(osc,cutoff*(1.0+(fenvamount*filterenv)),gain);
-  env = EnvGen.ar(Env.adsr(0.001,0.3,0.9,0.2),gate,doneAction:2);
-
-  Out.ar(out,Pan2.ar((0.7*filter+(0.3*filter.distort))*env*amp,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
 PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
     :lforate => 5900, :lfowidth => 0.01, :cutoff => 12000, :rq => 0.5, :pan => 0.0 },
   body: <<-SCLANG,
@@ -423,63 +247,6 @@ PLASTICKY_STRINGS = SynthDef.new(name: "plastickystrings", params: { :out => 0, 
   env = EnvGen.ar(Env.adsr(0.4,0.0,1.0,1.0),gate,doneAction:2);
 
   Out.ar(out,Pan2.ar(filter*env*amp,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-BASS_FOUNDATION = SynthDef.new(name: "bassfoundation", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
-    :cutoff => 1000, :rq => 0.5, :pan => 0.0 },
-  body: <<-SCLANG,
-  var osc, filter, env, filterenv;
-
-  osc = Saw.ar(freq);
-  filterenv = EnvGen.ar(Env.adsr(0.0,0.5,0.2,0.2),gate,doneAction:2);
-  filter =  RLPF.ar(osc,cutoff*filterenv+100,rq);
-  env = EnvGen.ar(Env.adsr(0.01,0.0,0.9,0.05),gate,doneAction:2);
-
-  Out.ar(out,Pan2.ar(filter*env*amp*2,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-BASS_HIGHEND = SynthDef.new(name: "basshighend", params: { :out => 0, :freq => 440, :amp => 0.8, :gate => 1,
-    :cutoff => 3000, :rq => 0.1, :drive => 2.0, :pan => 0.0 },
-  body: <<-SCLANG,
-  var osc, filter, env, filterenv;
-  var ab;
-
-  //osc = Mix(VarSaw.ar(freq*[0.25,1,1.5],Rand(0.0,1.0)!3,0.9,[0.5,0.4,0.1]));
-  osc = Mix(Saw.ar(freq*[0.25,1,1.5],[0.5,0.4,0.1]));
-  //osc = Mix(DPW4Saw.ar(freq*[0.25,1,1.5],[0.5,0.4,0.1]));
-  filterenv = EnvGen.ar(Env.adsr(0.0,0.5,0.2,0.2),gate,doneAction:2);
-  filter =  RLPF.ar(osc,cutoff*filterenv+100,rq);
-
-  //distortion
-  //filter = filter.distort.softclip;
-
-  ab = abs(filter);
-  filter = (filter*(ab + drive)/(filter ** 2 + (drive - 1) * ab + 1));
-
-  //remove low end
-  filter = BLowShelf.ar(filter,300,1.0,-12);
-  //dip at 1600Hz
-  filter = BPeakEQ.ar(filter,1600,1.0,-6);
-
-  env = EnvGen.ar(Env.adsr(0.01,0.0,0.9,0.05),gate,doneAction:2);
-
-  Out.ar(out,Pan2.ar(filter*env*amp*2,pan));
 SCLANG
   credit: <<-EOS,
 Sound recipes from:
@@ -549,27 +316,6 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-EIGHTTOEIGHT_KICK = SynthDef.new(name: "eightoeightkick", params: { :out => 0, :freq => 440, :amp => 0.1,
-    :ringTime => 10.0, :releaseTime => 1.0, :distortion => 0.1, :pan => -0.1 },
-  body: <<-SCLANG,
-  var impulse, filter, env;
-
-  impulse = Impulse.ar(0);
-  filter = Ringz.ar(impulse,XLine.ar(freq,60,0.1),ringTime);
-  env = EnvGen.ar(Env.perc(0.001,releaseTime),doneAction:2);
-  filter = (1.0-distortion)*filter + (distortion*(filter.distort));
-
-  Out.ar(out,Pan2.ar(filter*env*amp,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
 TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
     :lforate => 4.85, :lfowidth => 0.1, :cutoff => 5000, :rq => 0.25, :pan => 0.0 },
   body: <<-SCLANG,
@@ -582,27 +328,6 @@ TONEWHEEL_TWO = SynthDef.new(name: "tonewheeltwo", params: { :out => 0, :freq =>
   env = EnvGen.ar(Env.adsr(0.0,0.0,1.0,0.1),gate,doneAction:2);
   filter = BLowPass4.ar(pulse,cutoff,rq);
   filter = BPeakEQ.ar(filter,500,1.0,3);
-
-  Out.ar(out,Pan2.ar(Mix(filter)*env*amp,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-EVERYTHING_RHODES = SynthDef.new(name: "everythingrhodes", params: { :out => 0, :freq => 440, :amp => 0.1, :gate => 1,
-    :lforate => 1.85, :lfowidth => 0.5, :cutoff => 2000, :rq => 0.2, :pan => 0.0 },
-  body: <<-SCLANG,
-  var pulse, filter, env;
-
-  pulse = Pulse.ar(freq*[1,33.5.midiratio],[0.2,0.1],[0.7,0.3]);
-  env = EnvGen.ar(Env.adsr(0.0,1.0,0.8,3.0),gate,doneAction:2);
-  //keyboard tracking filter cutoff
-  filter = BLowPass4.ar(pulse,(cutoff*(env.squared))+200+freq,rq);
 
   Out.ar(out,Pan2.ar(Mix(filter)*env*amp,pan));
 SCLANG
@@ -636,28 +361,6 @@ EOS
   source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
 )
 
-FAT_VELOCITY_BASS = SynthDef.new(name: "fatvelocitybass", params: { :out => 0, :freq => 440, :amp => 0.5,
-    :gate => 1, :cutoff => 2000, :rq => 0.15, :lagTime => 0.01, :pan => 0.0 },
-  body: <<-SCLANG,
-  var lfo, osc, filter, env;
-
-  var basefreq =  ((freq.lag(lagTime).cpsmidi)+[0,11.95,31.03]).midicps;
-  osc = Saw.ar(basefreq,[0.5,0.4,0.1]); //+PinkNoise.ar(Line.kr(1.0,0,0.03));
-  env = EnvGen.ar(Env.adsr(0.01,1.0,1.0,0.25),gate,doneAction:2);
-  filter = BLowPass4.ar(osc,100+((amp.squared)*(freq+cutoff)),rq);
-
-  Out.ar(out,Pan2.ar(Mix(filter)*env*amp*0.8,pan));
-SCLANG
-  credit: <<-EOS,
-Sound recipes from:
-Mitchell Sigman (2011) Steal this Sound. Milwaukee, WI: Hal Leonard Books
-adapted for SuperCollider and elaborated by Nick Collins (http://www.sussex.ac.uk/Users/nc81/index.html)
-under GNU GPL 3  as per SuperCollider license
-EOS
-  source: "https://github.com/acarabott/roundhouse-synth-design-course-2014",
-)
-
-
 PMC_ROTALE = SynthDef.new(name: "PMCrotale", params: { :out => 0, :freq => 261, :tone => 3, :art => 1, :amp => 0.8, :pan => 0 },
   body: <<-SCLANG,
   var env, mod, sig;
@@ -674,54 +377,6 @@ PMC_ROTALE = SynthDef.new(name: "PMCrotale", params: { :out => 0, :freq => 261, 
   sig = sig * EnvGen.kr(env, timeScale: 1.3*art,
     levelScale: Rand(0.1, 0.5), doneAction:2);
   Out.ar(out, sig*amp);
-SCLANG
-  source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
-)
-
-KICK3 = SynthDef.new(name: "kick3", params: { :out => 0, :punch => 1, :amp => 1 },
-  body: <<-SCLANG,
-  var freq = EnvGen.kr(Env([400, 66], [0.08], -3)),
-  sig = Normalizer.ar(SinOsc.ar(freq, 0.5pi, punch).distort, 1) * amp
-            * EnvGen.kr(Env([0, 1, 0.8, 0], [0.01, 0.1, 0.2]), doneAction: 2);
-    Out.ar(out, sig ! 2);
-SCLANG
-  source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
-)
-
-RING_KICK = SynthDef.new(name: "ringkick", params: { :out => 0, :freq => 40, :decay => 0.25, :amp => 1 },
-  body: <<-SCLANG,
-  var snd;
-  snd = Ringz.ar(
-    in: LPF.ar(
-      in: Impulse.ar(0),
-      freq: 1000),
-    freq: freq,
-    decaytime: decay,
-    mul: 7 * amp).tanh.sin*2;
-  Out.ar(out, snd!2);
-SCLANG
-  source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
-)
-
-BASS1 = SynthDef.new(name: "bass1", params: { :out => 0, :freq => 440, :gate => 1, :amp => 0.5, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4 },
-  body: <<-SCLANG,
-    var sig, env;
-  env = Env.adsr(0.01, 0.3, 0.4, 0.1);
-    freq = Lag.kr(freq, slideTime);
-    sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort;
-  sig = sig * amp * EnvGen.kr(env, gate, doneAction: 2);
-    sig = LPF.ar(sig, ffreq);
-    Out.ar(out, sig ! 2)
-SCLANG
-  source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
-)
-
-KIK = SynthDef.new(name: "kik", params: { :out => 0, :basefreq => 50, :ratio => 7, :sweeptime => 0.05, :preamp => 1, :amp => 1, :decay1 => 0.3, :decay1L => 0.8, :decay2 => 0.15 },
-  body: <<-SCLANG,
-    var fcurve = EnvGen.kr(Env([basefreq * ratio, basefreq], [sweeptime], \exp)),
-        env = EnvGen.kr(Env([1, decay1L, 0], [decay1, decay2], -4), doneAction: 2),
-        sig = SinOsc.ar(fcurve, 0.5pi, preamp).distort * env * amp;
-    Out.ar(out, sig ! 2)
 SCLANG
   source: "From https://github.com/brunoruviaro/SynthDefs-for-Patterns",
 )
@@ -831,90 +486,6 @@ SCLANG
   source: "From https://github.com/elosine/synthdefs",
 )
 
-
-DRUM_KICK = SynthDef.new(name: "drum_kick", params: { :out => 0, :freq => 440, :gate => 1, :amp => 0.8, :source => nil,:pan => 0.0 },
-  body: <<-SCLANG,
-  var x1, x2, x3;
-
-  x1 = SinOsc.ar(EnvGen.kr(Env.perc(0.0001, 1.5, 1, -200), gate, 1000, 45, doneAction:2), 1, 1);
-  x2 = ((BPF.ar([GrayNoise.ar(6),GrayNoise.ar(6)],EnvGen.kr(Env.perc(0.001, 0.3, 1, -200), gate, 6000, 70), 1.5)).distort * Line.kr(0.3,0,0.1));
-  x3 = EnvGen.kr(Env.perc(0.0001, 0.09, amp, 8));
-  source = Pan2.ar(x1 + x2 * x3, 0);
-  Out.ar(out, source);
-SCLANG
-  source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
-)
-
-CHORD_BASS = SynthDef.new(name: "chord_bass", params: { :out => 0, :amp => 0.5, :sustain => 0.1, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.1,:rq => 0.99 },
-  body: <<-SCLANG,
-  var env, sound;
-  env=EnvGen.ar(Env.perc(releaseTime:releaseTime),doneAction:2);
-  sound=FreeVerb.ar(RLPF.ar(LFSaw.ar(freq,0,amp),Line.kr(filtfreq1, filtfreq2,0.1),rq), reverb, 0.2, 0.5);
-  Out.ar(out,Pan2.ar(sound*env, 0.0))
-SCLANG
-  source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
-)
-
-MY_BASS = SynthDef.new(name: "my_bass", params: { :out => 0, :amp => 1, :sustain => 0.3, :freq => 90, :filtfreq1 => 7000, :filtfreq2 => 1000, :releaseTime => 0.5, :reverb => 0.3, :rq => 0.99 },
-  body: <<-SCLANG,
-  var env, sound;
-  env=EnvGen.ar(Env.perc(releaseTime:releaseTime),doneAction:2);
-  sound=FreeVerb.ar(RLPF.ar(LFTri.ar(freq,0,amp*2),Line.kr(filtfreq1, filtfreq2,0.1),rq) ,reverb, 0.2 ,0.5);
-  Out.ar(out,Pan2.ar(sound*env, 0.0))
-SCLANG
-  source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
-)
-
-SOS_SNARE = SynthDef.new(name: "SOSsnare", params: { :out => 0, :decay => 0.12, :drum_mode_level => 0.25, :snare_level => 40, :snare_tightness => 3000, :freq => 405, :amp => 0.8 },
-  body: <<-SCLANG,
-  var drum_mode_sin_1, drum_mode_sin_2, drum_mode_pmosc, drum_mode_mix,
-drum_mode_env;
-  var snare_noise, snare_brf_1, snare_brf_2, snare_brf_3, snare_brf_4,
-snare_reson;
-  var snare_env;
-  var snare_drum_mix;
-
-  drum_mode_env = EnvGen.ar(Env.perc(0.005, decay), 1.0, doneAction: 2);
-  drum_mode_sin_1 = SinOsc.ar(freq*0.53, 0, drum_mode_env * 0.5);
-  drum_mode_sin_2 = SinOsc.ar(freq, 0, drum_mode_env * 0.5);
-  drum_mode_pmosc = PMOsc.ar( Saw.ar(freq*0.85), 184, 0.5/1.3, mul: drum_mode_env*5, add: 0);
-  drum_mode_mix = Mix.new([drum_mode_sin_1, drum_mode_sin_2, drum_mode_pmosc]) * drum_mode_level;
-
-  // choose either noise source below
-  //  snare_noise = Crackle.ar(2.01, 1);
-  snare_noise = LFNoise0.ar(20000, 0.1);
-  snare_env = EnvGen.ar(Env.perc(0.005, decay, curve:-5), 1.0, doneAction: 2);
-  snare_brf_1 = BRF.ar(in: snare_noise, freq: 8000, mul: 0.5, rq: 0.1);
-  snare_brf_2 = BRF.ar(in: snare_brf_1, freq: 5000, mul: 0.5, rq: 0.1);
-  snare_brf_3 = BRF.ar(in: snare_brf_2, freq: 3600, mul: 0.5, rq: 0.1);
-  snare_brf_4 = BRF.ar(in: snare_brf_3, freq: 2000, mul: snare_env, rq: 0.0001);
-  snare_reson = Resonz.ar(snare_brf_4, snare_tightness, mul: snare_level) ;
-  snare_drum_mix = Mix.new([drum_mode_mix, snare_reson]) * 5 * amp;
-  Out.ar(out, [snare_drum_mix, snare_drum_mix])
-SCLANG
-  credit: "recipe basically from Gordon Reid
-http://www.soundonsound.com/sos/Mar02/articles/synthsecrets0302.asp
-programmed by Renick Bell, renick_at_gmail.com",
-  source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
-)
-
-CLOSED_HAT = SynthDef.new(name: "closedhat", params: { :out => 0 },
-  body: <<-SCLANG,
-  var hatosc, hatenv, hatnoise, hatoutput;
-
-  hatnoise = {LPF.ar(WhiteNoise.ar(1),8000)};
-
-  hatosc = {HPF.ar(hatnoise,2400)};
-  hatenv = {Line.ar(1, 0, 0.1)};
-
-  hatoutput = (0.5 * hatosc * hatenv);
-
-  Out.ar(out, Pan2.ar(hatoutput, 0));
-SCLANG
-  source: "https://github.com/willieavendano/SC-SynthDefs/blob/master/DrumMachines",
-)
-
-
 ACID_OTO_309 = SynthDef.new(name: "acid_oto309", params: { :out => 0, :gate => 1, :freq => 440, :amp => 0.1, :pan => 0 },
   body: <<-SCLANG,
   var env1, env2, son, pitch;
@@ -948,49 +519,6 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CHEAP_PIANO = SynthDef.new(name: "cheappiano", params: { :out => 0, :freq => 440, :amp => 1, :dur => 1, :gate => 1, :pan => 0 },
-  body: <<-SCLANG,
-  var sig, in, n = 6, max = 0.04, min = 0.01, delay, pitch, detune, hammer;
-  freq = freq.cpsmidi;
-  hammer = Decay2.ar(Impulse.ar(0.001), 0.008, 0.04, LFNoise2.ar([2000,4000].asSpec.map(amp), 0.25));
-  sig = Mix.ar(Array.fill(3, { arg i;
-      detune = #[-0.04, 0, 0.03].at(i);
-      delay = (1/(freq + detune).midicps);
-      CombL.ar(hammer, delay, delay, 50 * amp)
-    }) );
-
-  sig = HPF.ar(sig,50) * EnvGen.ar(Env.perc(0.0001,dur, amp * 4, -1), gate: gate, doneAction:2);
-  Out.ar(out, Pan2.ar(sig, pan));
-SCLANG
-  credit: "based on something posted 2008-06-17 by jeff, based on an old example by james mcc",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-CLAP_OTO_309 = SynthDef.new(name: "clap_oto309", params: { :out => 0, :amp => 0.6, :pan => 0 },
-  body: <<-SCLANG,
-  var env1, env2, son, noise1, noise2;
-
-  env1 = EnvGen.ar(Env.new([0, 1, 0, 1, 0, 1, 0, 1, 0], [0.001, 0.013, 0, 0.01, 0, 0.01, 0, 0.03], [0, -3, 0, -3, 0, -3, 0, -4]));
-  env2 = EnvGen.ar(Env.new([0, 1, 0], [0.02, 0.3], [0, -4]), doneAction:2);
-
-  noise1 = WhiteNoise.ar(env1);
-  noise1 = HPF.ar(noise1, 600);
-  noise1 = BPF.ar(noise1, 2000, 3);
-
-  noise2 = WhiteNoise.ar(env2);
-  noise2 = HPF.ar(noise2, 1000);
-  noise2 = BPF.ar(noise2, 1200, 0.7, 0.7);
-
-  son = noise1 + noise2;
-  son = son * 2;
-  son = son.softclip * amp;
-
-  Out.ar(out, Pan2.ar(son, pan));
-SCLANG
-  credit: "from 08091500Acid309 by_otophilia",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
 CS80_LEAD_MH = SynthDef.new(name: "cs80lead_mh", params: { :freq => 880, :amp => 0.5, :att => 0.75, :decay => 0.5,
     :sus => 0.8, :rel => 1.0, :fatt => 0.75, :fdecay => 0.5, :fsus => 0.8, :frel => 1.0, :cutoff => 200, :pan => 0,
     :dtune => 0.002, :vibrate => 4, :vibdepth => 0.015, :gate => 1, :ratio => 1,:out => 0 },
@@ -1012,111 +540,6 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-CYMBAL_808 = SynthDef.new(name: "cymbal808", params: { :out => 0, :baseFreq => 300, :time => 250, :amp => 0.1 },
-  body: <<-SCLANG,
-  //var freqs = [baseFreq, baseFreq*1.3420, baseFreq*1.2312, baseFreq*1.6532, baseFreq*1.9523, baseFreq*2.1523];
-  //var freqs = [78.6, 140.44, 123.87, 219.4, 787.5, 531.3];
-  //var freqs = [205.35, 254.29, 294.03, 304.41, 369.64, 522.71];
-  var freqs = [205.35, 304.41, 369.64, 522.71, 540.54, 812.21];
-  var signal, pulseEnv;
-
-  pulseEnv = EnvGen.ar(Env.new([1.0, 0.6], [time], [-0.5]), timeScale:(1/1000));
-  signal = Mix.new(LFPulse.ar(freqs * 4.09));
-  signal = (BinaryOpUGen('==', signal, 6.0) * 0.6) + (BinaryOpUGen('==', signal, 2.0) * 0.2) + (BinaryOpUGen('==', signal, 1.0) * 0.9); // XOR
-  signal = (signal * pulseEnv) + (Mix.new(LFPulse.ar(freqs, width:0.55)) * 0.9);
-  signal = RLPF.ar(signal, 7000, 0.6);
-  signal = RHPF.ar(signal, 6800, 1.5);
-  signal = RHPF.ar(signal, 6800, 1.5);
-  signal = RHPF.ar(signal, 1200, 1.5);
-  signal = signal + FreeVerb.ar(signal);
-  signal = signal * EnvGen.ar(Env.new([0, 1, 0.4, 0, 0], [2, time, 50, 500], [0, -0.5, 0, -50]), timeScale:(1/1000), doneAction:2);
-  signal = [signal, DelayN.ar(signal, 0.005, 0.005)];
-  OffsetOut.ar(out, signal*amp ! 2);
-SCLANG
-  credit: "Published on sc-users 2007-08-25 by Ryan Brown",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-CYMBALIC_MCLD = SynthDef.new(name: "cymbalic_mcld", params: { :out => 0, :pan => 0, :amp => 0.1 },
-  body: <<-SCLANG,
-  var lodriver, locutoffenv, hidriver, hicutoffenv, freqs, res, thwack;
-
-  locutoffenv = EnvGen.ar(Env.perc(0.5, 5)) * 20000 + 10;
-  lodriver = LPF.ar(WhiteNoise.ar(0.1), locutoffenv);
-
-  hicutoffenv = 10001 - (EnvGen.ar(Env.perc(1, 3)) * 10000);
-  hidriver = HPF.ar(WhiteNoise.ar(0.1), hicutoffenv);
-  hidriver = hidriver * EnvGen.ar(Env.perc(1, 2, 0.25));
-
-  thwack = EnvGen.ar(Env.perc(0.001,0.001,1));
-
-  // This bit will regenerate new freqs every time you evaluate the SynthDef!
-  freqs  = {exprand(300, 20000)}.dup(100);
-
-  res    = Ringz.ar(lodriver + hidriver + thwack, freqs).mean;
-
-  Out.ar(out, Pan2.ar(((res * 1) + (lodriver * 2) + thwack) * amp, pan));
-SCLANG
-  credit: "Based on the example at http://www.mcld.co.uk/cymbalsynthesis/ published 2008 by Dan Stowell",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-KICK_CHIRP = SynthDef.new(name: "kick_chrp", params: { :out => 0, :amp => 1, :pan => 0 },
-  body: <<-SCLANG,
-  // a kick made using what radio folks would call a "chirp"
-  var ampenv, pitchenv;
-
-  ampenv   = EnvGen.ar(Env.perc(0, 0.2, curve: 0), doneAction: 2);
-  pitchenv = EnvGen.ar(Env.perc(0, 0.1, curve: -20).exprange(0, 1000), doneAction: 0);
-
-  Out.ar(out, Pan2.ar(SinOsc.ar(pitchenv) * amp, pan));
-SCLANG
-  credit: "by dan stowell. public domain",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-KICK_OTO_309 = SynthDef.new(name: "kick_oto309", params: { :out => 0, :amp => 0.1, :pan => 0 },
-  body: <<-SCLANG,
-  var env0, env1, env1m, son;
-
-  env0 =  EnvGen.ar(Env.new([0.5, 1, 0.5, 0], [0.005, 0.06, 0.26], [-4, -2, -4]), doneAction:2);
-  env1 = EnvGen.ar(Env.new([110, 59, 29], [0.005, 0.29], [-4, -5]));
-  env1m = env1.midicps;
-
-  son = LFPulse.ar(env1m, 0, 0.5, 1, -0.5);
-  son = son + WhiteNoise.ar(1);
-  son = LPF.ar(son, env1m*1.5, env0);
-  son = son + SinOsc.ar(env1m, 0.5, env0);
-
-  son = son * 1.2;
-  son = son.clip2(1);
-
-  Out.ar(out, Pan2.ar(son * amp));
-SCLANG
-  credit: "from 08091500Acid309 by_otophilia",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-ONECLAP = SynthDef.new(name: "oneclap", params: { :out => 0, :amp => 0.1, :filterfreq => 100, :rq => 0.1, :pan => 0 },
-  body: <<-SCLANG,
-var env, signal, attack, noise, hpf1, hpf2;
-  noise = WhiteNoise.ar(1)+SinOsc.ar([filterfreq/2,filterfreq/2+4 ], pi*0.5, XLine.kr(1,0.01,4));
-  //noise = PinkNoise.ar(1)+SinOsc.ar([(filterfreq)*XLine.kr(1,0.01,3), (filterfreq+4)*XLine.kr(1,0.01,3) ], pi*0.5, XLine.kr(1,0.01,4));
-  //signal = signal * SinOsc.ar(1,0.75);
-  hpf1 = RLPF.ar(noise, filterfreq, rq);
-  hpf2 = RHPF.ar(noise, filterfreq/2, rq/4);
-  env = EnvGen.kr(Env.perc(0.003, 0.00035));
-  signal = (hpf1+hpf2) * env;
-  signal = CombC.ar(signal, 0.5, 0.03, 0.031)+CombC.ar(signal, 0.5, 0.03016, 0.06);
-  //signal = Decay2.ar(signal, 0.5);
-  signal = FreeVerb.ar(signal, 0.23, 0.15, 0.2);
-  Out.ar(out, Pan2.ar(signal * amp, pan));
-  DetectSilence.ar(signal, doneAction:2);
-SCLANG
-  credit: "published on the sc-users list 2009-01-08 by thor",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
 PING_MH = SynthDef.new(name: "ping_mh", params: { :freq => 440,:amp => 0.2,:dur => 1,:attack => 0.001,:pan => 0,:out => 0 },
   body: <<-SCLANG,
     var sig,freq2;
@@ -1128,46 +551,6 @@ PING_MH = SynthDef.new(name: "ping_mh", params: { :freq => 440,:amp => 0.2,:dur 
     Out.ar(out,sig)
 SCLANG
   credit: "Your basic percussive synth instrument, a good default sound for testing patterns, etc.",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-SNARE_OTO_309 = SynthDef.new(name: "snare_oto309", params: { :out => 0, :amp => 0.1, :pan => 0 },
-  body: <<-SCLANG,
-  var env0, env1, env2, env1m, oscs, noise, son;
-
-  env0 = EnvGen.ar(Env.new([0.5, 1, 0.5, 0], [0.005, 0.03, 0.10], [-4, -2, -4]));
-  env1 = EnvGen.ar(Env.new([110, 60, 49], [0.005, 0.1], [-4, -5]));
-  env1m = env1.midicps;
-  env2 = EnvGen.ar(Env.new([1, 0.4, 0], [0.05, 0.13], [-2, -2]), doneAction:2);
-
-  oscs = LFPulse.ar(env1m, 0, 0.5, 1, -0.5) + LFPulse.ar(env1m * 1.6, 0, 0.5, 0.5, -0.25);
-  oscs = LPF.ar(oscs, env1m*1.2, env0);
-  oscs = oscs + SinOsc.ar(env1m, 0.8, env0);
-
-  noise = WhiteNoise.ar(0.2);
-  noise = HPF.ar(noise, 200, 2);
-  noise = BPF.ar(noise, 6900, 0.6, 3) + noise;
-  noise = noise * env2;
-
-  son = oscs + noise;
-  son = son.clip2(1) * amp;
-
-  Out.ar(out, Pan2.ar(son, pan));
-SCLANG
-  credit: "from 08091500Acid309 by_otophilia",
-  source: "https://github.com/supercollider-quarks/SynthDefPool",
-)
-
-SNARE_STEIN = SynthDef.new(name: "snare_stein", params: { :out => 0, :amp => 0.1, :pan => 0 },
-  body: <<-SCLANG,
-  var snare, filtWhite;
-
-  filtWhite = LPF.ar(WhiteNoise.ar(1), 7040, 1);
-
-  snare = (SinOsc.ar(330,0,0.25) * EnvGen.ar(Env.perc(0.0005,0.055))) + (SinOsc.ar(185,0,0.25) * EnvGen.ar(Env.perc(0.0005,0.075))) + (filtWhite * EnvGen.ar(Env.perc(0.0005,0.2), doneAction: 2) * 0.2) + (HPF.ar(filtWhite, 523, 1) * EnvGen.ar(Env.perc(0.0005,0.183)) * 0.2);
-  Out.ar(out, Pan2.ar(snare * amp * 10, pan));
-SCLANG
-  credit: "Snare written by Esben Stein, I believe",
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
@@ -1198,7 +581,6 @@ SCLANG
   source: "https://github.com/supercollider-quarks/SynthDefPool",
 )
 
-
 KRGN_GEN_FMDEVIL = SynthDef.new(name: "krgn_gen_fmdevil", params: { :out => 0, :freq => 440, :amp => 1.0, :index => 3, :detune => 1.02, :gate => 1 },
   body: <<-SCLANG,
   var mod1, mod2, mod3, car, idx, env;
@@ -1213,62 +595,6 @@ KRGN_GEN_FMDEVIL = SynthDef.new(name: "krgn_gen_fmdevil", params: { :out => 0, :
 SCLANG
   source: "https://github.com/mtytel/supersongs/",
 )
-
-BOOP = SynthDef.new(name: "boop", params: { :out => 0, :dur => 1.0, :amp => 1.0, :freq => 440 },
-  body: <<-SCLANG,
-  var env, sig;
-  env = EnvGen.ar(Env.new([1, 0.1, 0], [0.06, dur - 0.06]), doneAction: 2);
-  sig = LFTri.ar([freq * 0.995, freq * 1.005], 0, env * amp);
-  Out.ar(out, sig ! 2);
-SCLANG
-  source: "https://github.com/mtytel/supersongs/",
-)
-
-MARIO = SynthDef.new(name: "mario", params: { :out => 0, :freq => 440, :length => 0.1, :dur => 0.2 },
-  body: <<-SCLANG,
-  var snd, amp;
-  snd = LFPulse.ar(freq)!2;
-  amp = LFTri.ar(freq/50)!2;
-  snd = snd * EnvGen.ar(Env.linen(0.001, length * dur, 0.03), doneAction:2);
-  OffsetOut.ar(out, snd*amp);
-SCLANG
-  source: "https://github.com/mtytel/supersongs/",
-)
-
-MARIO_BASS = SynthDef.new(name: "mariobass", params: { :out => 0, :amp => 1.0, :freq => 440, :length => 0.1, :dur => 0.2 },
-  body: <<-SCLANG,
-  var snd;
-  snd = LFTri.ar(freq)!2;
-  snd = snd * EnvGen.ar(Env.linen(0.001, length * dur, 0.03), doneAction:2);
-  OffsetOut.ar(out, snd*amp);
-SCLANG
-  source: "https://github.com/mtytel/supersongs/",
-)
-
-BEAT = SynthDef.new(name: "beat", params: { :out => 0, :amp => 1.0, :sustain => 0.1, :dur => 0.1 },
-  body: <<-SCLANG,
-  var snd;
-  snd = BrownNoise.ar()!2;
-  snd = HPF.ar(snd, 2000);
-  snd = snd * EnvGen.ar(Env.linen(0.005, dur * sustain, 0.01), doneAction:2);
-  OffsetOut.ar(out, snd*amp);
-SCLANG
-  source: "https://github.com/mtytel/supersongs/",
-)
-
-BASS2 = SynthDef.new(name: "bass2", params: { :out => 0, :freq => 440, :gate => 1, :amp => 1.0, :slideTime => 0.17, :ffreq => 1100, :width => 0.15, :detune => 1.005, :preamp => 4, :dur => 0.2, :length => 0.2 },
-  body: <<-SCLANG,
-  var sig,
-    env = Env.adsr(0.01, 0.3, 0.4, 0.1);
-  freq = Lag.kr(freq, slideTime);
-  sig = Mix(VarSaw.ar([freq, freq * detune], 0, width, preamp)).distort * amp
-    * EnvGen.kr(env, gate * dur * length , doneAction: 2);
-  sig = LPF.ar(sig, ffreq);
-  Out.ar(out, sig ! 2)
-SCLANG
-  source: "https://github.com/mtytel/supersongs/",
-)
-
 
 DROPLET = SynthDef.new(name: "droplet", params: { :amp => 0.2, :out => 0, :freq => 3000, :dur => 1, :rate => 1 },
   body: <<-SCLANG,
@@ -1341,8 +667,6 @@ SCLANG
   source: "https://github.com/johncburnett/Matrix",
 )
 
-
-
 POOM = SynthDef.new(name: "poom", params: { :out => 0, :freq => 400, :level => 0.1 },
   body: <<-SCLANG,
   var env       = Env.perc(level: level);
@@ -1365,7 +689,6 @@ SINTH = SynthDef.new(name: "sinth", params: { :out => 0, :curve => 0, :dur => 1,
 SCLANG
   source: "https://github.com/philthomson/imp",
 )
-
 
 AEOLIAN_STRINGS = SynthDef.new(name: "aeolian_strings", params: { :out => 0 },
   body: <<-SCLANG,
@@ -1437,38 +760,6 @@ SCLANG
 )
 
 
-FM_TOM = SynthDef.new(name: "fmtom", params: { :out => 0, :freq => 200, :gate => 1, :vol => 0.5 },
-  body: <<-SCLANG,
-  var tom = PMOsc.ar(freq, 280, Line.kr(0.0, 12, 1), mul: EnvGen.ar(Env.adsr(0.003,0.2,0,0), gate, levelScale: 0.3, doneAction: 2));
-  Out.ar(out, tom * vol ! 2);
-SCLANG
-  source: "https://github.com/mattvears/supercollider-stuff",
-)
-
-BASS_303 = SynthDef.new(name: "bass303", params: { :out => 0, :freq => 440, :gate => 1, :lpf => 1000, :res => 0.8, :width => 0.05, :amp => 1, :vol => 0.5 },
-  body: <<-SCLANG,
-  var sig, env;
-  var sig2, env2;
-
-  // ghetto 303
-  env = Env.adsr(0.05, 2, 0, 0.3, 0.8, -12);
-  sig = LFPulse.ar(freq, width: width) + Pulse.ar(freq, width: 0.9);
-  sig = sig * EnvGen.ar(env, gate, amp, doneAction: 2);
-  sig = RLPF.ar(sig, lpf, res);
-
-  env2 = Env.adsr(0.03, 2, 0, 0.3, 0.8, -13);
-  sig2 = LFPulse.ar(freq, width: width)  + Pulse.ar(freq, width: 0.9);
-  sig2 = FreqShift.ar(sig2, 3);
-  sig2 = sig2 * EnvGen.ar(env2, gate, amp, doneAction: 2);
-  sig2 = RLPF.ar(sig2, lpf, res);
-
-
-  Out.ar(out, [sig * vol, sig2 * vol]);
-
-SCLANG
-  source: "https://github.com/mattvears/supercollider-stuff",
-)
-
 # (
 #   x = Signal.sineFill(513, [0.5, 0.2, 0.3, 0.0, 0.2]);
 #   // x.plot;
@@ -1502,44 +793,6 @@ SCLANG
 #   source: "https://github.com/mattvears/supercollider-stuff",
 # )
 
-SNARE_909 = SynthDef.new(name: "snare909", params: { :out => 0, :lpFreq => 1000, :vol => 1, :gate => 1 },
-  body: <<-SCLANG,
-  var sig1, sig2;
-  var triEnv;
-  var shifted1;
-  var shifted2;
-  var sinEnv;
-  var sin1, sin2;
-  var mixed;
-  var sig3;
-  var noiseEnv;
-
-  // tri -> final mixer
-  triEnv = Env.adsr(0, 0.4, 0, 0, curve: -4,  peakLevel: 0.5);
-  sig1 = LFTri.ar(111, 0, 0.5) * EnvGen.kr(triEnv, gate: gate, doneAction: 2);
-  shifted1 = FreqShift.ar(sig1, 175);
-  shifted2 = FreqShift.ar(sig1, 224);
-  sig1 = Mix.new([shifted1, shifted2]);
-
-  // sines -> final mixer
-  sin1 = SinOsc.ar(330, mul: 0.2);
-  sin2 = SinOsc.ar(180, mul: 0.2);
-  sinEnv = Env.adsr(0, 0.2, 0, 0);
-  sig2 = Mix.new([sin1, sin2]) * EnvGen.kr(sinEnv, gate: gate, doneAction: 2);
-
-  // noise -> final mixer
-  noiseEnv = Env.adsr(0, 0.3, 0, 0);
-  sig3 = LPF.ar(WhiteNoise.ar() * EnvGen.kr(noiseEnv, gate: gate, doneAction: 2), 1000);
-  sig3 = HPF.ar(sig3, 600);
-
-  mixed = Mix.new([sig1, sig2, sig3]);
-  mixed = LPF.ar(mixed, lpFreq) * vol;
-  Out.ar(out, mixed  ! 2);
-SCLANG
-  source: "https://github.com/mattvears/supercollider-stuff",
-)
-
-
 HOOVER = SynthDef.new(name: "hoover", params: { :freq => 220, :amp => 0.1, :lgu => 0.1, :lgd => 1, :gate => 1 },
   body: <<-SCLANG,
 var pwm, mix, env;
@@ -1570,7 +823,6 @@ Out.ar( 0, mix * env * amp );
 SCLANG
   source: "https://github.com/rukano/scprivatepool",
 )
-
 
 SAWPULSE = SynthDef.new(name: "sawpulse", params: { :out => 0, :freq => 440, :gate => 0.5, :plfofreq => 6, :mw => 0, :ffreq => 2000, :rq => 0.3, :freqlag => 0.05, :amp => 1 },
   body: <<-SCLANG,
@@ -1618,24 +870,6 @@ SCLANG
   source: "https://github.com/bwestergard/supercollider-experiments",
 )
 
-SNARE3 = SynthDef.new(name: "snare", params: { :amp => 1, :dur => 0.05, :out => 0 },
-  body: <<-SCLANG,
-dur = dur * 16;
-Out.ar(out, amp * XLine.ar(2,1/1000,dur) * BPF.ar(PinkNoise.ar(0.8), XLine.ar(20000,1000,dur, doneAction:2), 0.8).dup);
-SCLANG
-  source: "https://github.com/bwestergard/supercollider-experiments",
-)
-
-KICK1 = SynthDef.new(name: "kick", params: { :out => 0, :amp => 1, :dur => 0.05 },
-  body: <<-SCLANG,
-var tone;
-tone = SinOsc.ar(XLine.ar(800,2,dur*4, mul: 0.2, doneAction:2));
-Out.ar(out, amp * tone.dup * XLine.ar(2,1/1000,dur*4));
-SCLANG
-  source: "https://github.com/bwestergard/supercollider-experiments",
-)
-
-
 POLY1 = SynthDef.new(name: "poly1", params: { :out => 0, :gate => 1, :freq => 440 },
   body: <<-SCLANG,
   var aEnv,fEnv,osc1, osc2,flt;
@@ -1648,7 +882,6 @@ POLY1 = SynthDef.new(name: "poly1", params: { :out => 0, :gate => 1, :freq => 44
 SCLANG
   source: "https://github.com/k-o-l-e-k-t-i-v/supercollider",
 )
-
 
 end
 end
