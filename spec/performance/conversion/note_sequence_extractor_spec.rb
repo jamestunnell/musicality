@@ -87,7 +87,7 @@ describe NoteSequenceExtractor do
       end
     end
 
-    context 'array with two slurred notes, single pitch' do
+    context 'array with two slurred notes, single pitch each' do
       before :all do
         @notes = [ Note.quarter([C5], marks: [BEGIN_SLUR]),
                    Note.quarter([D5], marks: [END_SLUR]) ]

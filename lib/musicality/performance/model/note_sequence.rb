@@ -27,11 +27,30 @@ class NoteSequence
     @elements = elements
   end
 
+  # any consecutive elements with the same pitch and no attack will be combined
+  def simplify!
+    return if @elements.none?
+
+    prev_element = @elements[0]
+    idx = 1
+
+    while idx < @elements.size
+      element = @elements[idx]
+      if (element.pitch == prev_element.pitch) && (element.attack == Attack::NONE)
+        prev_element.duration += element.duration
+        @elements.delete_at(idx)
+      else
+        prev_element = element
+        idx += 1
+      end
+    end
+  end
+
   alias start offset
-  
+
   def offsets
     raise "contains no elements" if elements.empty?
-    
+
     off = @offset
     elements.map do |e|
       x = off
@@ -39,7 +58,7 @@ class NoteSequence
       x
     end
   end
-  
+
   def stop
     offsets.last + NoteSequence.adjust_duration(elements.last.duration, separation)
   end

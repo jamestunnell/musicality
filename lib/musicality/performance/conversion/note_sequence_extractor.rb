@@ -7,96 +7,55 @@ class NoteSequenceExtractor
     mark_slurring
     remove_bad_links
     calculate_offsets
-    establish_maps
+
     # now, ready to extract sequences!
   end
-  
+
   def extract_sequences cents_per_step = 10
-    return [] if @notes.empty?
-    
-    next_seqs = seqs_from_note(@notes.size-1, cents_per_step)
-    return next_seqs if @notes.one?
-    
-    complete_seqs = []
-    (@notes.size-2).downto(0) do |i|
-      cur_seqs = seqs_from_note(i, cents_per_step)
-      map = @maps[i]
-      
-      next_seqs.each do |next_seq|
-        p1 = nil
-        p2 = next_seq.elements.first.pitch
-        if p1 = map[:ties].key(p2)
-          cur_seq = cur_seqs.find {|x| x.elements.first.pitch == p1 }
-          NoteSequenceExtractor.tie_seqs(cur_seq, next_seq)
-        elsif p1 = map[:slurs].key(p2)
-          cur_seq = cur_seqs.find {|x| x.elements.first.pitch == p1 }
-          NoteSequenceExtractor.slur_seqs(cur_seq, next_seq)
-        elsif p1 = map[:full_glissandos].key(p2)
-          cur_seq = cur_seqs.find {|x| x.elements.first.pitch == p1 }
-          NoteSequenceExtractor.glissando_seqs(cur_seq, next_seq)
-        elsif p1 = map[:full_portamentos].key(p2)
-          cur_seq = cur_seqs.find {|x| x.elements.first.pitch == p1 }
-          NoteSequenceExtractor.portamento_seqs(cur_seq, next_seq, cents_per_step)
+    completed_seqs = []
+    continuing_sequences = {}
+
+    @notes.each_with_index do |note, idx|
+      offset = @offsets[idx]
+      duration = note.duration
+      attack = NoteSequenceExtractor.note_attack(note.articulation)
+      separation = NoteSequenceExtractor.note_separation(note.articulation, @slurring_flags[idx])
+
+      next_note = (idx == (@notes.size-1)) ? Note.quarter : @notes[idx+1]
+      continuation_map = NoteSequenceExtractor.continuation_map(note, next_note, separation)
+
+      new_continuing_sequences = {}
+
+      note.pitches.each do |p|
+        seq = if continuing_sequences.has_key?(p)
+          continuing_sequences[p].elements += note_pitch_elements(note, p, Attack::NONE, cents_per_step)
+          continuing_sequences.delete(p)
         else
-          complete_seqs.push next_seq
+          NoteSequence.new(offset, separation, note_pitch_elements(note, p, attack, cents_per_step))
         end
-      end      
-      next_seqs = cur_seqs
-    end
-    complete_seqs += next_seqs
-    return complete_seqs
-  end
-  
-  private
-  
-  def self.tie_seqs(cur_seq, next_seq)
-    cur_seq.elements.last.duration += next_seq.elements.first.duration
-    cur_seq.elements += next_seq.elements[1..-1]
-  end
-  
-  def self.slur_seqs(cur_seq, next_seq)
-    if next_seq.elements.first.attack == Attack::NORMAL
-      next_seq.elements.first.attack = Attack::NONE
-    end
-    cur_seq.separation = next_seq.separation
-    cur_seq.elements += next_seq.elements
-  end
 
-  def self.glissando_seqs(cur_seq, next_seq)
-    cur_seq.elements = GlissandoConverter.glissando_elements(cur_seq.last_pitch,
-      next_seq.first_pitch, cur_seq.full_duration, cur_seq.last_attack)
-    cur_seq.separation = next_seq.separation
-    cur_seq.elements += next_seq.elements
-  end
-
-  def self.portamento_seqs(cur_seq, next_seq, cents_per_step)
-    cur_seq.elements = PortamentoConverter.portamento_elements(cur_seq.last_pitch,
-      next_seq.first_pitch, cents_per_step, cur_seq.full_duration, cur_seq.last_attack)
-    cur_seq.separation = Separation::NONE
-    cur_seq.elements += next_seq.elements    
-  end
-  
-  def seqs_from_note(idx, cents_per_step)
-    map = @maps[idx]
-    note = @notes[idx]
-    attack = NoteSequenceExtractor.note_attack(note.articulation)
-    separation = NoteSequenceExtractor.note_separation(note.articulation, @slurring_flags[idx])
-    offset = @offsets[idx]
-    note.pitches.map do |p|
-      if map[:half_glissandos].has_key?(p)
-        NoteSequence.new(offset, separation, 
-          GlissandoConverter.glissando_elements(
-            p, map[:half_glissandos][p], note.duration, attack))
-      elsif map[:half_portamentos].has_key?(p)
-        NoteSequence.new(offset, Separation::NONE, 
-          PortamentoConverter.portamento_elements(
-            p, map[:half_portamentos][p], cents_per_step, note.duration, attack))
-      else
-        NoteSequence.new(offset, separation,
-          [NoteSequence::Element.new(note.duration, p, attack)])
+        if continuation_map.include?(p)
+          new_continuing_sequences[continuation_map[p]] = seq
+        else
+          completed_seqs.push seq
+        end
       end
+
+      if continuing_sequences.any?
+        require 'pry'
+        binding.pry
+        # raise "Should be no previous continuing sequences remaining"
+      end
+      continuing_sequences = new_continuing_sequences
     end
+
+    raise "Should be no previous continuing sequences remaining" if continuing_sequences.any?
+
+    completed_seqs.each {|seq| seq.simplify! }
+    return completed_seqs
   end
+
+  private
 
   def self.note_attack articulation
     case articulation
@@ -137,7 +96,7 @@ class NoteSequenceExtractor
   def mark_slurring
     @slurring_flags = []
     under_slur = false
-    
+
     @slurring_flags = Array.new(@notes.size) do |i|
       note = @notes[i]
 
@@ -162,7 +121,7 @@ class NoteSequenceExtractor
       end
     end
   end
-    
+
   def calculate_offsets
     offset = 0.to_r
     @offsets = Array.new(@notes.size) do |i|
@@ -171,61 +130,50 @@ class NoteSequenceExtractor
       cur_offset
     end
   end
-  
-  def self.no_separation?(articulation, under_slur)
-    under_slur && (
-      articulation == Articulations::NORMAL ||
-      articulation == Articulations::TENUTO ||
-      articulation == Articulations::ACCENT
-    )
-  end
-  
-  def establish_maps
-    @maps = []
-    
-    @notes.each_index do |i|
-      map = { :ties => {}, :slurs => {}, :full_glissandos => {}, 
-        :full_portamentos => {}, :half_glissandos => {}, 
-        :half_portamentos => {}}
-      note = @notes[i]
-      
-      # Create a dummy note (with no pitches) for the last note to "link" to.
-      # This will allow half glissandos and half portamentos from the last note
-      next_note = (i == (@notes.size-1)) ? Note.quarter : @notes[i+1]
-      
-      no_separation = NoteSequenceExtractor.no_separation?(note.articulation, @slurring_flags[i])
-      
-      linked = note.pitches & note.links.keys
-      linked.each do |p|
-        l = note.links[p]
-        if l.is_a?(Link::Tie)
-          map[:ties][p] = p
-        elsif l.is_a?(Link::Glissando)
-          if next_note.pitches.include?(l.target_pitch)
-            map[:full_glissandos][p] = l.target_pitch
-          else
-            map[:half_glissandos][p] = l.target_pitch
-          end
-        elsif l.is_a?(Link::Portamento)
-          if next_note.pitches.include?(l.target_pitch)
-            map[:full_portamentos][p] = l.target_pitch
-          else
-            map[:half_portamentos][p] = l.target_pitch
-          end
-        end
+
+  def self.continuation_map note, next_note, separation
+    map = {}
+
+    linked = note.pitches & note.links.keys
+    targeted = []
+    linked.each do |p|
+      l = note.links[p]
+      if l.is_a?(Link::Tie)
+        map[p] = p
+      elsif l.is_a?(Link::TargetedLink) && next_note.pitches.include?(l.target_pitch)
+        map[p] = l.target_pitch
       end
-      
-      if(no_separation)
-        unlinked = note.pitches - linked
-        target_pitches = note.links.map {|p,l| l.is_a?(Link::Tie) ? p : l.target_pitch }
-        untargeted = next_note.pitches - target_pitches
-        Optimization.linking(unlinked, untargeted).each do |pitch,tgt_pitch|
-          map[:slurs][pitch] = tgt_pitch
-        end
-      end
-      
-      @maps.push map
     end
+
+    if(separation == Separation::NONE)
+      unlinked = note.pitches - linked
+      untargeted = next_note.pitches - map.values
+      Optimization.linking(unlinked, untargeted).each do |pitch,tgt_pitch|
+        map[pitch] = tgt_pitch
+      end
+    end
+
+    return map
+  end
+
+  def note_pitch_elements note, pitch, attack, cents_per_step
+    duration = note.duration
+    link = note.links[pitch]
+    elements = if link && link.is_a?(Link::TargetedLink)
+      tgt_pitch = link.target_pitch
+      case link
+      when Link::Glissando
+        GlissandoConverter.glissando_elements(pitch, tgt_pitch, duration, attack)
+      when Link::Portamento
+        PortamentoConverter.portamento_elements(pitch, tgt_pitch, cents_per_step, duration, attack)
+      else
+        raise "Unexpected targeted link type"
+      end
+    else
+      [ NoteSequence::Element.new(note.duration, pitch, attack) ]
+    end
+
+    return elements
   end
 end
 
