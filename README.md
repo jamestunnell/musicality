@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jamestunnell/musicality.svg?branch=master)](https://travis-ci.org/jamestunnell/musicality)
+
 # Musicality
 
 The library is based around an abstract representation for music notation. From here, functions are built up to make composing elaborate pieces in this notation representation more manageable. Finally, music performance is supported by providing translation to common formats, like MIDI.
