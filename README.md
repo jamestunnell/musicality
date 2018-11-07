@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/jamestunnell/musicality.svg?branch=master)](https://travis-ci.org/jamestunnell/musicality)
+[![Coverage Status](https://coveralls.io/repos/github/jamestunnell/musicality/badge.svg?branch=master)](https://coveralls.io/github/jamestunnell/musicality?branch=master)
 
 # Musicality
 
