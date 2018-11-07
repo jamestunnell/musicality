@@ -34,7 +34,7 @@ describe CompoundSequence do
           it "should get values from each sequence using #{method} and combine each set of values using #{sym}" do
             args.each do |arg|
               enums = seqs.map {|s| s.send(method,arg) }
-              n = arg.is_a?(Fixnum) ? arg : arg.size
+              n = arg.is_a?(Integer) ? arg : arg.size
               vals = Array.new(n) do |i|
                 _vals = enums.map {|e| e.next }
                 _vals[1..-1].inject(_vals.first,sym)

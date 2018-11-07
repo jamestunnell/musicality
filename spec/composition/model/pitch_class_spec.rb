@@ -16,7 +16,7 @@ describe PitchClass do
     end
   end
 
-  it 'should add the #to_pc method to the Fixnum class' do
+  it 'should add the #to_pc method to the Integer class' do
     expect(5.methods).to include(:to_pc)
   end
 

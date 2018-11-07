@@ -20,7 +20,7 @@ end
 
 end
 
-class Fixnum
+class Integer
   def to_pc
     PitchClass.from_i self
   end

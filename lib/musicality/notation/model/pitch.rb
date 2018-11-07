@@ -13,9 +13,9 @@ module Musicality
 # @author James Tunnell
 #
 # @!attribute [r] octave
-#   @return [Fixnum] The pitch octave.
+#   @return [Integer] The pitch octave.
 # @!attribute [r] semitone
-#   @return [Fixnum] The pitch semitone.
+#   @return [Integer] The pitch semitone.
 #
 class Pitch
   include Comparable
