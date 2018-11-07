@@ -26,6 +26,7 @@ SuperCollider."
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.5"
   spec.add_development_dependency "pry"
+  spec.add_development_dependency "coveralls", '~> 0.8'
 
   spec.add_dependency "treetop", "~> 1.5"
   spec.add_dependency 'midilib', '~> 2.0'

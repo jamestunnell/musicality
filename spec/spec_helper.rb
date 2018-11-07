@@ -1,4 +1,9 @@
 require 'rspec'
+
+# For code coverage
+require 'coveralls'
+Coveralls.wear!
+
 require 'musicality'
 
 include Musicality
