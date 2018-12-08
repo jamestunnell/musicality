@@ -15,7 +15,7 @@ def rb_fname fname
   "#{dirname}/#{basename}.rb"
 end
 
-task :build_parsers do
+def rebuild_parsers force_rebuild
   wd = Dir.pwd
   Dir.chdir "lib/musicality/notation/parsing"
   parser_files = Dir.glob(["**/*.treetop","**/*.tt"])
@@ -27,21 +27,29 @@ task :build_parsers do
 
   build_list = parser_files.select do |fname|
     rb_name = rb_fname(fname)
-    !File.exists?(rb_name) || (File.mtime(fname) > File.mtime(rb_name))
+    force_rebuild || !File.exists?(rb_name) || (File.mtime(fname) > File.mtime(rb_name))
   end
   
   if build_list.any?
     puts "building parsers:"
     build_list.each do |fname|
       puts "  #{fname} -> #{rb_fname(fname)}"
-      `tt -f #{fname}`
+      `bundle exec tt -f #{fname}`
     end
   else
     puts "Parsers are up-to-date"
   end
   Dir.chdir wd
 end
+
+task :build_parsers do
+  rebuild_parsers(false)
+end
 task :spec => :build_parsers
+
+task :rebuild_parsers do
+  rebuild_parsers(true)
+end
 
 task :make_examples do
   current_dir = Dir.getwd
