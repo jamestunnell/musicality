@@ -36,11 +36,13 @@ module NonnegativeFloat
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
       r0.extend(NonnegativeFloat0)
+      r0.extend(NonnegativeFloat0)
     else
       r2 = _nt_float2
       if r2
         r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
+        r0.extend(NonnegativeFloat0)
         r0.extend(NonnegativeFloat0)
       else
         @index = i0
@@ -222,7 +224,7 @@ module NonnegativeFloat
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("e")
+      terminal_parse_failure('"e"')
       r1 = nil
     end
     s0 << r1

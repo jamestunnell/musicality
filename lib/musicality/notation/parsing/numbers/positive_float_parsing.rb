@@ -36,17 +36,20 @@ module PositiveFloat
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
       r0.extend(PositiveFloat0)
+      r0.extend(PositiveFloat0)
     else
       r2 = _nt_float2
       if r2
         r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
         r0 = r2
         r0.extend(PositiveFloat0)
+        r0.extend(PositiveFloat0)
       else
         r3 = _nt_float3
         if r3
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
+          r0.extend(PositiveFloat0)
           r0.extend(PositiveFloat0)
         else
           @index = i0
@@ -436,7 +439,7 @@ module PositiveFloat
       r1 = true
       @index += match_len
     else
-      terminal_parse_failure("e")
+      terminal_parse_failure('"e"')
       r1 = nil
     end
     s0 << r1

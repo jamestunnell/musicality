@@ -50,7 +50,7 @@ module PositiveRational
         r2 = true
         @index += match_len
       else
-        terminal_parse_failure("/")
+        terminal_parse_failure('"/"')
         r2 = nil
       end
       s0 << r2
