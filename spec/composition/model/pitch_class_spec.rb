@@ -39,11 +39,17 @@ describe PitchClass do
     end
   end
 
-  describe 'Fixnum#to_pc' do
+  describe 'Integer#to_pc' do
     it 'should pass self to PitchClass.from_i' do
       [-1,12,2,16].each do |i|
         expect(i.to_pc).to eq(PitchClass.from_i(i))
       end
+    end
+  end
+  
+  describe 'Integer#to_pcs' do
+    it 'should pass self to PitchClass.from_i' do
+      expect([-1,12,2,16].to_pcs).to eq([-1.to_pc,12.to_pc,2.to_pc,16.to_pc])
     end
   end
 
