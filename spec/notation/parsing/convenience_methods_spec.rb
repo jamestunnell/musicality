@@ -72,6 +72,45 @@ end
   end
 end
 
+# Failure cases
+describe 'String' do
+  # Duration parsing
+  [:to_d, :to_dur, :to_duration].each do |method|
+    describe "\##{method}" do
+      it "should fail to parse 'A'" do
+        expect { 'A'.send(method) }.to raise_error(ParseError)
+      end
+    end
+  end
+
+  # Pitch parsing
+  [:to_p, :to_pitch].each do |method|
+    describe "\##{method}" do
+      it "should fail to parse '/2'" do
+        expect { '/2'.send(method) }.to raise_error(ParseError)
+      end
+    end
+  end
+
+  # Note parsing
+  [:to_n, :to_note].each do |method|
+    describe "\##{method}" do
+      it "should fail to parse 'A'" do
+        expect { 'A'.send(method) }.to raise_error(ParseError)
+      end
+    end
+  end
+
+  # Meter parsing
+  [:to_meter].each do |method|
+    describe "\##{method}" do
+      it "should fail to parse 'A'" do
+        expect { 'A'.send(method) }.to raise_error(ParseError)
+      end
+    end
+  end
+end
+
 {
   Duration => [:to_ds, :to_durs, :to_durations],
   Pitch => [:to_ps, :to_pitches],

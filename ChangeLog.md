@@ -1,5 +1,6 @@
 ### 0.11.2 / 2016-03-29
 * Fix a bug in SuperCollider performance code
+* Raise ParseError if parse+convert convenience method (to_pitch, to_meter, etc.) fails
 
 ### 0.11.1 / 2016-02-18
 * Fix gem description string in .gemspec

@@ -10,5 +10,5 @@ module Musicality
   class DomainError < StandardError; end
   class EmptyError < StandardError; end
   class DurationMismatchError < StandardError; end
-
+  class ParseError < StandardError; end
 end
