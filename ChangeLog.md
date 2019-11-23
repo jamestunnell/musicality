@@ -1,3 +1,6 @@
+### 0.12.1 / 2019-11-23
+* Revert to bundler 1.17
+
 ### 0.12.0 / 2019-11-23
 * Raise ParseError if parse+convert convenience method (to_pitch, to_meter, etc.) fails
 * Simplify Key class
