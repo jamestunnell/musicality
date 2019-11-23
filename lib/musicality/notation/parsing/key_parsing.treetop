@@ -1,0 +1,37 @@
+module Musicality
+module Parsing
+
+grammar Key
+  include Pitch
+
+  rule key
+    pitch_letter mod:[#b]? major_minor {
+      def to_key
+        sem = pitch_letter.to_semitone
+        modval = 0
+        if !mod.empty?
+          modval = case mod.text_value
+          when "#" then 1
+          when "b" then -1
+          end
+        end
+
+        triad_type = if major_minor.text_value.include?("maj")
+          Musicality::Key::MAJOR
+        else
+          Musicality::Key::MINOR
+        end
+
+        return Musicality::Key.new(sem + modval, triad_type: triad_type)
+      end
+    }
+  end
+
+  rule major_minor
+    "maj" / "min"
+  end
+
+end
+
+end
+end
