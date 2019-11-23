@@ -1,37 +1,38 @@
 module Musicality
 module Keys
-  C_MAJOR = Key.major_sharp(PitchClasses::C)
-  G_MAJOR = Key.major_sharp(PitchClasses::G)
-  D_MAJOR = Key.major_sharp(PitchClasses::D)
-  A_MAJOR = Key.major_sharp(PitchClasses::A)
-  E_MAJOR = Key.major_sharp(PitchClasses::E)
-  B_MAJOR = Key.major_sharp(PitchClasses::B)
-  F_SHARP_MAJOR = Key.major_sharp(PitchClasses::Fs)
-  C_SHARP_MAJOR = Key.major_sharp(PitchClasses::Cs)
-  
-  F_MAJOR = Key.major_flat(PitchClasses::F)
-  B_FLAT_MAJOR = Key.major_flat(PitchClasses::Bb)
-  E_FLAT_MAJOR = Key.major_flat(PitchClasses::Eb)
-  A_FLAT_MAJOR = Key.major_flat(PitchClasses::Ab)
-  D_FLAT_MAJOR = Key.major_flat(PitchClasses::Db)
-  G_FLAT_MAJOR = Key.major_flat(PitchClasses::Gb)
-  C_FLAT_MAJOR = Key.major_flat(PitchClasses::Cb)
-  
-  A_MINOR = Key.minor_sharp(PitchClasses::A)
-  E_MINOR = Key.minor_sharp(PitchClasses::E)
-  B_MINOR = Key.minor_sharp(PitchClasses::B)
-  F_SHARP_MINOR = Key.minor_sharp(PitchClasses::Fs)
-  C_SHARP_MINOR = Key.minor_sharp(PitchClasses::Cs)
-  G_SHARP_MINOR = Key.minor_sharp(PitchClasses::Gs)
-  D_SHARP_MINOR = Key.minor_sharp(PitchClasses::Ds)
-  A_SHARP_MINOR = Key.minor_sharp(PitchClasses::As)
-  
-  D_MINOR = Key.minor_flat(PitchClasses::D)
-  G_MINOR = Key.minor_flat(PitchClasses::G)
-  C_MINOR = Key.minor_flat(PitchClasses::C)
-  F_MINOR = Key.minor_flat(PitchClasses::F)
-  B_FLAT_MINOR = Key.minor_flat(PitchClasses::Bb)
-  E_FLAT_MINOR = Key.minor_flat(PitchClasses::Eb)
-  A_FLAT_MINOR = Key.minor_flat(PitchClasses::Ab)
+  C_MAJOR = Key.major(PitchClasses::C)
+
+  # Major keys with sharps
+  G_MAJOR = Key.major(PitchClasses::G)
+  D_MAJOR = Key.major(PitchClasses::D)
+  A_MAJOR = Key.major(PitchClasses::A)
+  E_MAJOR = Key.major(PitchClasses::E)
+  B_MAJOR = Key.major(PitchClasses::B)
+
+  # Major keys with flats
+  F_MAJOR = Key.major(PitchClasses::F)
+  Bb_MAJOR = Key.major(PitchClasses::Bb)
+  Eb_MAJOR = Key.major(PitchClasses::Eb)
+  Ab_MAJOR = Key.major(PitchClasses::Ab)
+  Db_MAJOR = Key.major(PitchClasses::Db)
+  Gb_MAJOR = Key.major(PitchClasses::Gb)
+
+  A_MINOR = Key.minor(PitchClasses::A)
+
+  # Minor keys with sharps
+  E_MINOR = Key.minor(PitchClasses::E)
+  B_MINOR = Key.minor(PitchClasses::B)
+  Fs_MINOR = Key.minor(PitchClasses::Fs)
+  Cs_MINOR = Key.minor(PitchClasses::Cs)
+  Gs_MINOR = Key.minor(PitchClasses::Gs)
+
+  # Minor keys with flats
+  D_MINOR = Key.minor(PitchClasses::D)
+  G_MINOR = Key.minor(PitchClasses::G)
+  C_MINOR = Key.minor(PitchClasses::C)
+  F_MINOR = Key.minor(PitchClasses::F)
+  Bb_MINOR = Key.minor(PitchClasses::Bb)
+  Eb_MINOR = Key.minor(PitchClasses::Eb)
 end
+
 end
