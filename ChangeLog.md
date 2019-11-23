@@ -1,4 +1,7 @@
 ### 0.12.1 / 2019-11-23
+* Change bundler version spec to minimum
+
+### 0.12.1 / 2019-11-23
 * Revert to bundler 1.17
 
 ### 0.12.0 / 2019-11-23
